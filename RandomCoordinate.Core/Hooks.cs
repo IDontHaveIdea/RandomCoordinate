@@ -55,14 +55,14 @@ namespace IDHIPlugins
                     var newType = ctrl.NowRandomCoordinateMethod(type);
                     type = (ChaFileDefine.CoordinateType)ctrl
                         .NowRandomCoordinateMethod(type);
-                    var newType2 = ctrl.NowRandomCoordinates[type];
+#if DEBUG
                     RandomCoordinatePlugin._Log
                         .Warning("[ChangeCoordinateTypeAndReload] Name=" +
                         $"{ctrl.ChaControl.GetHeroine().Name.Trim()} " +
                         $"NowRandomCoordinate[type]={(int)type} " +
                         $"NowRandomCoordinate={newType} " +
-                        $"NowRandomCoordinate2={newType2} " +
                         $"Flag={Manager.Character.enableCharaLoadGCClear} sex={__instance.sex}");
+#endif
                 }
             }
 
@@ -140,7 +140,6 @@ namespace IDHIPlugins
                 }
             }
 
-
             if (ctrl.FirstRun)
             {
                 newType = ctrl.GetRandomCoordinateType(
@@ -196,8 +195,6 @@ namespace IDHIPlugins
                     $"{__instance.heroine.Name.Trim()} no action taken");
             }
 #endif
-
-
             if (isRemove)
             {
                 __instance.chaCtrl.RandomChangeOfClothesLowPoly(__instance.heroine.lewdness);
