@@ -2,14 +2,15 @@
 // RandomCoordinatePlugin
 //
 using System;
+using System.Collections.Generic;
 
-using BepInEx;
 using BepInEx.Logging;
 
 using KKAPI;
+using KKAPI.Chara;
 
 using IDHIUtils;
-using KKAPI.Chara;
+
 
 namespace IDHIPlugins
 {
@@ -17,6 +18,7 @@ namespace IDHIPlugins
     {
         internal static Logg _Log = new();
         internal static Random RandCoordinate = new();
+        internal static Dictionary<string, string> GirlsNames = new();
 
         private void Awake()
         {
@@ -29,6 +31,7 @@ namespace IDHIPlugins
             _Log.Level(LogLevel.Info, $"[{PluginName}] {PluginDisplayName} " +
                 $"loaded.");
 #endif
+            GirlsNames.Clear();
             CharacterApi.RegisterExtraBehaviour<RandomCoordinateController>(GUID);
 
             KoikatuAPI.Quitting += OnGameExit;
