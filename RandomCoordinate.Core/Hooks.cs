@@ -57,8 +57,8 @@ namespace IDHIPlugins
             }
             var mapNo = Utils.MapNumber(__instance);
 #if DEBUG
-            var name = __instance.GetHeroine()?.Name.Trim();
-            if (name == null)
+            var name = Utilities.GirlName(__instance);
+            /*if (name == null)
             {
                 if (GirlsNames.ContainsKey(__instance.name))
                 {
@@ -74,15 +74,10 @@ namespace IDHIPlugins
                     $"girl=[{__instance.name}] " +
                     $"type={type} " +
                     $"Flag={Manager.Character.enableCharaLoadGCClear}");
-            }
+            }*/
 #endif
             if (__instance.chaFile.coordinate.Length <= 4)
             {
-#if DEBUG
-                //_Log.Warning("[SyncroCoordinate] 02 "
-                //    + $"Name={name} Nothing to "
-                //    + "do move along!!.");
-#endif
                 return true;
             }
 
@@ -91,15 +86,16 @@ namespace IDHIPlugins
                 var ctrl = GetController(__instance);
                 if (ctrl != null)
                 {
-                    var newType = ctrl.NowRandomCoordinateMethod(type);
-                    type = (ChaFileDefine.CoordinateType)ctrl
-                        .NowRandomCoordinateMethod(type);
+                    var newRandomCoordinate = ctrl.NowRandomCoordinateByType(type);
+                    var randomCoordinateType = ctrl.GetCoordinateType(newRandomCoordinate);
+                    type = randomCoordinateType;
+                        
 #if DEBUG
-                    _Log.Warning("[ChangeCoordinateTypeAndReload] Name=" +
-                        $"{ctrl.ChaControl.GetHeroine().Name.Trim()} " +
+                    _Log.Warning("[ChangeCoordinateTypeAndReload] 02 Name=" +
+                        $"{name} " +
                         $"MapNo={mapNo} " +
-                        $"NowRandomCoordinate[type]={(int)type} " +
-                        $"NowRandomCoordinate={newType} " +
+                        $"randomCoordinateType={randomCoordinateType} " +
+                        $"newRandomCoordinate={newRandomCoordinate} " +
                         $"Flag={Manager.Character.enableCharaLoadGCClear} " +
                         $"sex={__instance.sex}");
 #endif
@@ -134,17 +130,14 @@ namespace IDHIPlugins
 
             var totalCoordinates = __instance.chaCtrl.chaFile.coordinate.Length;
             var ctrl = GetController(__instance.chaCtrl);
-#if DEBUG
-            _Log.Warning("[SyncroCoordinate] 01 Name=" +
-                $"{__instance.heroine.Name.Trim()}");
-#endif
+            var name = Utilities.GirlName(__instance);
+
             // If 4 or less no extra coordinates
             if (totalCoordinates <= 4)
             {
 #if DEBUG
-                //_Log.Warning("[SyncroCoordinate] 02 "
-                //    + $"Name={__instance.heroine.Name.Trim()} Nothing to "
-                //    + "do move along!!.");
+                _Log.Warning("[SyncroCoordinate] 01 Name=" +
+                    $"{name} total coordinates={totalCoordinates}");
 #endif
                 return;
             }
@@ -152,8 +145,11 @@ namespace IDHIPlugins
             var coordinateNumber = __instance.heroine.NowCoordinate;
             var coordinateType = __instance.chaCtrl.fileStatus.coordinateType;
 
+            // Check look up table
+            GirlsNowCoordinate.TryGetValue(__instance.chaCtrl.name, out var dictNowCoordinate);
+
             var nowCoordinate = coordinateNumber;
-            var nowRandomCoordinate = ctrl.NowRandomCoordinateMethod(
+            var nowRandomCoordinate = ctrl.NowRandomCoordinateByType(
                     (ChaFileDefine.CoordinateType)coordinateType);
             var newCoordinate = -1;
 
@@ -183,9 +179,10 @@ namespace IDHIPlugins
                 }
             }
 
+            // On first run get a random coordinate
             if (ctrl.FirstRun)
             {
-                newCoordinate = ctrl.GetRandomCoordinateType(
+                newCoordinate = ctrl.NewRandomCoordinateByType(
                                 (ChaFileDefine.CoordinateType)coordinateType);
                 coordinateNumber = newCoordinate;
             }
@@ -193,11 +190,12 @@ namespace IDHIPlugins
             {
                 if (RandomCoordinatePlugin.OnlyChangingRoom.Value)
                 {
+                    // Get a random coordinate is girl is one changing room
                     switch (__instance.mapNo)
                     {
                         case 17: // Hotel Changing Room
                         case 33: // Hotel Change Room
-                            newCoordinate = ctrl.GetRandomCoordinateType(
+                            newCoordinate = ctrl.NewRandomCoordinateByType(
                                 (ChaFileDefine.CoordinateType)coordinateType);
                             coordinateNumber = newCoordinate;
                             break;
@@ -209,7 +207,8 @@ namespace IDHIPlugins
                 }
                 else
                 {
-                    newCoordinate = ctrl.GetRandomCoordinateType(
+                    // Try and preserve current random coordinate
+                    newCoordinate = ctrl.NewRandomCoordinateByType(
                                 (ChaFileDefine.CoordinateType)coordinateType);
                     coordinateNumber = newCoordinate;
                 }
@@ -222,22 +221,24 @@ namespace IDHIPlugins
                 Manager.Character.enableCharaLoadGCClear = true;
 #if DEBUG
                 _Log.Warning($"[SynchroCoordinate] 03 " +
-                    $"Name={__instance.heroine.Name.Trim()} in map={__instance.mapNo} " +
-                    $"NowRandomCoordinate={nowRandomCoordinate} " +
-                    $"newCoordinate={newCoordinate} " +
+                    $"Name={name} in map={__instance.mapNo} " +
                     $"NowCoordinate={nowCoordinate} " +
+                    $"NowRandomCoordinate={nowRandomCoordinate} " +
+                    $"dictNowCoordinate={dictNowCoordinate} " +
+                    $"newCoordinate={newCoordinate} " +
                     $"coordinateType={(ChaFileDefine.CoordinateType)coordinateType} " +
-                    $"determined coordinate={(ChaFileDefine.CoordinateType)coordinateNumber} " +
-                    "CHANGE");
+                    $"CHANGE");
 #endif
             }
 #if DEBUG
             else
             {
                 _Log.Warning("[SyncroCoordinate] 04 Name=" +
-                    $"{Utilities.GirlName(__instance)} coordinateType " +
-                    $"[{coordinateType}] coordianteNumber={coordinateNumber} " +
-                    $"nowRandomCoordinate={nowRandomCoordinate} no action taken");
+                    $"{Utilities.GirlName(__instance)} " +
+                    $"coordinateType={coordinateType} " +
+                    $"coordianteNumber={coordinateNumber} " +
+                    $"nowRandomCoordinate={nowRandomCoordinate} " +
+                    $"dictNowCoordinate={dictNowCoordinate} no action taken");
             }
 #endif
             if (isRemove)

@@ -3,12 +3,17 @@
 //
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+
+using ADV.Commands.Base;
 
 using BepInEx.Logging;
 
 using KKAPI;
 using KKAPI.Chara;
 using KKAPI.MainGame;
+
+using Utils = IDHIUtils.Utilities;
 
 using static IDHIPlugins.RandomCoordinatePlugin;
 
@@ -19,11 +24,9 @@ namespace IDHIPlugins
     {
         #region private fields
         private bool _firstRandomRequest = true;
-        private int _coordinateType;
-        private bool _onLoadFirstCall = true;
-        private ChaFileDefine.CoordinateType _nowType;
         private List<int> _tmpCoordinates;
-        private ChaFileDefine.CoordinateType _nowRandomCoordinateType;
+        private int _nowRandomCoordinate;
+        private ChaFileDefine.CoordinateType _nowRandomType;
 
         private Dictionary<ChaFileDefine.CoordinateType, List<int>>
             _Coordinates = new()
@@ -45,15 +48,24 @@ namespace IDHIPlugins
         #endregion
 
         #region properties
-        public ChaFileDefine.CoordinateType NowType => _nowType;
-        public ChaFileDefine.CoordinateType NowRandomCoordinateType
-            => _nowRandomCoordinateType;
         public bool FirstRun => _firstRandomRequest;
+        public int NowRandomCoordinate => _nowRandomCoordinate;
+        public ChaFileDefine.CoordinateType NowRandomType => _nowRandomType;
         #endregion
 
         protected override void OnCardBeingSaved(GameMode currentGameMode)
         {
         }
+
+#if DEBUG
+        protected override void OnReload(GameMode currentGameMode, bool maintainState)
+        {
+            GirlsNowCoordinate.TryGetValue(ChaControl.name, out var dictNowCoordinate);
+            _Log.Warning($"[OnReloadState] " +
+                $"Name={Utilities.GirlName(ChaControl)} " +
+                $"dictNowCoordinate={dictNowCoordinate}");
+        }
+#endif
 
         protected override void OnReload(GameMode currentGameMode)
         {
@@ -64,36 +76,21 @@ namespace IDHIPlugins
 
             var heroine = ChaControl.GetHeroine();
 
-            if (heroine != null) {
-                var totalCoordinates = ChaControl.chaFile.coordinate.Length;
+            if (heroine != null)
+            {
+                // Initialize the coordinates information
+                InitCoordinates();
 
-                // For now just work with the Plain type
-                if ((totalCoordinates > 4)
-                    && (_Coordinates[ChaFileDefine.CoordinateType.Plain].Count == 0))
+                var coordinateType = GetCoordinateType(heroine.NowCoordinate);
+                var nowRandomCoordinate = _nowRandomCoordinateByType[coordinateType];
+                GirlsNowCoordinate.TryGetValue(ChaControl.name, out var dictNowCoordinate);
+
+                if (nowRandomCoordinate != heroine.NowCoordinate)
                 {
-                    // Add standard coordinates to respective types
-                    _Coordinates[ChaFileDefine.CoordinateType.Plain].Add(0);
-                    _Coordinates[ChaFileDefine.CoordinateType.Swim].Add(1);
-                    _Coordinates[ChaFileDefine.CoordinateType.Pajamas].Add(2);
-                    _Coordinates[ChaFileDefine.CoordinateType.Bathing].Add(3);
-
-                    // Add additional outfits to Plain type for random selection
-                    for (var i = 4; i < totalCoordinates; i++)
-                    {
-                        // TODO: Interface to classify coordinates grater than 3
-                        _Coordinates[ChaFileDefine.CoordinateType.Plain].Add(i);
-                    }
-                }
-
-                var lookType = LookType(heroine.NowCoordinate);
-                if (_onLoadFirstCall)
-                {
-                    _onLoadFirstCall = false;
-                    if (lookType == ChaFileDefine.CoordinateType.Plain)
-                    {
-                        _nowRandomCoordinateByType[lookType] = heroine.NowCoordinate;
-                        _nowRandomCoordinateType = lookType;
-                    }
+                    // Synchronize coordinate information
+                    GirlsNowCoordinate[ChaControl.name] = heroine.NowCoordinate;
+                    _nowRandomCoordinateByType[coordinateType] = heroine.NowCoordinate;
+                    _nowRandomType = coordinateType;
                 }
 #if DEBUG
                 // Sometimes cannot get ChaControl.GetHeroine() to work
@@ -101,31 +98,39 @@ namespace IDHIPlugins
                     heroine.Name.Trim();
                 _Log.Warning($"[OnReload] " +
                     $"Name={heroine.Name.Trim()} " +
-                    $"girlCha={ChaControl.name} " +
-                    $"girlHer={heroine.chaCtrl.name}" +
-                    $"Loading nowCoordinate={heroine.NowCoordinate} " +
-                    $"LookType={lookType} total " +
+                    $"Loading heroinie.NowCoordinate={heroine.NowCoordinate} " +
+                    $"nowRandomCoordinate={nowRandomCoordinate} " +
+                    $"dictNowCoordinate={dictNowCoordinate} " +
+                    $"LookType={coordinateType} total " +
                     $"coordinates={ChaControl.chaFile.coordinate.Length}");
 #endif
             }
         }
 
-        public int GetRandomCoordinateType(ChaFileDefine.CoordinateType type)
+        /// <summary>
+        /// If available select a random coordinate for any given coordinate
+        /// type.
+        /// TODO: For coordinates other than Plain and UI is needed
+        ///
+        /// * Plain - every additional coordinate outfit will be assumed is
+        ///   for the Plain type
+        /// * Swin - can work events depend on this
+        /// * Pajamas - TODO: test to see if it is possible
+        /// * Bathing - no need events depend on this
+        ///
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public int NewRandomCoordinateByType(ChaFileDefine.CoordinateType type)
         {
-            _nowType = type;
             if (_firstRandomRequest)
             {
                 _firstRandomRequest = false;
             }
-            if (ChaControl.chaFile.coordinate.Length <= 4)
-            {
-                return (int)type;
-            }
 
-            _coordinateType = (-1);
+            var _coordinate = (-1);
 
-            // For now only for Plain coordinates
-            _coordinateType = type switch {
+            _coordinate = type switch {
                 ChaFileDefine.CoordinateType.Swim => (int)ChaFileDefine.CoordinateType.Swim,
                 ChaFileDefine.CoordinateType.Pajamas => (int)ChaFileDefine.CoordinateType.Pajamas,
                 ChaFileDefine.CoordinateType.Bathing => (int)ChaFileDefine.CoordinateType.Bathing,
@@ -133,78 +138,10 @@ namespace IDHIPlugins
             };
 #if DEBUG
             _Log.Warning("[GetRandomCoordinateType] " +
-                $"Name={Utilities.GirlName(ChaControl)} type{type}");
+                $"Name={Utilities.GirlName(ChaControl)} type={type} " +
+                $"coordinate={_coordinate}");
 #endif
-            return _coordinateType;
-        }
-
-        public int NowRandomCoordinateMethod(ChaFileDefine.CoordinateType type)
-        {
-            var coord = (int)type;
-
-            if (_nowRandomCoordinateByType.ContainsKey(type))
-            {
-                coord = _nowRandomCoordinateByType[type];
-            }
-            return coord;
-        }
-
-        /// <summary>
-        /// Get random coordinate according to type classification
-        /// (Plain, Swim, ...) Now only working with Plain coordinate
-        /// only i.e., when Plain clothes are selected the function will
-        /// select among the Plain coordinate number 0 and anything
-        /// above 3 (Bathing)
-        /// </summary>
-        /// <param name="type">Coordinate type selected by the game</param>
-        /// <returns></returns>
-        private int RadomCoordinate(ChaFileDefine.CoordinateType type)
-        {
-            var newCoordinate = (int)type;
-            var coordinateIndex = -1;
-            var name = Utilities.GirlName(ChaControl);
-
-            try
-            {
-                var lookType = LookType(type);
-                _nowType = lookType;
-                _tmpCoordinates = _Coordinates[lookType];
-                _nowRandomCoordinateType = lookType;
-
-                if (_tmpCoordinates.Count > 1)
-                {
-                    try
-                    {
-                        coordinateIndex = RandCoordinate
-                            .Next(0, _tmpCoordinates.Count);
-                        newCoordinate = _tmpCoordinates[coordinateIndex];
-                        _nowRandomCoordinateByType[type] = newCoordinate;
-#if DEBUG
-                        _Log.Warning($"[RandomCoordinate] " +
-                            $"Name={name} " +
-                            $"Type={type} " +
-                            $"NowRandomCoordinateType={_nowRandomCoordinateType} " +
-                            $"coordinateIndex={coordinateIndex} " +
-                            $"NowRandomCoordinate={_nowRandomCoordinateByType[type]}");
-#endif
-                    }
-                    catch (Exception e)
-                    {
-                        _Log.Level(LogLevel.Error, $"[RandomCoordinate] " +
-                            $"Name={name} Problem generating random " +
-                            $"number lookType={lookType} " +
-                            $"Error code={e.Message}");
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                _Log.Level(LogLevel.Error, $"[RandomCoordinate] " +
-                    $"Name={name} Problem " +
-                    $"in random coordinate search type={type} " +
-                    $"code={e.Message}");
-            }
-            return newCoordinate;
+            return _coordinate;
         }
 
         /// <summary>
@@ -212,11 +149,11 @@ namespace IDHIPlugins
         /// type. The function is needed if the type selected by the game is
         /// greater then 3.
         /// </summary>
-        /// <param name="type">coordinate type in the request for random coordinate</param>
+        /// <param name="type">coordinate in the request for random coordinate</param>
         /// <returns></returns>
-        private ChaFileDefine.CoordinateType LookType(ChaFileDefine.CoordinateType type)
+        public ChaFileDefine.CoordinateType GetCoordinateType(int coordinate)
         {
-            var lookType = (int)type;
+            var lookType = coordinate;
             var rc = ChaFileDefine.CoordinateType.Plain;
 
             if (MathfEx.RangeEqualOn(0, lookType, 3))
@@ -242,8 +179,11 @@ namespace IDHIPlugins
                     rc = ChaFileDefine.CoordinateType.Pajamas;
                 }
             }
+
+            GirlsNowCoordinate.TryGetValue(ChaControl.name, out var dictNowCoordinate);
             _Log.Warning("[LookType] " +
-                $"Name={Utilities.GirlName(ChaControl)} type={type} rc={rc}");
+                $"Name={Utilities.GirlName(ChaControl)} dictNowCoordinate={dictNowCoordinate} " +
+                $"coordinate={coordinate} rc={rc}");
 #else
             else
             {
@@ -265,14 +205,147 @@ namespace IDHIPlugins
         }
 
         /// <summary>
-        /// Overload for LookType with integer parameter
+        /// Overload
         /// </summary>
-        /// <param name="type">type parameter as integer</param>
+        /// <param name="type">Type of coordinate</param>
         /// <returns></returns>
-        private ChaFileDefine.CoordinateType LookType(int type)
+        public ChaFileDefine.CoordinateType GetCoordinateType(ChaFileDefine.CoordinateType type)
         {
-            return LookType((ChaFileDefine.CoordinateType)type);
+            return GetCoordinateType((int)type);
         }
 
+        /// <summary>
+        /// Return the current coordinate for any given type
+        /// </summary>
+        /// <param name="type">Type of coordinate</param>
+        /// <returns></returns>
+        public int NowRandomCoordinateByType(ChaFileDefine.CoordinateType type)
+        {
+            var coordinateNumber = (int)type;
+            var lookType = GetCoordinateType(type);
+            GirlsNowCoordinate.TryGetValue(ChaControl.name, out var dictNowCoordinate);
+            _nowRandomCoordinateByType.TryGetValue(lookType, out coordinateNumber);
+
+
+#if DEBUG
+            // Get calling method name
+            var calllingMethod = Utils.CallingMethod();
+
+            _Log.Warning($"[NowRandomCoordinateByType] " +
+                $"Calling Method=[{calllingMethod}] " +
+                $"Name={Utilities.GirlName(ChaControl)} asked type={type} " +
+                $"searchType={lookType} " +
+                $"coordinateNumber={coordinateNumber} " +
+                $"dictNowCoordinate={dictNowCoordinate}\"");
+#endif
+            return coordinateNumber;
+        }
+
+        /// <summary>
+        /// Overload NowRandomCoordinate with integer type
+        /// </summary>
+        /// <param name="integerType">coordinate type as integer</param>
+        /// <returns></returns>
+        public int NowRandomCoordinateByType(int integerType)
+        {
+            return NowRandomCoordinateByType((ChaFileDefine.CoordinateType)integerType);
+        }
+
+        /// <summary>
+        /// Get random coordinate according to type classification
+        /// (Plain, Swim, ...) Now only working with Plain coordinate
+        /// only i.e., when Plain clothes are selected the function will
+        /// select among the Plain coordinate number 0 and anything
+        /// above 3 (Bathing)
+        /// </summary>
+        /// <param name="type">Coordinate type selected by the game</param>
+        /// <returns></returns>
+        private int RadomCoordinate(ChaFileDefine.CoordinateType type)
+        {
+            var newCoordinate = (int)type;
+            var coordinateIndex = -1;
+            var name = Utilities.GirlName(ChaControl);
+
+            try
+            {
+                var lookType = GetCoordinateType(type);
+                _tmpCoordinates = _Coordinates[lookType];
+
+                if (_tmpCoordinates.Count > 1)
+                {
+                    try
+                    {
+                        // New random coordinate
+                        coordinateIndex = RandCoordinate
+                            .Next(0, _tmpCoordinates.Count);
+                        newCoordinate = _tmpCoordinates[coordinateIndex];
+
+                        // save coordinate
+                        _nowRandomCoordinateByType[lookType] = newCoordinate;
+                        _nowRandomCoordinate = newCoordinate;
+                        _nowRandomType = lookType;
+
+                        // Save on lookup table outside of Controller
+                        // testing to change to lookup table
+                        GirlsNowCoordinate[ChaControl.name] = newCoordinate;
+#if DEBUG
+                        _Log.Warning($"[RandomCoordinate] 01 " +
+                            $"Name={name} " +
+                            $"Type={type} " +
+                            $"NowRandomType={_nowRandomType} " +
+                            $"coordinateIndex={coordinateIndex} " +
+                            $"NowRandomCoordinate={_nowRandomCoordinateByType[lookType]}");
+#endif
+                    }
+                    catch (Exception e)
+                    {
+                        _Log.Level(LogLevel.Error, $"[RandomCoordinate] " +
+                            $"Name={name} Problem generating random " +
+                            $"number lookType={lookType} " +
+                            $"Error code={e.Message}");
+                    }
+                }
+#if DEBUG
+                else
+                {
+                    _Log.Warning($"[RandomCoordinate] 02 " +
+                        $"Name={name} " +
+                        $"Type={type} " +
+                        $"Total Coordinates By Type={_tmpCoordinates.Count} " +
+                        $"NowRandomType={_nowRandomType} " +
+                        $"NowRandomCoordinate={_nowRandomCoordinate}");
+                }
+#endif
+            }
+            catch (Exception e)
+            {
+                _Log.Level(LogLevel.Error, $"[RandomCoordinate] " +
+                    $"Name={name} Problem " +
+                    $"in random coordinate search type={type} " +
+                    $"code={e.Message}");
+            }
+            return newCoordinate;
+        }
+
+        /// <summary>
+        /// Clears and fill the _Coordinates dictionary
+        /// </summary>
+        private void InitCoordinates()
+        {
+            var totalCoordinates = ChaControl.chaFile.coordinate.Length;
+
+            for (var i = 0; i < 4; i++)
+            {
+                _Coordinates[(ChaFileDefine.CoordinateType)i].Clear();
+                _Coordinates[(ChaFileDefine.CoordinateType)i].Add(i);
+            }
+
+            // Add additional outfits to Plain type for random selection
+            for (var i = 4; i < totalCoordinates; i++)
+            {
+                // TODO: Interface to classify coordinates grater than 3
+                _Coordinates[ChaFileDefine.CoordinateType.Plain].Add(i);
+            }
+        }
     }
 }
