@@ -48,6 +48,7 @@ namespace IDHIPlugins
         #endregion
 
         #region properties
+        public bool RandomPossible => (ChaFileControl.coordinate.Length > 4);
         public bool FirstRun => _firstRandomRequest;
         public int NowRandomCoordinate => _nowRandomCoordinate;
         public ChaFileDefine.CoordinateType NowRandomType => _nowRandomType;
@@ -56,16 +57,6 @@ namespace IDHIPlugins
         protected override void OnCardBeingSaved(GameMode currentGameMode)
         {
         }
-
-#if DEBUG
-        protected override void OnReload(GameMode currentGameMode, bool maintainState)
-        {
-            GirlsNowCoordinate.TryGetValue(ChaControl.name, out var dictNowCoordinate);
-            _Log.Warning($"[OnReloadState] " +
-                $"Name={Utilities.GirlName(ChaControl)} " +
-                $"dictNowCoordinate={dictNowCoordinate}");
-        }
-#endif
 
         protected override void OnReload(GameMode currentGameMode)
         {
@@ -83,7 +74,6 @@ namespace IDHIPlugins
 
                 var coordinateType = GetCoordinateType(heroine.NowCoordinate);
                 var nowRandomCoordinate = _nowRandomCoordinateByType[coordinateType];
-                GirlsNowCoordinate.TryGetValue(ChaControl.name, out var dictNowCoordinate);
 
                 if (nowRandomCoordinate != heroine.NowCoordinate)
                 {
@@ -92,17 +82,21 @@ namespace IDHIPlugins
                     _nowRandomCoordinateByType[coordinateType] = heroine.NowCoordinate;
                     _nowRandomType = coordinateType;
                 }
+
+                // Sometimes cannot get ChaControl.GetHeroine() to work save
+                // to a lookup table
+                GirlsNames[ChaControl.name] = Utilities.GirlName(heroine);
 #if DEBUG
-                // Sometimes cannot get ChaControl.GetHeroine() to work
-                GirlsNames[ChaControl.name] =
-                    heroine.Name.Trim();
+                GirlsNowCoordinate.TryGetValue(ChaControl.name, out var dictNowCoordinate);
                 _Log.Warning($"[OnReload] " +
                     $"Name={heroine.Name.Trim()} " +
                     $"Loading heroinie.NowCoordinate={heroine.NowCoordinate} " +
-                    $"nowRandomCoordinate={nowRandomCoordinate} " +
+                    $"nowRandomCoordinate={nowRandomCoordinate} - " +
+                    $"{_nowRandomCoordinateByType[coordinateType]} " +
                     $"dictNowCoordinate={dictNowCoordinate} " +
                     $"LookType={coordinateType} total " +
-                    $"coordinates={ChaControl.chaFile.coordinate.Length}");
+                    $"coordinates={ChaFileControl.coordinate.Length} " +
+                    $"random possible={RandomPossible}");
 #endif
             }
         }
@@ -153,54 +147,27 @@ namespace IDHIPlugins
         /// <returns></returns>
         public ChaFileDefine.CoordinateType GetCoordinateType(int coordinate)
         {
-            var lookType = coordinate;
             var rc = ChaFileDefine.CoordinateType.Plain;
 
-            if (MathfEx.RangeEqualOn(0, lookType, 3))
+            if (MathfEx.RangeEqualOn(0, coordinate, 3))
             {
-                rc = (ChaFileDefine.CoordinateType)lookType;
+                rc = (ChaFileDefine.CoordinateType)coordinate;
             }
-#if DEBUG
             else
             {
-                if (_Coordinates[ChaFileDefine.CoordinateType.Plain].Contains(lookType))
-                {
-                    //return ChaFileDefine.CoordinateType.Plain;
-                    rc = ChaFileDefine.CoordinateType.Plain;
-                }
-                if (_Coordinates[ChaFileDefine.CoordinateType.Swim].Contains(lookType))
-                {
-                    //return ChaFileDefine.CoordinateType.Swim;
-                    rc = ChaFileDefine.CoordinateType.Swim;
-                }
-                if (_Coordinates[ChaFileDefine.CoordinateType.Pajamas].Contains(lookType))
-                {
-                    //return ChaFileDefine.CoordinateType.Pajamas;
-                    rc = ChaFileDefine.CoordinateType.Pajamas;
-                }
-            }
-
-            GirlsNowCoordinate.TryGetValue(ChaControl.name, out var dictNowCoordinate);
-            _Log.Warning("[LookType] " +
-                $"Name={Utilities.GirlName(ChaControl)} dictNowCoordinate={dictNowCoordinate} " +
-                $"coordinate={coordinate} rc={rc}");
-#else
-            else
-            {
-                if (_Coordinates[ChaFileDefine.CoordinateType.Plain].Contains(lookType))
+                if (_Coordinates[ChaFileDefine.CoordinateType.Plain].Contains(coordinate))
                 {
                     return ChaFileDefine.CoordinateType.Plain;
                 }
-                if (_Coordinates[ChaFileDefine.CoordinateType.Swim].Contains(lookType))
+                if (_Coordinates[ChaFileDefine.CoordinateType.Swim].Contains(coordinate))
                 {
                     return ChaFileDefine.CoordinateType.Swim;
                 }
-                if (_Coordinates[ChaFileDefine.CoordinateType.Pajamas].Contains(lookType))
+                if (_Coordinates[ChaFileDefine.CoordinateType.Pajamas].Contains(coordinate))
                 {
                     return ChaFileDefine.CoordinateType.Pajamas;
                 }
             }
-#endif
             return rc;
         }
 
@@ -223,13 +190,11 @@ namespace IDHIPlugins
         {
             var coordinateNumber = (int)type;
             var lookType = GetCoordinateType(type);
-            GirlsNowCoordinate.TryGetValue(ChaControl.name, out var dictNowCoordinate);
             _nowRandomCoordinateByType.TryGetValue(lookType, out coordinateNumber);
-
-
 #if DEBUG
             // Get calling method name
             var calllingMethod = Utils.CallingMethod();
+            GirlsNowCoordinate.TryGetValue(ChaControl.name, out var dictNowCoordinate);
 
             _Log.Warning($"[NowRandomCoordinateByType] " +
                 $"Calling Method=[{calllingMethod}] " +

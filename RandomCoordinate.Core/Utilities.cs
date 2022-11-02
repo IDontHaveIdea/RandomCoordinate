@@ -3,18 +3,18 @@
 //
 using ActionGame.Chara;
 
-using UnityEngine;
-
+using KKAPI.MainGame;
 
 using static IDHIPlugins.RandomCoordinatePlugin;
-using KKAPI.MainGame;
+
 
 namespace IDHIPlugins
 {
     public partial class Utilities
     {
         /// <summary>
-        /// Get the girl name for debugging purposes
+        /// Get the girl name for debugging purposes. Sometimes looking in
+        /// the Savedata.Heroine class fails.
         /// </summary>
         /// <param name="girl"></param>
         /// <returns></returns>
@@ -31,6 +31,11 @@ namespace IDHIPlugins
             return name;
         }
 
+        /// <summary>
+        /// Overload GirlNme(ChaControl)
+        /// </summary>
+        /// <param name="girl"></param>
+        /// <returns></returns>
         public static string GirlName(SaveData.Heroine girl)
         {
             var name = girl.Name.Trim();
@@ -43,6 +48,12 @@ namespace IDHIPlugins
 
             return name;
         }
+
+        /// <summary>
+        /// Overload GirlNme(ChaControl)
+        /// </summary>
+        /// <param name="girl"></param>
+        /// <returns></returns>
         public static string GirlName(NPC girl)
         {
             return GirlName(girl.chaCtrl);
