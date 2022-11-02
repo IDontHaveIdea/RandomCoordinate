@@ -30,6 +30,6 @@ namespace IDHIPlugins
         public const string PluginDisplayName = "Random Coordinates Plug-in";
 #endif
         public const string PluginName = "RandomCoordinate";
-        public const string Version = "0.0.7.0";
+        public const string Version = "0.8.0.0";
     }
 }
