@@ -29,9 +29,9 @@ namespace IDHIPlugins
         }
 
         /// <summary>
-        /// Set the new original position when changing positions via the H point picker scene
+        /// Prefix for ChaControl.ChangeCoordinateTypeAndReload to manipulate
+        /// the value of the coordinate type
         /// </summary>
-        ///
         [HarmonyPrefix]
         [HarmonyPatch(typeof(ChaControl),
             nameof(ChaControl.ChangeCoordinateTypeAndReload),
@@ -56,26 +56,9 @@ namespace IDHIPlugins
                 return true;
             }
             var mapNo = Utils.MapNumber(__instance);
-#if DEBUG
             var name = Utilities.GirlName(__instance);
-            /*if (name == null)
-            {
-                if (GirlsNames.ContainsKey(__instance.name))
-                {
-                    name = Utilities.GirlName(__instance);
-                }
-                else
-                {
-                    name = "Error not found!";
-                }
-                _Log.Error(
-                    "[ChangeCoordinateTypeAndReload] 01 Name=" +
-                    $"{name} from backup MapNo={mapNo} " +
-                    $"girl=[{__instance.name}] " +
-                    $"type={type} " +
-                    $"Flag={Manager.Character.enableCharaLoadGCClear}");
-            }*/
-#endif
+            var callingType = type;
+
             if (__instance.chaFile.coordinate.Length <= 4)
             {
                 return true;
@@ -86,18 +69,23 @@ namespace IDHIPlugins
                 var ctrl = GetController(__instance);
                 if (ctrl != null)
                 {
-                    var newRandomCoordinate = ctrl.NowRandomCoordinateByType(type);
-                    var randomCoordinateType = ctrl.GetCoordinateType(newRandomCoordinate);
-                    type = randomCoordinateType;
-                        
+                    // Preserve current random coordinate for type change request
+                    var nowRandomCoordinate =
+                        ctrl.NowRandomCoordinateByType(type);
+                    if (nowRandomCoordinate >= 0)
+                    {
+                        type = (ChaFileDefine.CoordinateType)nowRandomCoordinate;
+                    }
 #if DEBUG
+                    var randomCoordinateType =
+                        ctrl.GetCoordinateType(nowRandomCoordinate);
                     _Log.Warning("[ChangeCoordinateTypeAndReload] 02 Name=" +
                         $"{name} " +
                         $"MapNo={mapNo} " +
+                        $"type={callingType} " +
                         $"randomCoordinateType={randomCoordinateType} " +
-                        $"newRandomCoordinate={newRandomCoordinate} " +
-                        $"Flag={Manager.Character.enableCharaLoadGCClear} " +
-                        $"sex={__instance.sex}");
+                        $"nowRandomCoordinate={nowRandomCoordinate} " +
+                        $"Flag={Manager.Character.enableCharaLoadGCClear}");
 #endif
                 }
             }
@@ -112,7 +100,9 @@ namespace IDHIPlugins
         /// <param name="isRemove"></param>
         [HarmonyPostfix]
         [HarmonyPatch(typeof(NPC), nameof(NPC.SynchroCoordinate))]
-        private static void SynchroCoordinatePostfix(NPC __instance, bool isRemove)
+        private static void SynchroCoordinatePostfix(
+            NPC __instance,
+            bool isRemove)
         {
             if (KoikatuAPI.GetCurrentGameMode() != GameMode.MainGame)
             {
@@ -132,8 +122,8 @@ namespace IDHIPlugins
             var ctrl = GetController(__instance.chaCtrl);
             var name = Utilities.GirlName(__instance);
 
-            // If 4 or less no extra coordinates
-            if (totalCoordinates <= 4)
+            // If there no extra outfits
+            if (!ctrl.RandomPossible)
             {
 #if DEBUG
                 _Log.Warning("[SyncroCoordinate] 01 Name=" +
@@ -141,7 +131,7 @@ namespace IDHIPlugins
 #endif
                 return;
             }
-            
+
             var coordinateNumber = __instance.heroine.NowCoordinate;
             var coordinateType = __instance.chaCtrl.fileStatus.coordinateType;
 
@@ -188,9 +178,9 @@ namespace IDHIPlugins
             }
             else if (coordinateNumber != 3)
             {
-                if (RandomCoordinatePlugin.OnlyChangingRoom.Value)
+                if (OnlyChangingRoom.Value)
                 {
-                    // Get a random coordinate is girl is one changing room
+                    // Get a random coordinate if girl is in a changing room
                     switch (__instance.mapNo)
                     {
                         case 17: // Hotel Changing Room
@@ -200,14 +190,14 @@ namespace IDHIPlugins
                             coordinateNumber = newCoordinate;
                             break;
                         default:
-                            // Preserve random selection??
+                            // Preserve random selection
                             coordinateNumber = nowRandomCoordinate;
                             break;
                     }
                 }
                 else
                 {
-                    // Try and preserve current random coordinate
+                    // Get new random coordinate
                     newCoordinate = ctrl.NewRandomCoordinateByType(
                                 (ChaFileDefine.CoordinateType)coordinateType);
                     coordinateNumber = newCoordinate;
@@ -216,6 +206,7 @@ namespace IDHIPlugins
 
             if (coordinateType != coordinateNumber)
             {
+                // Change to new coordinate
                 Manager.Character.enableCharaLoadGCClear = false;
                 __instance.chaCtrl.ChangeCoordinateTypeAndReload((ChaFileDefine.CoordinateType)coordinateNumber);
                 Manager.Character.enableCharaLoadGCClear = true;
@@ -228,9 +219,7 @@ namespace IDHIPlugins
                     $"newCoordinate={newCoordinate} " +
                     $"coordinateType={(ChaFileDefine.CoordinateType)coordinateType} " +
                     $"CHANGE");
-#endif
             }
-#if DEBUG
             else
             {
                 _Log.Warning("[SyncroCoordinate] 04 Name=" +
@@ -238,7 +227,11 @@ namespace IDHIPlugins
                     $"coordinateType={coordinateType} " +
                     $"coordianteNumber={coordinateNumber} " +
                     $"nowRandomCoordinate={nowRandomCoordinate} " +
-                    $"dictNowCoordinate={dictNowCoordinate} no action taken");
+                    $"dictNowCoordinate={dictNowCoordinate} " +
+                    $"isRemove={isRemove} " +
+                    $"no action taken");
+            }
+#else
             }
 #endif
             if (isRemove)
