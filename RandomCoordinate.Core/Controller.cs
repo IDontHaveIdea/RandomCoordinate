@@ -48,7 +48,7 @@ namespace IDHIPlugins
         #endregion
 
         #region properties
-        public bool RandomPossible => (ChaFileControl.coordinate.Length > 4);
+        public bool HasMoreOutfits => (ChaFileControl.coordinate.Length > 4);
         public bool FirstRun => _firstRandomRequest;
         public int NowRandomCoordinate => _nowRandomCoordinate;
         public ChaFileDefine.CoordinateType NowRandomType => _nowRandomType;
@@ -58,8 +58,13 @@ namespace IDHIPlugins
         {
         }
 
-        protected override void OnReload(GameMode currentGameMode)
+        protected override void OnReload(GameMode currentGameMode, bool maintainState)
         {
+            if (maintainState)
+            {
+                return;
+            }
+
             if (KoikatuAPI.GetCurrentGameMode() != GameMode.MainGame)
             {
                 return;
@@ -72,14 +77,13 @@ namespace IDHIPlugins
                 // Initialize the coordinates information
                 InitCoordinates();
 
-                var coordinateType = GetCoordinateType(heroine.NowCoordinate);
+                var coordinateType = GetCoordinateType(heroine.StatusCoordinate);
                 var nowRandomCoordinate = _nowRandomCoordinateByType[coordinateType];
 
-                if (nowRandomCoordinate != heroine.NowCoordinate)
+                if (nowRandomCoordinate != heroine.StatusCoordinate)
                 {
                     // Synchronize coordinate information
-                    GirlsNowCoordinate[ChaControl.name] = heroine.NowCoordinate;
-                    _nowRandomCoordinateByType[coordinateType] = heroine.NowCoordinate;
+                    _nowRandomCoordinateByType[coordinateType] = heroine.StatusCoordinate;
                     _nowRandomType = coordinateType;
                 }
 
@@ -87,16 +91,14 @@ namespace IDHIPlugins
                 // to a lookup table
                 GirlsNames[ChaControl.name] = Utilities.GirlName(heroine);
 #if DEBUG
-                GirlsNowCoordinate.TryGetValue(ChaControl.name, out var dictNowCoordinate);
                 _Log.Warning($"[OnReload] " +
                     $"Name={heroine.Name.Trim()} " +
-                    $"Loading heroinie.NowCoordinate={heroine.NowCoordinate} " +
+                    $"Loading heroinie.NowCoordinate={heroine.StatusCoordinate} " +
                     $"nowRandomCoordinate={nowRandomCoordinate} - " +
                     $"{_nowRandomCoordinateByType[coordinateType]} " +
-                    $"dictNowCoordinate={dictNowCoordinate} " +
                     $"LookType={coordinateType} total " +
                     $"coordinates={ChaFileControl.coordinate.Length} " +
-                    $"random possible={RandomPossible}");
+                    $"random possible={HasMoreOutfits}");
 #endif
             }
         }
@@ -194,14 +196,12 @@ namespace IDHIPlugins
 #if DEBUG
             // Get calling method name
             var calllingMethod = Utils.CallingMethod();
-            GirlsNowCoordinate.TryGetValue(ChaControl.name, out var dictNowCoordinate);
 
             _Log.Warning($"[NowRandomCoordinateByType] " +
                 $"Calling Method=[{calllingMethod}] " +
                 $"Name={Utilities.GirlName(ChaControl)} asked type={type} " +
                 $"searchType={lookType} " +
-                $"coordinateNumber={coordinateNumber} " +
-                $"dictNowCoordinate={dictNowCoordinate}\"");
+                $"coordinateNumber={coordinateNumber}");
 #endif
             return coordinateNumber;
         }
@@ -249,10 +249,6 @@ namespace IDHIPlugins
                         _nowRandomCoordinateByType[lookType] = newCoordinate;
                         _nowRandomCoordinate = newCoordinate;
                         _nowRandomType = lookType;
-
-                        // Save on lookup table outside of Controller
-                        // testing to change to lookup table
-                        GirlsNowCoordinate[ChaControl.name] = newCoordinate;
 #if DEBUG
                         _Log.Warning($"[RandomCoordinate] 01 " +
                             $"Name={name} " +
