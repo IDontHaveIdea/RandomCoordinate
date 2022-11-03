@@ -123,7 +123,7 @@ namespace IDHIPlugins
             var name = Utilities.GirlName(__instance);
 
             // If there no extra outfits
-            if (!ctrl.RandomPossible)
+            if (!ctrl.HasMoreOutfits)
             {
 #if DEBUG
                 _Log.Warning("[SyncroCoordinate] 01 Name=" +
@@ -132,12 +132,8 @@ namespace IDHIPlugins
                 return;
             }
 
-            var coordinateNumber = __instance.heroine.NowCoordinate;
+            var coordinateNumber = __instance.heroine.StatusCoordinate;
             var coordinateType = __instance.chaCtrl.fileStatus.coordinateType;
-
-            // Check look up table
-            GirlsNowCoordinate.TryGetValue(__instance.chaCtrl.name, out var dictNowCoordinate);
-
             var nowCoordinate = coordinateNumber;
             var nowRandomCoordinate = ctrl.NowRandomCoordinateByType(
                     (ChaFileDefine.CoordinateType)coordinateType);
@@ -210,12 +206,12 @@ namespace IDHIPlugins
                 Manager.Character.enableCharaLoadGCClear = false;
                 __instance.chaCtrl.ChangeCoordinateTypeAndReload((ChaFileDefine.CoordinateType)coordinateNumber);
                 Manager.Character.enableCharaLoadGCClear = true;
+                _Log.Debug($"[SynchroCoordinate] Name={name} coordinate={coordinateNumber}");
 #if DEBUG
                 _Log.Warning($"[SynchroCoordinate] 03 " +
                     $"Name={name} in map={__instance.mapNo} " +
                     $"NowCoordinate={nowCoordinate} " +
                     $"NowRandomCoordinate={nowRandomCoordinate} " +
-                    $"dictNowCoordinate={dictNowCoordinate} " +
                     $"newCoordinate={newCoordinate} " +
                     $"coordinateType={(ChaFileDefine.CoordinateType)coordinateType} " +
                     $"CHANGE");
@@ -227,7 +223,6 @@ namespace IDHIPlugins
                     $"coordinateType={coordinateType} " +
                     $"coordianteNumber={coordinateNumber} " +
                     $"nowRandomCoordinate={nowRandomCoordinate} " +
-                    $"dictNowCoordinate={dictNowCoordinate} " +
                     $"isRemove={isRemove} " +
                     $"no action taken");
             }
