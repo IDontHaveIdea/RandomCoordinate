@@ -19,15 +19,9 @@ namespace IDHIPlugins
         internal static Logg _Log = new();
         internal static Random RandCoordinate = new();
 
-        // These dictionaries are to cache information
-
-        // Names sometimes fail using ChaControl.GetHeroine()
+        // This dictionary is for caching some information
+        // Names sometimes fail when using ChaControl.GetHeroine()
         internal static Dictionary<string, string> GirlsNames = new();
-
-        // When there is a dating event the game seems to be creating
-        // a new instance of the girl which resets the saved information
-        // at the end of the date scene the girls seems to be restored. 
-        internal static Dictionary<string, int> GirlsNowCoordinate = new();
 
         private void Awake()
         {
@@ -35,13 +29,12 @@ namespace IDHIPlugins
             ConfigEntries();
             _Log.Enabled = DebugInfo.Value;
 #if DEBUG
-            _Log.Level(LogLevel.Info, $"[{PluginName}] Logging set to " +
-                $"{_Log.Enabled}");
             _Log.Level(LogLevel.Info, $"[{PluginName}] {PluginDisplayName} " +
                 $"loaded.");
+            _Log.Level(LogLevel.Info, $"[{PluginName}] Logging set to " +
+                $"{_Log.Enabled}");
 #endif
             GirlsNames.Clear();
-            GirlsNowCoordinate.Clear();
             CharacterApi.RegisterExtraBehaviour<RandomCoordinateController>(GUID);
 
             KoikatuAPI.Quitting += OnGameExit;
