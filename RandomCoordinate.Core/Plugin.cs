@@ -4,6 +4,8 @@
 using System;
 using System.Collections.Generic;
 
+using UnityEngine.SceneManagement;
+
 using BepInEx.Logging;
 
 using KKAPI;
@@ -18,6 +20,8 @@ namespace IDHIPlugins
     {
         internal static Logg _Log = new();
         internal static Random RandCoordinate = new();
+        internal static string _guideChaName;
+        internal static SaveData.Heroine _guide;
 
         // This dictionary is for caching some information
         // Names sometimes fail when using ChaControl.GetHeroine()
@@ -38,6 +42,7 @@ namespace IDHIPlugins
             CharacterApi.RegisterExtraBehaviour<RandomCoordinateController>(GUID);
 
             KoikatuAPI.Quitting += OnGameExit;
+            SceneManager.sceneLoaded += RoamStart;
         }
 
         private void Start()
@@ -57,6 +62,26 @@ namespace IDHIPlugins
         internal static void OnGameExit(object sender, EventArgs e)
         {
             _Log.Info($"[OnGameExit] RandomCoordinate exiting game.");
+        }
+
+        /// <summary>
+        /// Check when main game starts
+        /// </summary>
+        /// <param name="scene"></param>
+        /// <param name="loadSceneMode"></param>
+        private void RoamStart(Scene scene, LoadSceneMode loadSceneMode)
+        {
+            if (scene.name == "Action")
+            {
+                _guideChaName =
+                    $"chaF_{Manager.Game.saveData.heroineList.Count:D3}";
+                SceneManager.sceneLoaded -= RoamStart;
+            }
+        }
+
+        internal static void SetGuide(SaveData.Heroine heroine)
+        {
+            _guide = heroine;
         }
 
         /// <summary>

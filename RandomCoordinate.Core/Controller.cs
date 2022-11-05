@@ -87,12 +87,17 @@ namespace IDHIPlugins
                     _nowRandomType = coordinateType;
                 }
 
+                if (heroine.chaCtrl.name == _guideChaName)
+                {
+                    SetGuide(heroine);
+                }
+
                 // Sometimes cannot get ChaControl.GetHeroine() to work save
                 // to a lookup table
                 GirlsNames[ChaControl.name] = Utilities.GirlName(heroine);
 #if DEBUG
                 _Log.Warning($"[OnReload] " +
-                    $"Name={heroine.Name.Trim()} " +
+                    $"Name={heroine.Name.Trim()} chaName={heroine.chaCtrl.name}" +
                     $"Loading heroinie.NowCoordinate={heroine.StatusCoordinate} " +
                     $"nowRandomCoordinate={nowRandomCoordinate} - " +
                     $"{_nowRandomCoordinateByType[coordinateType]} " +
@@ -130,7 +135,7 @@ namespace IDHIPlugins
                 ChaFileDefine.CoordinateType.Swim => (int)ChaFileDefine.CoordinateType.Swim,
                 ChaFileDefine.CoordinateType.Pajamas => (int)ChaFileDefine.CoordinateType.Pajamas,
                 ChaFileDefine.CoordinateType.Bathing => (int)ChaFileDefine.CoordinateType.Bathing,
-                _ => RadomCoordinate(type),
+                _ => RandomCoordinate(type),
             };
 #if DEBUG
             _Log.Warning("[GetRandomCoordinateType] " +
@@ -225,7 +230,7 @@ namespace IDHIPlugins
         /// </summary>
         /// <param name="type">Coordinate type selected by the game</param>
         /// <returns></returns>
-        private int RadomCoordinate(ChaFileDefine.CoordinateType type)
+        private int RandomCoordinate(ChaFileDefine.CoordinateType type)
         {
             var newCoordinate = (int)type;
             var coordinateIndex = -1;
