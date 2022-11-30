@@ -58,6 +58,11 @@ namespace IDHIPlugins
         {
         }
 
+        //protected override void OnReload(GameMode currentGameMode)
+        //{
+        //    base.OnReload(currentGameMode);
+        //}
+
         protected override void OnReload(GameMode currentGameMode, bool maintainState)
         {
             if (maintainState)
@@ -97,8 +102,8 @@ namespace IDHIPlugins
                 GirlsNames[ChaControl.name] = Utilities.GirlName(heroine);
 #if DEBUG
                 _Log.Warning($"[OnReload] " +
-                    $"Name={heroine.Name.Trim()} chaName={heroine.chaCtrl.name}" +
-                    $"Loading heroinie.NowCoordinate={heroine.StatusCoordinate} " +
+                    $"Name={heroine.Name.Trim()} chaName={heroine.chaCtrl.name} " +
+                    $"heroinie.NowCoordinate={heroine.StatusCoordinate} " +
                     $"nowRandomCoordinate={nowRandomCoordinate} - " +
                     $"{_nowRandomCoordinateByType[coordinateType]} " +
                     $"LookType={coordinateType} total " +
