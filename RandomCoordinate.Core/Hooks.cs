@@ -55,10 +55,11 @@ namespace IDHIPlugins
             {
                 return true;
             }
+#if DEBUG
             var mapNo = Utils.MapNumber(__instance);
             var name = Utilities.GirlName(__instance);
             var callingType = type;
-
+#endif
             if (__instance.chaFile.coordinate.Length <= 4)
             {
                 return true;
@@ -121,6 +122,13 @@ namespace IDHIPlugins
             var totalCoordinates = __instance.chaCtrl.chaFile.coordinate.Length;
             var ctrl = GetController(__instance.chaCtrl);
             var name = Utilities.GirlName(__instance);
+
+            if ((__instance.chaCtrl == _guide.chaCtrl) && (__instance.mapNo == 3))
+            {
+                ChangeCoordinate(__instance,
+                    (int)ChaFileDefine.CoordinateType.Swim);
+            }
+
 
             // If there no extra outfits
             if (!ctrl.HasMoreOutfits)
@@ -203,9 +211,10 @@ namespace IDHIPlugins
             if (coordinateType != coordinateNumber)
             {
                 // Change to new coordinate
-                Manager.Character.enableCharaLoadGCClear = false;
-                __instance.chaCtrl.ChangeCoordinateTypeAndReload((ChaFileDefine.CoordinateType)coordinateNumber);
-                Manager.Character.enableCharaLoadGCClear = true;
+                //Manager.Character.enableCharaLoadGCClear = false;
+                //__instance.chaCtrl.ChangeCoordinateTypeAndReload((ChaFileDefine.CoordinateType)coordinateNumber);
+                //Manager.Character.enableCharaLoadGCClear = true;
+                ChangeCoordinate(__instance, coordinateNumber);
                 _Log.Debug($"[SynchroCoordinate] Name={name} coordinate={coordinateNumber}");
 #if DEBUG
                 _Log.Warning($"[SynchroCoordinate] 03 " +
@@ -233,6 +242,13 @@ namespace IDHIPlugins
             {
                 __instance.chaCtrl.RandomChangeOfClothesLowPoly(__instance.heroine.lewdness);
             }
+        }
+
+        private static void ChangeCoordinate(NPC girl, int coordinateNumber)
+        {
+            Manager.Character.enableCharaLoadGCClear = false;
+            girl.chaCtrl.ChangeCoordinateTypeAndReload((ChaFileDefine.CoordinateType)coordinateNumber);
+            Manager.Character.enableCharaLoadGCClear = true;
         }
     }
 }
