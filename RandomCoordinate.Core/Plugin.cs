@@ -6,10 +6,13 @@ using System.Collections.Generic;
 
 using UnityEngine.SceneManagement;
 
+using ActionGame.Chara;
+
 using BepInEx.Logging;
 
 using KKAPI;
 using KKAPI.Chara;
+using KKAPI.MainGame;
 
 using IDHIUtils;
 
@@ -79,9 +82,38 @@ namespace IDHIPlugins
             }
         }
 
-        internal static void SetGuide(SaveData.Heroine heroine)
+        /// <summary>
+        /// Save Heroine information for the Guide Character
+        /// </summary>
+        /// <param name="heroine"></param>
+        /// <param name="setCoordinate"></param>
+        internal static void SetGuide(SaveData.Heroine heroine, bool setCoordinate = false)
         {
             _guide = heroine;
+            if (setCoordinate)
+            {
+                var npc = heroine.GetNPC();
+                if (npc != null)
+                {
+                    _Log.Error("NPC OK");
+                    //if (npc.mapNo == 3)
+                    //{
+                    //    ChangeCoordinate(npc,
+                    //            (int)ChaFileDefine.CoordinateType.Swim);
+                    //}
+                }
+                else
+                {
+                    _Log.Error("NPC IS NULL");
+                }
+            }
+        }
+
+        internal static void ChangeCoordinate(NPC girl, int coordinateNumber)
+        {
+            Manager.Character.enableCharaLoadGCClear = false;
+            girl.chaCtrl.ChangeCoordinateTypeAndReload((ChaFileDefine.CoordinateType)coordinateNumber);
+            Manager.Character.enableCharaLoadGCClear = true;
         }
 
         /// <summary>
