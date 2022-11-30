@@ -15,6 +15,7 @@ using IDHIUtils;
 using Utils = IDHIUtils.Utilities;
 
 using static IDHIPlugins.RandomCoordinatePlugin;
+using SaveData;
 
 
 namespace IDHIPlugins
@@ -59,6 +60,20 @@ namespace IDHIPlugins
             var mapNo = Utils.MapNumber(__instance);
             var name = Utilities.GirlName(__instance);
             var callingType = type;
+            if ((__instance == _guide.chaCtrl))
+            {
+                _Log.Warning($"GUIDE IN CHANGE IN MAP={mapNo}");
+                if (mapNo == 3)
+                {
+                    _Log.Warning("ASK FOR A CHANGE");
+                    type = ChaFileDefine.CoordinateType.Swim;
+                    return true;
+                }
+                else
+                {
+                    _Log.Warning($"NO CHANGE");
+                }
+            }
 #endif
             if (__instance.chaFile.coordinate.Length <= 4)
             {
@@ -123,12 +138,13 @@ namespace IDHIPlugins
             var ctrl = GetController(__instance.chaCtrl);
             var name = Utilities.GirlName(__instance);
 
-            if ((__instance.chaCtrl == _guide.chaCtrl) && (__instance.mapNo == 3))
+
+            if (__instance.chaCtrl == _guide.chaCtrl)
             {
                 ChangeCoordinate(__instance,
                     (int)ChaFileDefine.CoordinateType.Swim);
+                return;
             }
-
 
             // If there no extra outfits
             if (!ctrl.HasMoreOutfits)
@@ -211,9 +227,6 @@ namespace IDHIPlugins
             if (coordinateType != coordinateNumber)
             {
                 // Change to new coordinate
-                //Manager.Character.enableCharaLoadGCClear = false;
-                //__instance.chaCtrl.ChangeCoordinateTypeAndReload((ChaFileDefine.CoordinateType)coordinateNumber);
-                //Manager.Character.enableCharaLoadGCClear = true;
                 ChangeCoordinate(__instance, coordinateNumber);
                 _Log.Debug($"[SynchroCoordinate] Name={name} coordinate={coordinateNumber}");
 #if DEBUG
@@ -242,13 +255,6 @@ namespace IDHIPlugins
             {
                 __instance.chaCtrl.RandomChangeOfClothesLowPoly(__instance.heroine.lewdness);
             }
-        }
-
-        private static void ChangeCoordinate(NPC girl, int coordinateNumber)
-        {
-            Manager.Character.enableCharaLoadGCClear = false;
-            girl.chaCtrl.ChangeCoordinateTypeAndReload((ChaFileDefine.CoordinateType)coordinateNumber);
-            Manager.Character.enableCharaLoadGCClear = true;
         }
     }
 }
