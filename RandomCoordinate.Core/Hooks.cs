@@ -62,16 +62,24 @@ namespace IDHIPlugins
             var callingType = type;
             if ((__instance == _guide.chaCtrl))
             {
-                _Log.Warning($"GUIDE IN CHANGE IN MAP={mapNo}");
+                _Log.Error($"GUIDE IN CHANGE IN MAP={mapNo}");
                 if (mapNo == 3)
                 {
-                    _Log.Warning("ASK FOR A CHANGE");
+                    _Log.Error("ASK FOR A CHANGE");
                     type = ChaFileDefine.CoordinateType.Swim;
                     return true;
                 }
                 else
                 {
-                    _Log.Warning($"NO CHANGE");
+                    NPC target = __instance.GetHeroine().charaBase as NPC;
+                    if (target != null)
+                    {
+                        _Log.Error($"GUIDE IN CHANGE IN 2 MAP={target.mapNo}");
+                    }
+                    else
+                    {
+                        _Log.Error($"NO CHANGE");
+                    }
                 }
             }
 #endif
@@ -141,6 +149,10 @@ namespace IDHIPlugins
 
             if (__instance.chaCtrl == _guide.chaCtrl)
             {
+#if DEBUG
+                _Log.Warning("[SyncroCoordinate] 00 GUIDE Name=" +
+                    $"{name} total coordinates={totalCoordinates}");
+#endif
                 ChangeCoordinate(__instance,
                     (int)ChaFileDefine.CoordinateType.Swim);
                 return;
@@ -230,7 +242,7 @@ namespace IDHIPlugins
                 ChangeCoordinate(__instance, coordinateNumber);
                 _Log.Debug($"[SynchroCoordinate] Name={name} coordinate={coordinateNumber}");
 #if DEBUG
-                _Log.Warning($"[SynchroCoordinate] 03 " +
+                _Log.Info($"[SynchroCoordinate] 03 " +
                     $"Name={name} in map={__instance.mapNo} " +
                     $"NowCoordinate={nowCoordinate} " +
                     $"NowRandomCoordinate={nowRandomCoordinate} " +
@@ -240,7 +252,7 @@ namespace IDHIPlugins
             }
             else
             {
-                _Log.Warning("[SyncroCoordinate] 04 Name=" +
+                _Log.Info("[SyncroCoordinate] 04 Name=" +
                     $"{Utilities.GirlName(__instance)} " +
                     $"coordinateType={coordinateType} " +
                     $"coordianteNumber={coordinateNumber} " +
