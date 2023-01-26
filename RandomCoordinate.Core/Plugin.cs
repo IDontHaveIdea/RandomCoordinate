@@ -89,13 +89,16 @@ namespace IDHIPlugins
         /// <param name="setCoordinate"></param>
         internal static void SetGuide(SaveData.Heroine heroine, bool setCoordinate = false)
         {
+
             _guide = heroine;
+            _Log.Info($"[SetGuide] GUIDE={_guide.Name.Trim()} chaName={_guideChaName}");
+
             if (setCoordinate)
             {
                 var npc = heroine.GetNPC();
                 if (npc != null)
                 {
-                    _Log.Error("NPC OK");
+                    _Log.Error("[SetGuide] GUIDE NPC OK");
                     //if (npc.mapNo == 3)
                     //{
                     //    ChangeCoordinate(npc,
@@ -104,7 +107,15 @@ namespace IDHIPlugins
                 }
                 else
                 {
-                    _Log.Error("NPC IS NULL");
+                    NPC target = _guide.charaBase as NPC;
+                    if (target != null)
+                    {
+                        _Log.Error($"[SetGuide] GUIDE IN 2 MAP={target.mapNo}");
+                    }
+                    else
+                    {
+                        _Log.Error($"[SetGuide] GUIDE NPC NULL 2");
+                    }
                 }
             }
         }
