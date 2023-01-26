@@ -128,14 +128,12 @@ namespace IDHIPlugins
                 // to a lookup table
                 GirlsNames[ChaControl.name] = Utilities.GirlName(heroine);
 #if DEBUG
-                _Log.Warning($"[OnReload] " +
-                    $"Name={heroine.Name.Trim()} chaName={heroine.chaCtrl.name} " +
-                    $"heroinie.NowCoordinate={heroine.StatusCoordinate} " +
-                    $"nowRandomCoordinate={nowRandomCoordinate} - " +
-                    $"{_nowRandomCoordinateByType[coordinateType]} " +
-                    $"LookType={coordinateType} total " +
-                    $"coordinates={ChaFileControl.coordinate.Length} " +
-                    $"random possible={HasMoreOutfits}");
+                RandomCoordinatePlugin._Log.Warning($"[OnReload] " +
+                    $"Name={heroine.Name.Trim()} " +
+                    $"girl={ChaControl.name} " +
+                    $"Loading nowCoordinate={heroine.NowCoordinate} " +
+                    $"LookType={lookType} total " +
+                    $"coordinates={ChaControl.chaFile.coordinate.Length}");
 #endif
             }
         }

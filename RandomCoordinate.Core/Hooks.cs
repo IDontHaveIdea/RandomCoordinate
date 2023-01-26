@@ -88,6 +88,11 @@ namespace IDHIPlugins
                 return true;
             }
 
+            if (__instance.chaFile.coordinate.Length <= 4)
+            {
+                return true;
+            }
+
             if (type == ChaFileDefine.CoordinateType.Plain)
             {
                 var ctrl = GetController(__instance);
