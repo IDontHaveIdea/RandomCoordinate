@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 
 using ADV.Commands.Base;
+using ActionGame.Chara;
 
 using BepInEx.Logging;
 
@@ -17,7 +18,6 @@ using Utils = IDHIUtils.Utilities;
 
 using static IDHIPlugins.RandomCoordinatePlugin;
 using IDHIUtils;
-using ActionGame.Chara;
 
 namespace IDHIPlugins
 {
