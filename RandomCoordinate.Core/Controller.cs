@@ -16,7 +16,8 @@ using KKAPI.MainGame;
 using Utils = IDHIUtils.Utilities;
 
 using static IDHIPlugins.RandomCoordinatePlugin;
-
+using IDHIUtils;
+using ActionGame.Chara;
 
 namespace IDHIPlugins
 {
@@ -67,6 +68,31 @@ namespace IDHIPlugins
         {
             if (maintainState)
             {
+                _Log.Error("[OnReload] maintainState");
+                if (_guide != null)
+                {
+                    var npc = _guide.GetNPC();
+                    if (npc != null)
+                    {
+                        _Log.Error("[OnReload] GUIDE NPC OK");
+                    }
+                    else
+                    {
+                        NPC target = _guide.charaBase as NPC;
+                        if (target != null)
+                        {
+                            _Log.Error($"[OnReload] GUIDE IN 2 MAP={target.mapNo}");
+                        }
+                        else
+                        {
+                            _Log.Error($"[OnReload] GUIDE NPC NULL 2");
+                        }
+                    }
+                }
+                else
+                {
+                    _Log.Error("[OnReload] GUIDE IS NULL 1");
+                }
                 return;
             }
 
@@ -94,7 +120,8 @@ namespace IDHIPlugins
 
                 if (heroine.chaCtrl.name == _guideChaName)
                 {
-                    SetGuide(heroine);
+                    SetGuide(heroine, true);
+                    heroine.chaCtrl.fileStatus.coordinateType = (int)CoordinateType.Swim;
                 }
 
                 // Sometimes cannot get ChaControl.GetHeroine() to work save
