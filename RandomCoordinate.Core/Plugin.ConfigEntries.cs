@@ -11,6 +11,7 @@ namespace IDHIPlugins
     public partial class RandomCoordinatePlugin
     {
         internal static ConfigEntry<bool> DebugInfo { get; set; }
+        internal static ConfigEntry<bool> DebugToConsole { get; set; }
         internal static ConfigEntry<bool> OnlyChangingRoom { get; set; }
 
         internal void ConfigEntries()
@@ -34,6 +35,28 @@ namespace IDHIPlugins
                     $"to {_Log.Enabled}");
 #endif
             };
+
+            DebugToConsole = Config.Bind(
+                section: sectionDescription,
+                key: "Debug information to Console",
+                defaultValue: false,
+                configDescription: new ConfigDescription(
+                    description: "Show debug information in Console",
+                    acceptableValues: null,
+                    tags: new ConfigurationManagerAttributes {
+                        Order = 39,
+                        IsAdvanced = true
+                    }));
+            DebugToConsole.SettingChanged += (_sender, _args) =>
+            {
+                _Log.DebugToConsole = DebugToConsole.Value;
+#if DEBUG
+                _Log.Level(LogLevel.Info, $"[ConfigEntries] Log.DebugToConsole set to " +
+                    $"{_Log.DebugToConsole}");
+#endif
+
+            };
+
 
             sectionDescription = "Options";
 

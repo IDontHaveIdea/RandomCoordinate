@@ -35,6 +35,7 @@ namespace IDHIPlugins
             _Log.LogSource = base.Logger;
             ConfigEntries();
             _Log.Enabled = DebugInfo.Value;
+            _Log.DebugToConsole = DebugToConsole.Value;
 #if DEBUG
             _Log.Level(LogLevel.Info, $"[{PluginName}] {PluginDisplayName} " +
                 $"loaded.");
