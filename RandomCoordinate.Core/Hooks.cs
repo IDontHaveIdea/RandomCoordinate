@@ -34,7 +34,8 @@ namespace IDHIPlugins
         /// the value of the coordinate type
         /// </summary>
         [HarmonyPrefix]
-        [HarmonyPatch(typeof(ChaControl),
+        [HarmonyPatch(
+            typeof(ChaControl),
             nameof(ChaControl.ChangeCoordinateTypeAndReload),
             new Type[]
                 {
