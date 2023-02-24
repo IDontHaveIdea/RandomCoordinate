@@ -63,23 +63,23 @@ namespace IDHIPlugins
             var callingType = type;
             if ((__instance == _guide.chaCtrl))
             {
-                _Log.Error($"GUIDE IN CHANGE IN MAP={mapNo}");
+                _Log.Level(BepInEx.Logging.LogLevel.Warning, $"ChaControl=[{__instance.name}] GUIDE IN CHANGE IN MAP={mapNo}");
                 if (mapNo == 3)
                 {
-                    _Log.Error("ASK FOR A CHANGE");
+                    _Log.Level(BepInEx.Logging.LogLevel.Warning, "ASK FOR A CHANGE");
                     type = ChaFileDefine.CoordinateType.Swim;
                     return true;
                 }
                 else
                 {
-                    NPC target = __instance.GetHeroine().charaBase as NPC;
+                    var target = __instance.GetHeroine().charaBase as NPC;
                     if (target != null)
                     {
-                        _Log.Error($"GUIDE IN CHANGE IN 2 MAP={target.mapNo}");
+                        _Log.Level(BepInEx.Logging.LogLevel.Warning, $"GUIDE IN CHANGE IN MAP={target.mapNo}");
                     }
                     else
                     {
-                        _Log.Error($"NO CHANGE");
+                        _Log.Level(BepInEx.Logging.LogLevel.Warning, $"NO CHANGE");
                     }
                 }
             }
@@ -92,6 +92,7 @@ namespace IDHIPlugins
             if (type == ChaFileDefine.CoordinateType.Plain)
             {
                 var ctrl = GetController(__instance);
+
                 if (ctrl != null)
                 {
                     // Preserve current random coordinate for type change request
