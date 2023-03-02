@@ -100,22 +100,27 @@ namespace IDHIPlugins
                 if (npc != null)
                 {
                     _Log.Error("[SetGuide] GUIDE NPC OK");
-                    //if (npc.mapNo == 3)
-                    //{
-                    //    ChangeCoordinate(npc,
-                    //            (int)ChaFileDefine.CoordinateType.Swim);
-                    //}
+                    if (npc.mapNo == 3)
+                    {
+                        ChangeCoordinate(npc,
+                                (int)ChaFileDefine.CoordinateType.Swim);
+                    }
+                    else
+                    {
+                        _Log.Error($"[SetGuide] GUIDE IN 1 MAP={npc.mapNo}");
+                    }
                 }
                 else
                 {
-                    NPC target = _guide.charaBase as NPC;
+                    _Log.Error("[SetGuide] GUIDE NPC NOT OK IS NULL");
+                    var target = _guide.charaBase as NPC;
                     if (target != null)
                     {
                         _Log.Error($"[SetGuide] GUIDE IN 2 MAP={target.mapNo}");
                     }
                     else
                     {
-                        _Log.Error($"[SetGuide] GUIDE NPC NULL 2");
+                        _Log.Error($"[SetGuide] GUIDE NPC STILL NULL");
                     }
                 }
             }
@@ -127,6 +132,14 @@ namespace IDHIPlugins
             girl.chaCtrl.ChangeCoordinateTypeAndReload((ChaFileDefine.CoordinateType)coordinateNumber);
             Manager.Character.enableCharaLoadGCClear = true;
         }
+
+        internal static void ChangeCoordinate(ChaControl girl, int coordinateNumber)
+        {
+            Manager.Character.enableCharaLoadGCClear = false;
+            girl.ChangeCoordinateTypeAndReload((ChaFileDefine.CoordinateType)coordinateNumber);
+            Manager.Character.enableCharaLoadGCClear = true;
+        }
+
 
         /// <summary>
         /// Get controller for characters
