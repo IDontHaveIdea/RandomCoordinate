@@ -78,7 +78,7 @@ namespace IDHIPlugins
                     }
                     else
                     {
-                        NPC target = _guide.charaBase as NPC;
+                        var target = _guide.charaBase as NPC;
                         if (target != null)
                         {
                             _Log.Error($"[OnReload] GUIDE IN 2 MAP={target.mapNo}");
