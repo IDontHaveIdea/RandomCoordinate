@@ -148,13 +148,12 @@ namespace IDHIPlugins
             var ctrl = GetController(__instance.chaCtrl);
             var name = Utilities.GirlName(__instance);
 
+            _Log.Debug("[SyncroCoordinate] Name=" +
+                $"{name} total coordinates={totalCoordinates}");
+
             // If there no extra outfits
             if (!ctrl.HasMoreOutfits)
             {
-#if DEBUG
-                _Log.Warning("[SyncroCoordinate] 01 Name=" +
-                    $"{name} total coordinates={totalCoordinates}");
-#endif
                 return;
             }
 
@@ -234,7 +233,8 @@ namespace IDHIPlugins
             {
                 // Change to new coordinate
                 ChangeCoordinate(__instance, coordinateNumber);
-                _Log.Debug($"[SynchroCoordinate] Name={name} coordinate={coordinateNumber}");
+                _Log.Debug($"[SynchroCoordinate] Name={name} " +
+                    $"coordinate={coordinateNumber}");
 #if DEBUG
                 _Log.Info($"[SynchroCoordinate] 03 " +
                     $"Name={name} in map={__instance.mapNo} " +
