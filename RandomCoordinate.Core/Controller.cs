@@ -29,7 +29,7 @@ namespace IDHIPlugins
         private int _nowRandomCoordinate;
         private ChaFileDefine.CoordinateType _nowRandomType;
 
-        private Dictionary<ChaFileDefine.CoordinateType, List<int>>
+        private readonly Dictionary<ChaFileDefine.CoordinateType, List<int>>
             _Coordinates = new()
         {
             {ChaFileDefine.CoordinateType.Plain, new List<int> {}},
@@ -38,7 +38,7 @@ namespace IDHIPlugins
             {ChaFileDefine.CoordinateType.Bathing, new List<int> {}}
         };
 
-        private Dictionary<ChaFileDefine.CoordinateType, int>
+        private readonly Dictionary<ChaFileDefine.CoordinateType, int>
             _nowRandomCoordinateByType = new()
         {
             {ChaFileDefine.CoordinateType.Plain, 0},
@@ -68,31 +68,6 @@ namespace IDHIPlugins
         {
             if (maintainState)
             {
-                _Log.Error("[OnReload] maintainState");
-                if (_guide != null)
-                {
-                    var npc = _guide.GetNPC();
-                    if (npc != null)
-                    {
-                        _Log.Error("[OnReload] GUIDE NPC OK");
-                    }
-                    else
-                    {
-                        var target = _guide.charaBase as NPC;
-                        if (target != null)
-                        {
-                            _Log.Error($"[OnReload] GUIDE IN 2 MAP={target.mapNo}");
-                        }
-                        else
-                        {
-                            _Log.Error($"[OnReload] GUIDE NPC NULL 2");
-                        }
-                    }
-                }
-                else
-                {
-                    _Log.Error("[OnReload] GUIDE IS NULL 1");
-                }
                 return;
             }
 
@@ -118,10 +93,10 @@ namespace IDHIPlugins
                     _nowRandomType = coordinateType;
                 }
 
-                if (heroine.chaCtrl.name == _guideChaName)
+
+                if (heroine.fixCharaID == -13)
                 {
-                    SetGuide(heroine, true);
-                    heroine.chaCtrl.fileStatus.coordinateType = (int)CoordinateType.Swim;
+                    SetupGuide(heroine, true);
                 }
 
                 // Sometimes cannot get ChaControl.GetHeroine() to work save
@@ -334,6 +309,7 @@ namespace IDHIPlugins
 
             for (var i = 0; i < 4; i++)
             {
+                // Original 4 coordinates
                 _Coordinates[(ChaFileDefine.CoordinateType)i].Clear();
                 _Coordinates[(ChaFileDefine.CoordinateType)i].Add(i);
             }
