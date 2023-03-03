@@ -1,4 +1,4 @@
-# RandomCoordinate
+﻿# RandomCoordinate
 
 This is a plug-in for **Koikatsu Sunshine** that will select a random outfit for the
 **Plain** type when the girl have more than 4.
