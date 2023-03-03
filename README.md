@@ -15,7 +15,7 @@ conversations, Dating events, entering a map, ..., etc). The game already does t
 1. Install [BepInEx](https://github.com/BepInEx/BepInEx/releases/tag/v5.4.21) 5.4.21
 2. Install [KKAPI](https://github.com/IllusionMods/IllusionModdingAPI/releases/tag/v1.35) 1.35
 3. Install the latest release of [IDHIUtils](https://github.com/IDontHaveIdea/IDHIUtils/releases/latest)
-4. Download the latest release from [the releases page](../../releases)
+4. Download the latest release from [the releases page](https://github.com/IDontHaveIdea/RandomCoordinate/releases/latest)
 
 ## Roadmap
 
