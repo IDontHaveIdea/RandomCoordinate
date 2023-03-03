@@ -38,9 +38,10 @@ namespace IDHIPlugins
             }
 
             _guide = heroine;
+#if DEBUG
             _Log.Info($"[SetGuide] GUIDE={_guide.Name.Trim()} chaName={_guide.chaCtrl.name} " +
                 $"position maps={hashes} mapNo={guideMap}");
-
+#endif
             if (setCoordinate)
             {
                 // For the guide 
