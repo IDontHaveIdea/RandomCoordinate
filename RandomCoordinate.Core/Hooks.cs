@@ -148,18 +148,6 @@ namespace IDHIPlugins
             var ctrl = GetController(__instance.chaCtrl);
             var name = Utilities.GirlName(__instance);
 
-
-            if (__instance.chaCtrl == _guide.chaCtrl)
-            {
-#if DEBUG
-                _Log.Warning("[SyncroCoordinate] 00 GUIDE Name=" +
-                    $"{name} total coordinates={totalCoordinates}");
-#endif
-                ChangeCoordinate(__instance,
-                    (int)ChaFileDefine.CoordinateType.Swim);
-                return;
-            }
-
             // If there no extra outfits
             if (!ctrl.HasMoreOutfits)
             {
@@ -203,7 +191,9 @@ namespace IDHIPlugins
                 }
             }
 
-            // On first run get a random coordinate
+            // On first run (of OnReload) get a random coordinate
+            // This causes to have more variety whenever a start game, change period
+            // load a save game a random coordinate will be selected.
             if (ctrl.FirstRun)
             {
                 newCoordinate = ctrl.NewRandomCoordinateByType(
@@ -217,8 +207,10 @@ namespace IDHIPlugins
                     // Get a random coordinate if girl is in a changing room
                     switch (__instance.mapNo)
                     {
-                        case 17: // Hotel Changing Room
-                        case 33: // Hotel Change Room
+                        // Hotel Changing Room
+                        case 17:
+                        // Beach Change Room
+                        case 33:
                             newCoordinate = ctrl.NewRandomCoordinateByType(
                                 (ChaFileDefine.CoordinateType)coordinateType);
                             coordinateNumber = newCoordinate;
