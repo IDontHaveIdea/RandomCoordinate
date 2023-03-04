@@ -11,6 +11,7 @@ namespace IDHIPlugins
     public partial class RandomCoordinatePlugin
     {
         internal static SaveData.Heroine _guide;
+        internal static int _guideMapNo;
 
         /// <summary>
         /// Save Heroine information for the Guide Character
@@ -38,6 +39,7 @@ namespace IDHIPlugins
             }
 
             _guide = heroine;
+            _guideMapNo = guideMap;
 #if DEBUG
             _Log.Info($"[SetGuide] GUIDE={_guide.Name.Trim()} chaName={_guide.chaCtrl.name} " +
                 $"position maps={hashes} mapNo={guideMap}");
