@@ -91,6 +91,7 @@ namespace IDHIPlugins
                     // Synchronize coordinate information
                     _nowRandomCoordinateByType[coordinateType] = heroine.StatusCoordinate;
                     _nowRandomType = coordinateType;
+                    nowRandomCoordinate = _nowRandomCoordinateByType[coordinateType];
                 }
 
 
