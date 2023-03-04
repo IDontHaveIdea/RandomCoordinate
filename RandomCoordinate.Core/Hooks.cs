@@ -57,33 +57,27 @@ namespace IDHIPlugins
             {
                 return true;
             }
-#if DEBUG
+
             var mapNo = Utils.MapNumber(__instance);
             var name = Utilities.GirlName(__instance);
             var callingType = type;
+
             if ((__instance == _guide.chaCtrl))
             {
-                _Log.Level(BepInEx.Logging.LogLevel.Warning, $"ChaControl=[{__instance.name}] GUIDE IN CHANGE IN MAP={mapNo}");
-                if (mapNo == 3)
+#if DEBUG
+                _Log.Warning($"[ChangeCoordinateTypeAndReload] " +
+                    $"ChaControl=[{__instance.name}] Guide in change coordinate in " +
+                    $"map={mapNo}");
+#endif
+                if (_guideMapNo == 4)
                 {
-                    _Log.Level(BepInEx.Logging.LogLevel.Warning, "ASK FOR A CHANGE");
+#if DEBUG
+                    _Log.Warning("Ask for swimsuit.");
+#endif
                     type = ChaFileDefine.CoordinateType.Swim;
                     return true;
                 }
-                else
-                {
-                    var target = __instance.GetHeroine().charaBase as NPC;
-                    if (target != null)
-                    {
-                        _Log.Level(BepInEx.Logging.LogLevel.Warning, $"GUIDE IN CHANGE IN MAP={target.mapNo}");
-                    }
-                    else
-                    {
-                        _Log.Level(BepInEx.Logging.LogLevel.Warning, $"NO CHANGE");
-                    }
-                }
             }
-#endif
             if (__instance.chaFile.coordinate.Length <= 4)
             {
                 return true;
@@ -234,7 +228,8 @@ namespace IDHIPlugins
                 // Change to new coordinate
                 ChangeCoordinate(__instance, coordinateNumber);
                 _Log.Debug($"[SynchroCoordinate] Name={name} " +
-                    $"coordinate={coordinateNumber}");
+                    $"current coordinate={nowCoordinate}" +
+                    $"new coordinate={coordinateNumber}");
 #if DEBUG
                 _Log.Info($"[SynchroCoordinate] 03 " +
                     $"Name={name} in map={__instance.mapNo} " +
@@ -259,6 +254,8 @@ namespace IDHIPlugins
 #endif
             if (isRemove)
             {
+                _Log.Debug("[SynchroCoordinate] isRemove=true executing " +
+                    $"RandomChangeOfClothesLowPoly.");
                 __instance.chaCtrl.RandomChangeOfClothesLowPoly(__instance.heroine.lewdness);
             }
         }
