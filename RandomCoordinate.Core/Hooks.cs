@@ -71,7 +71,7 @@ namespace IDHIPlugins
                 {
                     type = ChaFileDefine.CoordinateType.Swim;
                     _Log.Debug($"[ChangeCoordinateTypeAndReload] Guide name={name} on " +
-                        $"map={mapNo} set type={type}.");
+                        $"map={mapNo} parameter type={callingType} set type={type}.");
                     return true;
                 }
             }
@@ -93,8 +93,6 @@ namespace IDHIPlugins
                     {
                         type = (ChaFileDefine.CoordinateType)nowRandomCoordinate;
                     }
-                    _Log.Debug($"[ChangeCoordinateTypeAndReload] Name={name} on " +
-                        $"map={mapNo} set type={type}.");
 #if DEBUG
                     var randomCoordinateType =
                         ctrl.GetCoordinateType(nowRandomCoordinate);
@@ -108,6 +106,8 @@ namespace IDHIPlugins
 #endif
                 }
             }
+            _Log.Debug($"[ChangeCoordinateTypeAndReload] Name={name} on " +
+                $"map={mapNo} parameter type={callingType} set type={type}.");
             return true;
         }
 
@@ -191,11 +191,13 @@ namespace IDHIPlugins
             // On first run (of OnReload) get a random coordinate
             // This causes to have more variety whenever a start game, change period
             // load a save game a random coordinate will be selected.
+            // FirstRun unreliable game reinitializes controller
             if (ctrl.FirstRun)
             {
                 newCoordinate = ctrl.NewRandomCoordinateByType(
                                 (ChaFileDefine.CoordinateType)coordinateType);
                 coordinateNumber = newCoordinate;
+                _Log.Error($"[SynchroCoordinate] Name={name} carajo FirstRun={ctrl.FirstRun}");
             }
             // coordinateNumber not equal to Bathing
             else if (coordinateNumber != 3)
@@ -246,7 +248,7 @@ namespace IDHIPlugins
             }
             else
             {
-                _Log.Info("[SyncroCoordinate] 04 Name=" +
+                _Log.Info("[SynchroCoordinate] 04 Name=" +
                     $"{Utilities.GirlName(__instance)} " +
                     $"coordinateType={coordinateType} " +
                     $"coordianteNumber={coordinateNumber} " +
