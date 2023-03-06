@@ -229,6 +229,14 @@ namespace IDHIPlugins
             return NowRandomCoordinateByType((ChaFileDefine.CoordinateType)integerType);
         }
 
+        public void SetRandomCoordinate(ChaFileDefine.CoordinateType type)
+        {
+            var lookType = GetCoordinateType(type);
+            _nowRandomCoordinate = (int)type;
+            _nowRandomType = lookType;
+
+        }
+
         /// <summary>
         /// Get random coordinate according to type classification
         /// (Plain, Swim, ...) Now only working with Plain coordinate
