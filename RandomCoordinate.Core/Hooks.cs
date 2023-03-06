@@ -9,13 +9,11 @@ using UnityEngine;
 using HarmonyLib;
 
 using KKAPI;
-using KKAPI.MainGame;
 
 using IDHIUtils;
 using Utils = IDHIUtils.Utilities;
 
 using static IDHIPlugins.RandomCoordinatePlugin;
-using SaveData;
 
 
 namespace IDHIPlugins
@@ -72,7 +70,8 @@ namespace IDHIPlugins
                 if (_guideMapNo == 4)
                 {
 #if DEBUG
-                    _Log.Warning("Ask for swimsuit.");
+                    _Log.Warning("[ChangeCoordinateTypeAndReload] On beach ask for " +
+                        "swimsuit.");
 #endif
                     type = ChaFileDefine.CoordinateType.Swim;
                     return true;
@@ -141,9 +140,10 @@ namespace IDHIPlugins
             var totalCoordinates = __instance.chaCtrl.chaFile.coordinate.Length;
             var ctrl = GetController(__instance.chaCtrl);
             var name = Utilities.GirlName(__instance);
+            var mapNo = Utils.MapNumber(__instance);
 
             _Log.Debug("[SyncroCoordinate] Name=" +
-                $"{name} total coordinates={totalCoordinates}");
+                $"{name} in map={mapNo} total coordinates={totalCoordinates}");
 
             // If there no extra outfits
             if (!ctrl.HasMoreOutfits)
@@ -166,13 +166,17 @@ namespace IDHIPlugins
             // For Bathing is the standard game code
             else if (coordinateNumber == 3)
             {
-                switch (__instance.mapNo)
+                switch (mapNo)
                 {
-                    case 13: // Hotel Public Bath
-                    case 14: // Hotel Shower Room
-                    case 17: // Hotel Changing Room
+                    // Hotel Public Bath
+                    case 13:
+                    // Hotel Shower Room
+                    case 14:
+                    // Hotel Changing Room
+                    case 17:
                         break;
-                    case 36: // Hotel Suite
+                    // Hotel Suite
+                    case 36:
                         if (__instance.AI.actionNo == 23)
                         {
                             coordinateNumber = 0;
@@ -193,12 +197,13 @@ namespace IDHIPlugins
                                 (ChaFileDefine.CoordinateType)coordinateType);
                 coordinateNumber = newCoordinate;
             }
+            // coordinateNumber not equal to Bathing
             else if (coordinateNumber != 3)
             {
                 if (OnlyChangingRoom.Value)
                 {
                     // Get a random coordinate if girl is in a changing room
-                    switch (__instance.mapNo)
+                    switch (mapNo)
                     {
                         // Hotel Changing Room
                         case 17:
@@ -229,7 +234,7 @@ namespace IDHIPlugins
                 ChangeCoordinate(__instance, coordinateNumber);
                 _Log.Debug($"[SynchroCoordinate] Name={name} " +
                     $"current coordinate={nowCoordinate}" +
-                    $"new coordinate={coordinateNumber}");
+                    $"new coordinate={coordinateNumber}.");
 #if DEBUG
                 _Log.Info($"[SynchroCoordinate] 03 " +
                     $"Name={name} in map={__instance.mapNo} " +
@@ -254,9 +259,10 @@ namespace IDHIPlugins
 #endif
             if (isRemove)
             {
-                _Log.Debug("[SynchroCoordinate] isRemove=true executing " +
+                _Log.Debug($"[SynchroCoordinate] Name={name} Calling " +
                     $"RandomChangeOfClothesLowPoly.");
-                __instance.chaCtrl.RandomChangeOfClothesLowPoly(__instance.heroine.lewdness);
+                __instance.chaCtrl.RandomChangeOfClothesLowPoly(
+                    __instance.heroine.lewdness);
             }
         }
     }
