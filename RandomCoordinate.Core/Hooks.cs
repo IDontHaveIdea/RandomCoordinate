@@ -69,11 +69,9 @@ namespace IDHIPlugins
 #endif
                 if (_guideMapNo == 4)
                 {
-#if DEBUG
-                    _Log.Warning("[ChangeCoordinateTypeAndReload] On beach ask for " +
-                        "swimsuit.");
-#endif
                     type = ChaFileDefine.CoordinateType.Swim;
+                    _Log.Debug($"[ChangeCoordinateTypeAndReload] Guide name={name} on " +
+                        $"map={mapNo} set type={type}.");
                     return true;
                 }
             }
@@ -95,6 +93,8 @@ namespace IDHIPlugins
                     {
                         type = (ChaFileDefine.CoordinateType)nowRandomCoordinate;
                     }
+                    _Log.Debug($"[ChangeCoordinateTypeAndReload] Name={name} on " +
+                        $"map={mapNo} set type={type}.");
 #if DEBUG
                     var randomCoordinateType =
                         ctrl.GetCoordinateType(nowRandomCoordinate);
@@ -142,8 +142,8 @@ namespace IDHIPlugins
             var name = Utilities.GirlName(__instance);
             var mapNo = Utils.MapNumber(__instance);
 
-            _Log.Debug("[SyncroCoordinate] Name=" +
-                $"{name} in map={mapNo} total coordinates={totalCoordinates}");
+            _Log.Debug("[SynchroCoordinate] Name=" +
+                $"{name} in map={mapNo} total coordinates={totalCoordinates}.");
 
             // If there no extra outfits
             if (!ctrl.HasMoreOutfits)
