@@ -10,7 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Controller.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SetupGuide.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Guide.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Hooks.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Plugin.ConfigEntries.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Plugin.cs" />
