@@ -11,7 +11,7 @@ using KKAPI;
 namespace IDHIPlugins
 {
     [BepInDependency(KoikatuAPI.GUID, KoikatuAPI.VersionConst)]
-    [BepInDependency(IDHIUtils.IDHIUtilsInfo.GUID, "1.0.6.2")]
+    [BepInDependency(IDHIUtils.IDHIUtilsInfo.GUID, "1.0.6.0")]
     [BepInPlugin(GUID, PluginDisplayName, Version)]
     [BepInProcess(KoikatuAPI.GameProcessName)]
     public partial class RandomCoordinatePlugin : BaseUnityPlugin

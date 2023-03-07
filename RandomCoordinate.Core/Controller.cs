@@ -2,11 +2,9 @@
 // RandomCoordinateController
 //
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-
-using ADV.Commands.Base;
-using ActionGame.Chara;
 
 using BepInEx.Logging;
 
@@ -17,7 +15,6 @@ using KKAPI.MainGame;
 using Utils = IDHIUtils.Utilities;
 
 using static IDHIPlugins.RandomCoordinatePlugin;
-using IDHIUtils;
 
 namespace IDHIPlugins
 {
@@ -98,6 +95,7 @@ namespace IDHIPlugins
                 if (heroine.fixCharaID == -13)
                 {
                     SetupGuide(heroine, true);
+                    nowRandomCoordinate = _nowRandomCoordinateByType[coordinateType];
                 }
 
                 // Sometimes cannot get ChaControl.GetHeroine() to work save
