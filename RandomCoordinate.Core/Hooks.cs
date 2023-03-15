@@ -71,6 +71,7 @@ namespace IDHIPlugins
             {
                 if (_guideMapNo == 4)
                 {
+                    // Guide: Change to swimsuit if on the beach
                     type = ChaFileDefine.CoordinateType.Swim;
                     if ((int)type > 3)
                     {
@@ -102,7 +103,7 @@ namespace IDHIPlugins
                     }
                 }
             }
-            type = ChaFileDefine.CoordinateType.Swim;
+
             if ((int)type > 3)
             {
                 newName = $" ({_MoreOutfits
