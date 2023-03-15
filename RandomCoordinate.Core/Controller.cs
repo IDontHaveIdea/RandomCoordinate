@@ -76,35 +76,32 @@ namespace IDHIPlugins
                 InitCoordinates();
 
                 var coordinateType = GetCoordinateType(heroine.StatusCoordinate);
-                var nowRandomCoordinate = _nowRandomCoordinateByType[coordinateType];
 
-                if (nowRandomCoordinate != heroine.StatusCoordinate)
+                if (_nowRandomCoordinateByType[coordinateType]
+                    != heroine.StatusCoordinate)
                 {
                     // Synchronize coordinate information
                     _nowRandomCoordinateByType[coordinateType] = heroine.StatusCoordinate;
                     _nowRandomType = coordinateType;
-                    nowRandomCoordinate = _nowRandomCoordinateByType[coordinateType];
                 }
-
 
                 if (heroine.fixCharaID == -13)
                 {
+                    // This is the Guide character needs special treatment
                     SetupGuide(heroine, true);
                     coordinateType = GetCoordinateType(heroine.StatusCoordinate);
-                    nowRandomCoordinate = _nowRandomCoordinateByType[coordinateType];
                 }
 
                 // Sometimes cannot get ChaControl.GetHeroine() to work save
                 // to a lookup table
+                // TODO: check this to see if still stands
                 GirlsNames[ChaControl.name] = Utilities.GirlName(heroine);
-#if DEBUG
-                _Log.Warning($"[OnReload] " +
+                _Log.Debug($"[OnReload] " +
                     $"Name={heroine.Name.Trim()} chaName={heroine.chaCtrl.name} " +
                     $"heroinie.StatusCoordinate={heroine.StatusCoordinate} " +
                     $"nowRandomCoordinate={_nowRandomCoordinateByType[coordinateType]} " +
                     $" total coordinates={ChaFileControl.coordinate.Length} " +
                     $"random possible={HasMoreOutfits}");
-#endif
             }
         }
 
