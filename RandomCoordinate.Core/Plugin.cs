@@ -4,18 +4,16 @@
 using System;
 using System.Collections.Generic;
 
-using UnityEngine.SceneManagement;
-
 using ActionGame.Chara;
 
 using BepInEx.Logging;
 
 using KKAPI;
 using KKAPI.Chara;
-using KKAPI.MainGame;
 
 using IDHIUtils;
-using System.Text;
+
+
 
 namespace IDHIPlugins
 {
@@ -23,6 +21,7 @@ namespace IDHIPlugins
     {
         internal static Logg _Log = new();
         internal static Random RandCoordinate = new();
+        internal static MoreOutfits _MoreOutfits = new();
 
         // This dictionary is for caching some information
         // Names sometimes fail when using ChaControl.GetHeroine()
@@ -34,12 +33,14 @@ namespace IDHIPlugins
             ConfigEntries();
             _Log.Enabled = DebugInfo.Value;
             _Log.DebugToConsole = DebugToConsole.Value;
-#if DEBUG
             _Log.Level(LogLevel.Info, $"[{PluginName}] {PluginDisplayName} " +
                 $"loaded.");
+#if DEBUG
             _Log.Level(LogLevel.Info, $"[{PluginName}] Logging set to " +
-                $"{_Log.Enabled}");
+                $"{_Log.Enabled} DebugToConsole={_Log.DebugToConsole}");
 #endif
+            _Log.Debug($"[ConfigEntries] Random Coordinates Change Room Only set " +
+                    $"to={OnlyChangingRoom.Value}");
             GirlsNames.Clear();
             CharacterApi.RegisterExtraBehaviour<RandomCoordinateController>(GUID);
 
@@ -62,7 +63,7 @@ namespace IDHIPlugins
         /// <param name="e"></param>
         internal static void OnGameExit(object sender, EventArgs e)
         {
-            _Log.Info($"[OnGameExit] RandomCoordinate exiting game.");
+            _Log.Info($"[OnGameExit] {PluginName} exiting game.");
         }
 
         internal static void ChangeCoordinate(NPC girl, int coordinateNumber)
