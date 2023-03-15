@@ -37,7 +37,9 @@ namespace IDHIPlugins
                     var ctrl = GetController(heroine.chaCtrl);
                     var guideMap = -1; // Utils.GuideMapNumber(heroine);
                     var mapMove = -1;
-                    
+                    var statusCoordinate = heroine.StatusCoordinate;
+                    var nowRandomCoordinate = -1;
+                    var newCoordinate = -1;
 
                     mapMove = fixChara.charaData.moveData.mapNo;
                     guideMap = fixChara.mapNo;
@@ -74,11 +76,14 @@ namespace IDHIPlugins
                             if (getNewCoordinate)
                             {
                                 getNewCoordinate = false;
-                                _Log.Error("Calling Random");
+#if DEBUG
+                                _Log.Error("[SetGuide] Calling NewRandomCoordinateByType.");
+#endif
                                 // Guide won't be in any map that have special
                                 // consideration
-                                var newCoordinate = ctrl.NewRandomCoordinateByType(
+                                newCoordinate = ctrl.NewRandomCoordinateByType(
                                             ChaFileDefine.CoordinateType.Plain);
+                                nowRandomCoordinate = ctrl.NowRandomCoordinate;
                                 if (heroine.StatusCoordinate != newCoordinate)
                                 {
                                     ChangeCoordinate(heroine.chaCtrl, newCoordinate);
@@ -86,12 +91,30 @@ namespace IDHIPlugins
                             }
                         }
                     }
+                    var nowName = "";
+                    var newName = ".";
+                    if (statusCoordinate > 3)
+                    {
+                        nowName = $"({_MoreOutfits
+                            .GetCoordinateName(heroine.chaCtrl, statusCoordinate)}) ";
+                    }
+                    if (ctrl.NowRandomCoordinate > 3)
+                    {
+                        newName = $" ({_MoreOutfits
+                            .GetCoordinateName(
+                            heroine.chaCtrl, ctrl.NowRandomCoordinate)}).";
+                    }
+                    _Log.Debug($"[SetGuide] GUIDE={_guide.Name.Trim()} in " +
+                        $"mapNo={guideMap} setCoordinate={setCoordinate} {nowName}" +
+                        $"NowRandomCoordinate={ctrl.NowRandomCoordinate}{newName}");
 #if DEBUG
                     _Log.Info($"[SetGuide] GUIDE={_guide.Name.Trim()} " +
                         $"chaName={_guide.chaCtrl.name} " +
-                        $"position guideMap={guideMap} uMap={uMap} mapMove={mapMove} " +
+                        $"guideMap={guideMap} options uMap={uMap} mapMove={mapMove} " +
                         $"mapFix={fixChara.mapNo} " +
-                        $"move={fixChara.charaData.moveData.isAlive} getNewCoordinate={getNewCoordinate}.");
+                        $"setCoordinate={setCoordinate} " +
+                        $"newCoordinate={newCoordinate} " +
+                        $"NowRandomCoordinate={nowRandomCoordinate}.");
 #endif
                 }
             }
@@ -101,164 +124,10 @@ namespace IDHIPlugins
         {
             var was = getNewCoordinate;
             getNewCoordinate = true;
-            _Log.Info($"[PeriodChange] NewPeriod={args.NewPeriod} " +
-                $"getNewCoordinate={getNewCoordinate} was={getNewCoordinate}");
-            
-        }
-    }
-    /*public partial class RandomCoordinatePlugin
-    {
-        internal static SaveData.Heroine _guide;
-        internal static int _guideMapNo;
-        internal static ActionGame.Chara.Fix _fixChara;
-
-        /// <summary>
-        /// Save Heroine information for the Guide Character
-        /// </summary>
-        /// <param name="heroine"></param>
-        /// <param name="setCoordinate"></param>
-        internal static void SetupGuide(
-            SaveData.Heroine heroine,
-            bool setCoordinate = false)
-        {
-            if (heroine.fixCharaID != -13)
-            {
-                return;
-            }
-            var hashes = new StringBuilder();
-            var guideMap = -1;
-            var fixChara = heroine.charaBase as ActionGame.Chara.Fix;
-            var mapMove = -1;
-            var mapFix = -1;
-            var ctrl = GetController(heroine.chaCtrl);
-            if (fixChara != null)
-            {
-                _fixChara = fixChara;
-                mapMove = fixChara.charaData.moveData.mapNo;
-                mapFix = fixChara.mapNo;
-                guideMap = mapMove;
-                if ((mapMove <= 0) && (mapFix != 0))
-                {
-                    guideMap = mapFix;
-                }
-            }
-            _guide = heroine;
-            _guideMapNo = guideMap;
-            if (setCoordinate)
-            {
-                // For the guide 
-                if (guideMap == 4)
-                {
-                    heroine.chaCtrl.fileStatus.coordinateType = (int)ChaFileDefine.CoordinateType.Swim;
-                    ctrl.SetRandomCoordinate(ChaFileDefine.CoordinateType.Swim);
-                    ChangeCoordinate(heroine.chaCtrl, (int)ChaFileDefine.CoordinateType.Swim);
-                }
-                else
-                {
-                    // Guide won't be in any map that have special consideration
-                    var newCoordinate = ctrl.NewRandomCoordinateByType(
-                                ChaFileDefine.CoordinateType.Plain);
-                    ChangeCoordinate(heroine.chaCtrl, newCoordinate);
-                }
-            }
 #if DEBUG
-            _Log.Info($"[SetGuide] GUIDE={_guide.Name.Trim()} chaName={_guide.chaCtrl.name} " +
-                $"position guideMap={guideMap} mapMove={mapMove} mapFix={mapFix}.");
-#endif
-        }
-    }*/
-}
-
-
-
-/*
-//
-// RandomCoordinatePlugin
-//
-using System.Text;
-
-using IDHIUtils;
-
-
-namespace IDHIPlugins
-{
-    public partial class RandomCoordinatePlugin
-    {
-        internal static SaveData.Heroine _guide;
-        internal static int _guideMapNo;
-        internal static ActionGame.Chara.Fix _fixChara;
-
-        /// <summary>
-        /// Save Heroine information for the Guide Character
-        /// </summary>
-        /// <param name="heroine"></param>
-        /// <param name="setCoordinate"></param>
-        internal static void SetupGuide(
-            SaveData.Heroine heroine,
-            bool setCoordinate = false)
-        {
-            if (heroine.fixCharaID != -13)
-            {
-                return;
-            }
-            var hashes = new StringBuilder();
-            var guideMap = -1;
-            var fixChara = heroine.charaBase as ActionGame.Chara.Fix;
-            var mapMove = -1;
-            var mapFix = -1;
-            var ctrl = GetController(heroine.chaCtrl);
-            if (fixChara != null)
-            {
-                _fixChara = fixChara;
-                mapMove = fixChara.charaData.moveData.mapNo;
-                mapFix = fixChara.mapNo;
-                guideMap = mapMove;
-                if ((mapMove <= 0) && (mapFix != 0))
-                {
-                    guideMap = mapFix;
-                }
-            }
-            _guide = heroine;
-            _guideMapNo = guideMap;
-            if (setCoordinate)
-            {
-                // For the guide 
-                if (guideMap == 4)
-                {
-                    heroine.chaCtrl.fileStatus.coordinateType = (int)ChaFileDefine.CoordinateType.Swim;
-                    ctrl.SetRandomCoordinate(ChaFileDefine.CoordinateType.Swim);
-                    ChangeCoordinate(heroine.chaCtrl, (int)ChaFileDefine.CoordinateType.Swim);
-                }
-                else
-                {
-                    // Guide won't be in any map that have special consideration
-                    var newCoordinate = ctrl.NewRandomCoordinateByType(
-                                ChaFileDefine.CoordinateType.Plain);
-                    ChangeCoordinate(heroine.chaCtrl, newCoordinate);
-                }
-            }
-#if DEBUG
-            _Log.Info($"[SetGuide] GUIDE={_guide.Name.Trim()} chaName={_guide.chaCtrl.name} " +
-                $"position guideMap={guideMap} mapMove={mapMove} mapFix={mapFix}.");
+            _Log.Warning($"[PeriodChange] NewPeriod={args.NewPeriod} " +
+                $"getNewCoordinate={getNewCoordinate} was={was}");
 #endif
         }
     }
 }
-
-var hashes = new StringBuilder();
-            var guideMap = -1;
-            if (Manager.Game.saveData.guideSetPositionMaps != null)
-            {
-                hashes.Append("[ ");
-                foreach (var h in Manager.Game.saveData.guideSetPositionMaps)
-                {
-                    if (Manager.Game.saveData.guideSetPositionMaps.Count == 1)
-                    {
-                        guideMap = h;
-                    }
-                    hashes.Append($"{h} ");
-                }
-                hashes.Append(']');
-            }
-
- */
