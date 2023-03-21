@@ -55,12 +55,22 @@ namespace IDHIPlugins
                 return true;
             }
 
+            var nowRandomCoordinate = -1;
+            var ctrl = GetController(__instance);
+            if (ctrl != null)
+            {
+                nowRandomCoordinate = ctrl.NowRandomCoordinateByType(type);
+            }
+
             var mapNo = Utils.MapNumber(__instance);
+            var mapName = Utils.MapName(__instance);
             var name = Utilities.GirlName(__instance);
             var callingType = type;
 
             var callName = "";
             var newName = ".";
+            
+
             if ((int)callingType > 3)
             {
                 callName = $"({_MoreOutfits
@@ -79,7 +89,9 @@ namespace IDHIPlugins
                             .GetCoordinateName(__instance, (int)type)}).";
                     }
                     _Log.Debug($"[ChangeCoordinateTypeAndReload] Guide name={name} on " +
-                        $"map={mapNo} parameter type={callingType} {callName}set " +
+                        $"map={mapNo} mapName={mapName} " +
+                        $"nowRandomCoordinate={nowRandomCoordinate} " +
+                        $"parameter type={callingType} {callName}set " +
                         $"type={type}{newName}");
                     return true;
                 }
@@ -90,13 +102,13 @@ namespace IDHIPlugins
             }
             if (type == ChaFileDefine.CoordinateType.Plain)
             {
-                var ctrl = GetController(__instance);
+                //ctrl = GetController(__instance);
 
                 if (ctrl != null)
                 {
                     // Preserve current random coordinate for type change request
-                    var nowRandomCoordinate =
-                        ctrl.NowRandomCoordinateByType(type);
+                    //nowRandomCoordinate =
+                    //    ctrl.NowRandomCoordinateByType(type);
                     if (nowRandomCoordinate >= 0)
                     {
                         type = (ChaFileDefine.CoordinateType)nowRandomCoordinate;
@@ -110,8 +122,8 @@ namespace IDHIPlugins
                     .GetCoordinateName(__instance, (int)type)}).";
             }
             _Log.Debug($"[ChangeCoordinateTypeAndReload] Name={name} on " +
-                $"map={mapNo} parameter type={callingType} {callName}set " +
-                $"type={type}{newName}");
+                $"map={mapNo} mapName={mapName} nowRandomCoordinate={nowRandomCoordinate}" +
+                $" parameter type={callingType} {callName}set type={type}{newName}");
             return true;
         }
 
@@ -145,12 +157,13 @@ namespace IDHIPlugins
             var ctrl = GetController(__instance.chaCtrl);
             var name = Utilities.GirlName(__instance);
             var mapNo = Utils.MapNumber(__instance);
+            var mapName = Utils.MapName(__instance);
 
             // If there no extra outfits
             if (!ctrl.HasMoreOutfits)
             {
                 _Log.Debug($"[SynchroCoordinate] Name={name} in map={mapNo} " +
-                    $"total coordinates={totalCoordinates}.");
+                    $"mapName={mapName} total coordinates={totalCoordinates}.");
                 return;
             }
 
@@ -201,7 +214,8 @@ namespace IDHIPlugins
                                 (ChaFileDefine.CoordinateType)coordinateType);
                 coordinateNumber = newCoordinate;
 #if DEBUG
-                _Log.Error($"[SynchroCoordinate] Name={name} in map={mapNo} FirstRun.");
+                _Log.Error($"[SynchroCoordinate] Name={name} in map={mapNo} " +
+                    $"mapName={mapName} FirstRun.");
 #endif
             }
             // coordinateNumber not equal to Bathing
@@ -252,13 +266,14 @@ namespace IDHIPlugins
                 }
                 ChangeCoordinate(__instance, coordinateNumber);
                 _Log.Debug($"[SynchroCoordinate] Name={name} in map={mapNo} " +
+                    $"mapName={mapName} " +
                     $"current coordinate={nowCoordinate} {nowName}" +
                     $"new coordinate={coordinateNumber}{newName}");
             }
             if (isRemove)
             {
-                _Log.Debug($"[SynchroCoordinate] Name={name} in map={mapNo} calling " +
-                    $"RandomChangeOfClothesLowPoly.");
+                _Log.Debug($"[SynchroCoordinate] Name={name} in map={mapNo} " +
+                    $"mapName={mapName} calling RandomChangeOfClothesLowPoly.");
                 __instance.chaCtrl.RandomChangeOfClothesLowPoly(
                     __instance.heroine.lewdness);
             }
