@@ -8,13 +8,20 @@
 
 ##### Fixed
 
-#### <u>v1.0.1.0 - 2022-06-05</u>
+#### <u>v1.0.1.0 - 2023-06-05</u>
 
 ##### Added
 
-- Positions available in the VIP room pool now available in the Hotel main pool
-- Using Japanese names in conditional compilation
+- Support for the guide. If the guide is changed with one with more than four
+coordinates random selection for the guide should work. When at the beach it
+should wear a Swimsuit coordinate.
+- Random selection always occur at the start of period or load of a saved game.
 
-#### <u>v1.0.0.0 - 2022-04-19</u>
+##### Changed
+
+- When a period changes or when a save game is loaded a random selection will
+occur.
+
+#### <u>v0.8.0.0 - 2022-11-03</u>
 
 First Release

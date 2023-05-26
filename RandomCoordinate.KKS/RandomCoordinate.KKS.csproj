@@ -8,8 +8,7 @@
 
   <PropertyGroup>
     <ProjectGuid>{2B4DB559-C750-4C60-B52F-D7E3002770FE}</ProjectGuid>
-    <RootNamespace>IDHIPlugins</RootNamespace>
-    <RootNamespace>IDHIPlugins</RootNamespace>
+    <RootNamespace>IDHIPlugIns</RootNamespace>
     <Nullable>warnings</Nullable>
     <AssemblyName>KKS_$(MSBuildProjectName.Replace(".KKS", ""))</AssemblyName>
   </PropertyGroup>

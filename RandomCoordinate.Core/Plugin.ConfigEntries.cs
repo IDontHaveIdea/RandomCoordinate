@@ -6,7 +6,7 @@ using BepInEx.Logging;
 
 using KKAPI.Utilities;
 
-namespace IDHIPlugins
+namespace IDHIPlugIns
 {
     public partial class RandomCoordinatePlugin
     {
@@ -70,6 +70,11 @@ namespace IDHIPlugins
                         "changing room.",
                     acceptableValues: null,
                     tags: new ConfigurationManagerAttributes { Order = 30 }));
+            OnlyChangingRoom.SettingChanged += (_sender, _args) =>
+            {
+                _Log.Debug($"[ConfigEntries] Random Coordinates Change Room Only set " +
+                    $"to={OnlyChangingRoom.Value}");
+            };
         }
     }
 }

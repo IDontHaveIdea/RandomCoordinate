@@ -3,7 +3,7 @@
 //
 using System.Reflection;
 
-using IDHIPlugins;
+using IDHIPlugIns;
 using IDHIUtils;
 
 #region Assembly attributes
@@ -19,7 +19,7 @@ using IDHIUtils;
 
 #endregion Assembly attributes
 
-namespace IDHIPlugins
+namespace IDHIPlugIns
 {
     public partial class RandomCoordinatePlugin
     {
@@ -30,6 +30,6 @@ namespace IDHIPlugins
         public const string PluginDisplayName = "Random Coordinates Plug-in";
 #endif
         public const string PluginName = "RandomCoordinate";
-        public const string Version = "1.0.0.1";
+        public const string Version = "1.0.1.0";
     }
 }

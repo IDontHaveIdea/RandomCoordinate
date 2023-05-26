@@ -2,11 +2,9 @@
 // RandomCoordinateController
 //
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-
-using ADV.Commands.Base;
-using ActionGame.Chara;
 
 using BepInEx.Logging;
 
@@ -16,10 +14,9 @@ using KKAPI.MainGame;
 
 using Utils = IDHIUtils.Utilities;
 
-using static IDHIPlugins.RandomCoordinatePlugin;
-using IDHIUtils;
+using static IDHIPlugIns.RandomCoordinatePlugin;
 
-namespace IDHIPlugins
+namespace IDHIPlugIns
 {
     public partial class RandomCoordinateController : CharaCustomFunctionController
     {
@@ -59,11 +56,6 @@ namespace IDHIPlugins
         {
         }
 
-        //protected override void OnReload(GameMode currentGameMode)
-        //{
-        //    base.OnReload(currentGameMode);
-        //}
-
         protected override void OnReload(GameMode currentGameMode, bool maintainState)
         {
             if (maintainState)
@@ -84,34 +76,33 @@ namespace IDHIPlugins
                 InitCoordinates();
 
                 var coordinateType = GetCoordinateType(heroine.StatusCoordinate);
-                var nowRandomCoordinate = _nowRandomCoordinateByType[coordinateType];
-
-                if (nowRandomCoordinate != heroine.StatusCoordinate)
+                var currentRandomCoordinate = _nowRandomCoordinateByType[coordinateType];
+                if (_nowRandomCoordinateByType[coordinateType]
+                    != heroine.StatusCoordinate)
                 {
                     // Synchronize coordinate information
                     _nowRandomCoordinateByType[coordinateType] = heroine.StatusCoordinate;
                     _nowRandomType = coordinateType;
                 }
 
-
                 if (heroine.fixCharaID == -13)
                 {
+                    // This is the Guide character needs special treatment
                     SetupGuide(heroine, true);
+                    coordinateType = GetCoordinateType(heroine.StatusCoordinate);
                 }
 
                 // Sometimes cannot get ChaControl.GetHeroine() to work save
                 // to a lookup table
+                // TODO: check this to see if still stands
                 GirlsNames[ChaControl.name] = Utilities.GirlName(heroine);
-#if DEBUG
-                _Log.Warning($"[OnReload] " +
+                _Log.Debug($"[OnReload] " +
                     $"Name={heroine.Name.Trim()} chaName={heroine.chaCtrl.name} " +
-                    $"heroinie.NowCoordinate={heroine.StatusCoordinate} " +
-                    $"nowRandomCoordinate={nowRandomCoordinate} - " +
-                    $"{_nowRandomCoordinateByType[coordinateType]} " +
-                    $"LookType={coordinateType} total " +
-                    $"coordinates={ChaFileControl.coordinate.Length} " +
+                    $"heroinie.StatusCoordinate={heroine.StatusCoordinate} " +
+                    $"nowRandomCoordinate={_nowRandomCoordinateByType[coordinateType]} " +
+                    $"currentRandomCoordinate={currentRandomCoordinate} " +
+                    $"total coordinates={ChaFileControl.coordinate.Length} " +
                     $"random possible={HasMoreOutfits}");
-#endif
             }
         }
 
@@ -136,19 +127,12 @@ namespace IDHIPlugins
                 _firstRandomRequest = false;
             }
 
-            var _coordinate = (-1);
-
-            _coordinate = type switch {
+            var _coordinate = type switch {
                 ChaFileDefine.CoordinateType.Swim => (int)ChaFileDefine.CoordinateType.Swim,
                 ChaFileDefine.CoordinateType.Pajamas => (int)ChaFileDefine.CoordinateType.Pajamas,
                 ChaFileDefine.CoordinateType.Bathing => (int)ChaFileDefine.CoordinateType.Bathing,
                 _ => RandomCoordinate(type),
             };
-#if DEBUG
-            _Log.Warning("[GetRandomCoordinateType] " +
-                $"Name={Utilities.GirlName(ChaControl)} type={type} " +
-                $"coordinate={_coordinate}");
-#endif
             return _coordinate;
         }
 
@@ -202,20 +186,12 @@ namespace IDHIPlugins
         /// <returns></returns>
         public int NowRandomCoordinateByType(ChaFileDefine.CoordinateType type)
         {
-            var coordinateNumber = (int)type;
             var lookType = GetCoordinateType(type);
-            _nowRandomCoordinateByType.TryGetValue(lookType, out coordinateNumber);
-#if DEBUG
-            // Get calling method name
-            var calllingMethod = Utils.CallingMethod();
-
-            _Log.Warning($"[NowRandomCoordinateByType] " +
-                $"Calling Method=[{calllingMethod}] " +
-                $"Name={Utilities.GirlName(ChaControl)} asked type={type} " +
-                $"searchType={lookType} " +
-                $"coordinateNumber={coordinateNumber}");
-#endif
-            return coordinateNumber;
+            if (_nowRandomCoordinateByType.TryGetValue(lookType, out var coordinateNumber))
+            {
+                return coordinateNumber;
+            }
+            return (int)type;
         }
 
         /// <summary>
@@ -226,6 +202,14 @@ namespace IDHIPlugins
         public int NowRandomCoordinateByType(int integerType)
         {
             return NowRandomCoordinateByType((ChaFileDefine.CoordinateType)integerType);
+        }
+
+        public void SetRandomCoordinate(ChaFileDefine.CoordinateType type)
+        {
+            var lookType = GetCoordinateType(type);
+            _nowRandomCoordinate = (int)type;
+            _nowRandomType = lookType;
+
         }
 
         /// <summary>
@@ -240,7 +224,6 @@ namespace IDHIPlugins
         private int RandomCoordinate(ChaFileDefine.CoordinateType type)
         {
             var newCoordinate = (int)type;
-            var coordinateIndex = -1;
             var name = Utilities.GirlName(ChaControl);
 
             try
@@ -253,7 +236,7 @@ namespace IDHIPlugins
                     try
                     {
                         // New random coordinate
-                        coordinateIndex = RandCoordinate
+                        var coordinateIndex = RandCoordinate
                             .Next(0, _tmpCoordinates.Count);
                         newCoordinate = _tmpCoordinates[coordinateIndex];
 
@@ -261,14 +244,6 @@ namespace IDHIPlugins
                         _nowRandomCoordinateByType[lookType] = newCoordinate;
                         _nowRandomCoordinate = newCoordinate;
                         _nowRandomType = lookType;
-#if DEBUG
-                        _Log.Warning($"[RandomCoordinate] 01 " +
-                            $"Name={name} " +
-                            $"Type={type} " +
-                            $"NowRandomType={_nowRandomType} " +
-                            $"coordinateIndex={coordinateIndex} " +
-                            $"NowRandomCoordinate={_nowRandomCoordinateByType[lookType]}");
-#endif
                     }
                     catch (Exception e)
                     {
@@ -278,17 +253,6 @@ namespace IDHIPlugins
                             $"Error code={e.Message}");
                     }
                 }
-#if DEBUG
-                else
-                {
-                    _Log.Warning($"[RandomCoordinate] 02 " +
-                        $"Name={name} " +
-                        $"Type={type} " +
-                        $"Total Coordinates By Type={_tmpCoordinates.Count} " +
-                        $"NowRandomType={_nowRandomType} " +
-                        $"NowRandomCoordinate={_nowRandomCoordinate}");
-                }
-#endif
             }
             catch (Exception e)
             {
