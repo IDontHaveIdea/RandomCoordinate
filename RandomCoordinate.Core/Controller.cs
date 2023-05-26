@@ -14,9 +14,9 @@ using KKAPI.MainGame;
 
 using Utils = IDHIUtils.Utilities;
 
-using static IDHIPlugins.RandomCoordinatePlugin;
+using static IDHIPlugIns.RandomCoordinatePlugin;
 
-namespace IDHIPlugins
+namespace IDHIPlugIns
 {
     public partial class RandomCoordinateController : CharaCustomFunctionController
     {
@@ -76,7 +76,7 @@ namespace IDHIPlugins
                 InitCoordinates();
 
                 var coordinateType = GetCoordinateType(heroine.StatusCoordinate);
-
+                var currentRandomCoordinate = _nowRandomCoordinateByType[coordinateType];
                 if (_nowRandomCoordinateByType[coordinateType]
                     != heroine.StatusCoordinate)
                 {
@@ -100,7 +100,8 @@ namespace IDHIPlugins
                     $"Name={heroine.Name.Trim()} chaName={heroine.chaCtrl.name} " +
                     $"heroinie.StatusCoordinate={heroine.StatusCoordinate} " +
                     $"nowRandomCoordinate={_nowRandomCoordinateByType[coordinateType]} " +
-                    $" total coordinates={ChaFileControl.coordinate.Length} " +
+                    $"currentRandomCoordinate={currentRandomCoordinate} " +
+                    $"total coordinates={ChaFileControl.coordinate.Length} " +
                     $"random possible={HasMoreOutfits}");
             }
         }

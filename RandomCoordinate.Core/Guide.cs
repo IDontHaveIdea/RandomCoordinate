@@ -11,7 +11,7 @@ using KKAPI.MainGame;
 using Utils = IDHIUtils.Utilities;
 using System.Linq;
 
-namespace IDHIPlugins
+namespace IDHIPlugIns
 {
     public partial class RandomCoordinatePlugin
     {

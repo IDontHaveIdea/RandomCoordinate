@@ -6,7 +6,7 @@ using BepInEx.Logging;
 
 using KKAPI.Utilities;
 
-namespace IDHIPlugins
+namespace IDHIPlugIns
 {
     public partial class RandomCoordinatePlugin
     {

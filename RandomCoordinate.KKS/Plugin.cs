@@ -8,7 +8,7 @@ using KKAPI;
 //[BepInDependency(IDHIUtils.IDHIUtilsInfo.GUID, IDHIUtils.IDHIUtilsInfo.Version)]
 
 
-namespace IDHIPlugins
+namespace IDHIPlugIns
 {
     [BepInDependency(KoikatuAPI.GUID, KoikatuAPI.VersionConst)]
     [BepInDependency(IDHIUtils.IDHIUtilsInfo.GUID, "1.0.6.0")]
