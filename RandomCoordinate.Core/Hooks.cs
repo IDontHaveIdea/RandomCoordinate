@@ -27,11 +27,8 @@ namespace IDHIPlugIns
             _hookInstance = Harmony.CreateAndPatchAll(typeof(Hooks));
         }
 
-        /// <summary>
-        /// Prefix for ChaControl.ChangeCoordinateTypeAndReload to manipulate
-        /// the value of the coordinate type
-        /// </summary>
-        [HarmonyPrefix]
+        /*
+         *         [HarmonyPrefix]
         [HarmonyPatch(
             typeof(ChaControl),
             nameof(ChaControl.ChangeCoordinateTypeAndReload),
@@ -40,6 +37,22 @@ namespace IDHIPlugIns
                     typeof(ChaFileDefine.CoordinateType),
                     typeof(bool)
                 }
+            )]
+
+         */
+
+        /// <summary>
+        /// Prefix for ChaControl.ChangeCoordinateTypeAndReload to manipulate
+        /// the value of the coordinate type
+        /// </summary>
+        [HarmonyPrefix]
+        [HarmonyPatch(
+            typeof(ChaControl),
+            nameof(ChaControl.ChangeCoordinateTypeAndReload),
+            [
+                typeof(ChaFileDefine.CoordinateType),
+                typeof(bool)
+            ]
             )]
         private static bool ChangeCoordinateTypeAndReloadPrefix(
             ChaControl __instance,
@@ -123,7 +136,7 @@ namespace IDHIPlugIns
             }
             _Log.Debug($"[ChangeCoordinateTypeAndReload] Name={name} on " +
                 $"map={mapNo} mapName={mapName} nowRandomCoordinate={nowRandomCoordinate}" +
-                $" parameter type={callingType} {callName}set type={type}{newName}");
+                $" parameter type={callingType} {callName} set type={type}{newName}");
             return true;
         }
 
