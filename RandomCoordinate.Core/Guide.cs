@@ -13,7 +13,7 @@ using System.Linq;
 
 namespace IDHIPlugIns
 {
-    public partial class RandomCoordinatePlugin
+    public partial class RandomCoordinatePlugIn
     {
         internal static SaveData.Heroine _guide;
         internal static int _guideMapNo;
