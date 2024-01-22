@@ -8,7 +8,7 @@ using KKAPI.Utilities;
 
 namespace IDHIPlugIns
 {
-    public partial class RandomCoordinatePlugin
+    public partial class RandomCoordinatePlugIn
     {
         internal static ConfigEntry<bool> DebugInfo { get; set; }
         internal static ConfigEntry<bool> DebugToConsole { get; set; }
