@@ -1,10 +1,7 @@
 ﻿//
 // Hooks
 //
-using System;
-
 using ActionGame.Chara;
-using UnityEngine;
 
 using HarmonyLib;
 
@@ -14,8 +11,6 @@ using IDHIUtils;
 using Utils = IDHIUtils.Utilities;
 
 using static IDHIPlugIns.RandomCoordinatePlugIn;
-using Studio;
-using System.Runtime.Remoting.Metadata.W3cXsd2001;
 
 
 namespace IDHIPlugIns
@@ -256,7 +251,8 @@ namespace IDHIPlugIns
             var coordinateNumber = __instance.heroine.StatusCoordinate;
             var coordinateType = __instance.chaCtrl.fileStatus.coordinateType;
             var nowCoordinate = coordinateNumber;
-            var nowRandomCoordinate = ctrl.NowRandomCoordinateByType(
+            var nowRandomCoordinate = ctrl.NowRandomCoordinate;
+            var nowRandomCoordinateByType = ctrl.NowRandomCoordinateByType(
                     (ChaFileDefine.CoordinateType)coordinateType);
 
             // Test for out of bounds adjusting for each character
@@ -289,7 +285,7 @@ namespace IDHIPlugIns
                 }
             }
 
-            int newCoordinate;
+            var newCoordinate = -1;
             // On first run (of OnReload) get a random coordinate
             // This causes to have more variety whenever a start game, change period
             // load a save game a random coordinate will be selected.
@@ -322,7 +318,7 @@ namespace IDHIPlugIns
                             break;
                         default:
                             // Preserve random selection
-                            coordinateNumber = nowRandomCoordinate;
+                            coordinateNumber = nowRandomCoordinateByType;
                             break;
                     }
                 }
@@ -337,10 +333,32 @@ namespace IDHIPlugIns
 
 #if DEBUG
             // Change to new coordinate
+            var nowName = "";
+            var newName = ".";
+            if (nowCoordinate > 3)
+            {
+                nowName = $" ({_MoreOutfits
+                    .GetCoordinateName(__instance.chaCtrl, nowCoordinate)})";
+            }
+            if (coordinateNumber > 3)
+            {
+                newName = $" ({_MoreOutfits
+                    .GetCoordinateName(__instance.chaCtrl, coordinateNumber)}).";
+            }
+            if (coordinateType != coordinateNumber)
+            {
+                ChangeCoordinate(__instance, coordinateNumber);
+            }
             if (mapNo == currentMapNo)
+            {
+                _Log.Debug($"[SynchroCoordinate] Name={name} in map={mapNo} " +
+                $"mapName={mapName} " +
+                $"current coordinate={nowCoordinate}{nowName} " +
+                $"new coordinate={coordinateNumber}{newName} " +
+                $"nowRandomCoordinate={nowRandomCoordinate}");
+            }
 #else
             if (coordinateType != coordinateNumber)
-#endif
             {
                 // Change to new coordinate
                 var nowName = "";
@@ -361,6 +379,7 @@ namespace IDHIPlugIns
                     $"current coordinate={nowCoordinate}{nowName} " +
                     $"new coordinate={coordinateNumber}{newName}");
             }
+#endif
 #if !DEBUG
             if (isRemove)
             {

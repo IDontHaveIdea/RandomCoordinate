@@ -1,6 +1,8 @@
 ﻿//
 // RandomCoordinatePlugin
 //
+// Ignore Spelling: cha
+
 using System;
 using System.Collections.Generic;
 
@@ -25,7 +27,7 @@ namespace IDHIPlugIns
 
         // This dictionary is for caching some information
         // Names sometimes fail when using ChaControl.GetHeroine()
-        internal static Dictionary<string, string> GirlsNames = new();
+        internal static Dictionary<string, string> GirlsNames = [];
 
         private void Awake()
         {

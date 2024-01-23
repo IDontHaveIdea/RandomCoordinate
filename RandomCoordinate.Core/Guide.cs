@@ -1,15 +1,12 @@
 ﻿//
 // RandomCoordinatePlugin
 //
-using System.Collections;
-using System.Text;
-
-using UnityEngine;
+using System.Linq;
 
 using KKAPI.MainGame;
 
 using Utils = IDHIUtils.Utilities;
-using System.Linq;
+
 
 namespace IDHIPlugIns
 {

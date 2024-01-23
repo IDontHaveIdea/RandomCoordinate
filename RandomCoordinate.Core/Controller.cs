@@ -2,9 +2,7 @@
 // RandomCoordinateController
 //
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 
 using BepInEx.Logging;
 
@@ -12,9 +10,8 @@ using KKAPI;
 using KKAPI.Chara;
 using KKAPI.MainGame;
 
-using Utils = IDHIUtils.Utilities;
-
 using static IDHIPlugIns.RandomCoordinatePlugIn;
+
 
 namespace IDHIPlugIns
 {
