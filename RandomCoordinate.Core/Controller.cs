@@ -60,7 +60,8 @@ namespace IDHIPlugIns
                 return;
             }
 
-            if (KoikatuAPI.GetCurrentGameMode() != GameMode.MainGame)
+            // if (KoikatuAPI.GetCurrentGameMode() != GameMode.MainGame)
+            if (currentGameMode != GameMode.MainGame)
             {
                 return;
             }
