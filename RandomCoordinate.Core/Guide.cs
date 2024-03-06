@@ -32,7 +32,7 @@ namespace IDHIPlugIns
                 if (fixChara != null)
                 {
                     var ctrl = GetController(heroine.chaCtrl);
-                    var guideMap = -1; // Utils.GuideMapNumber(heroine);
+                    var guideMap = -1;
                     var mapMove = -1;
                     var statusCoordinate = heroine.StatusCoordinate;
                     var nowRandomCoordinate = -1;
@@ -117,7 +117,7 @@ namespace IDHIPlugIns
             }
         }
 
-        internal static void PeriodChange(object sendier, GameAPI.PeriodChangeEventArgs args)
+        internal static void PeriodChange(object sender, GameAPI.PeriodChangeEventArgs args)
         {
             var was = getNewCoordinate;
             getNewCoordinate = true;
