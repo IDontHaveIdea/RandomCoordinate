@@ -57,27 +57,23 @@ namespace IDHIPlugIns
                 nowRandomCoordinateByType = ctrl.NowRandomCoordinateByType(type);
                 nowRandomCoordinate = ctrl.NowRandomCoordinate;
             }
-
+#if DEBUG
             var actScene = ActionScene.instance;
             var currentMapNo = actScene.Map.no;
             var mapNo = Utils.MapNumber(__instance);
-            var mapName = Utils.MapName(__instance);
-            var name = Utilities.GirlName(__instance);
-            var callingType = type;
-            var callName = "";
-            var newName = ".";
-
-#if DEBUG
             if (mapNo == currentMapNo)
             {
+                var mapName = Utils.MapName(__instance);
+                var name = Utilities.GirlName(__instance);
+                var callingType = type;
+
                 _Log.Warning($"[ChangeCoordinateType] Name={name} on " +
                 $"map={mapNo} mapName={mapName} " +
                 $"nowRandomCoordinateByType={nowRandomCoordinateByType} " +
                 $"nowRandomCoordinate={nowRandomCoordinate} " +
-                $"parameter type={callingType}{callName} set type={type}{newName}");
+                $"parameter type={callingType} set type={type}.");
             }
 #endif
-
             return true;
         }
 
@@ -286,10 +282,10 @@ namespace IDHIPlugIns
             }
 
             var newCoordinate = -1;
-            // On first run (of OnReload) get a random coordinate
-            // This causes to have more variety whenever a start game, change period
-            // load a save game a random coordinate will be selected.
-            // FirstRun unreliable game reinitializes controller
+            // On first run (of OnReload) get a random coordinate. This causes to have
+            // more variety whenever a start game, change period load a save game a
+            // random coordinate will be selected.
+            // FirstRun unreliable game reinitializes controller.
             if (ctrl.FirstRun)
             {
                 newCoordinate = ctrl.NewRandomCoordinateByType(
@@ -390,36 +386,5 @@ namespace IDHIPlugIns
             }
 #endif
         }
-
-
-        /*[HarmonyPostfix]
-        [HarmonyPatch(typeof(OCIChar),
-            nameof(OCIChar.SetCoordinateInfo),
-            [
-                typeof(ChaFileDefine.CoordinateType),
-                typeof(bool)
-            ]
-            )]
-        private static void SetCoordinateInfoPostfix(
-            ChaFileDefine.CoordinateType __instance,
-            bool _force = false)
-        {
-            _Log.Debug($"[SetCoordinateInfo] Calling.");
-        }
-
-        [HarmonyPostfix]
-        [HarmonyPatch(typeof(ChaControl),
-            nameof(ChaControl.ChangeCoordinateType),
-            [
-                typeof(ChaFileDefine.CoordinateType),
-                typeof(bool)
-            ]
-            )]
-        public static void ChangeCoordinateTypePostfix(
-            ChaFileDefine.CoordinateType __instance,
-            bool changeBackCoordinateType)
-        {
-            _Log.Debug($"[ChangeCoordinateType] Calling.");
-        }*/
     }
 }
