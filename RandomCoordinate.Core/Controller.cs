@@ -60,7 +60,6 @@ namespace IDHIPlugIns
                 return;
             }
 
-            // if (KoikatuAPI.GetCurrentGameMode() != GameMode.MainGame)
             if (currentGameMode != GameMode.MainGame)
             {
                 return;
@@ -115,7 +114,7 @@ namespace IDHIPlugIns
         ///
         /// * Plain - every additional coordinate outfit will be assumed is
         ///   for the Plain type
-        /// * Swin - can work events depend on this
+        /// * Swim - can work events depend on this
         /// * Pajamas - TODO: test to see if it is possible
         /// * Bathing - no need events depend on this
         ///
