@@ -2,9 +2,7 @@
 // RandomCoordinateController
 //
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 
 using BepInEx.Logging;
 
@@ -12,9 +10,8 @@ using KKAPI;
 using KKAPI.Chara;
 using KKAPI.MainGame;
 
-using Utils = IDHIUtils.Utilities;
+using static IDHIPlugIns.RandomCoordinatePlugIn;
 
-using static IDHIPlugIns.RandomCoordinatePlugin;
 
 namespace IDHIPlugIns
 {
@@ -23,7 +20,7 @@ namespace IDHIPlugIns
         #region private fields
         private bool _firstRandomRequest = true;
         private List<int> _tmpCoordinates;
-        private int _nowRandomCoordinate;
+        private int _nowRandomCoordinate = (-1);
         private ChaFileDefine.CoordinateType _nowRandomType;
 
         private readonly Dictionary<ChaFileDefine.CoordinateType, List<int>>
@@ -63,7 +60,7 @@ namespace IDHIPlugIns
                 return;
             }
 
-            if (KoikatuAPI.GetCurrentGameMode() != GameMode.MainGame)
+            if (currentGameMode != GameMode.MainGame)
             {
                 return;
             }
@@ -77,6 +74,7 @@ namespace IDHIPlugIns
 
                 var coordinateType = GetCoordinateType(heroine.StatusCoordinate);
                 var currentRandomCoordinate = _nowRandomCoordinateByType[coordinateType];
+                _nowRandomCoordinate = heroine.StatusCoordinate;
                 if (_nowRandomCoordinateByType[coordinateType]
                     != heroine.StatusCoordinate)
                 {
@@ -96,6 +94,8 @@ namespace IDHIPlugIns
                 // to a lookup table
                 // TODO: check this to see if still stands
                 GirlsNames[ChaControl.name] = Utilities.GirlName(heroine);
+#if DEBUG
+#else
                 _Log.Debug($"[OnReload] " +
                     $"Name={heroine.Name.Trim()} chaName={heroine.chaCtrl.name} " +
                     $"heroinie.StatusCoordinate={heroine.StatusCoordinate} " +
@@ -103,6 +103,7 @@ namespace IDHIPlugIns
                     $"currentRandomCoordinate={currentRandomCoordinate} " +
                     $"total coordinates={ChaFileControl.coordinate.Length} " +
                     $"random possible={HasMoreOutfits}");
+#endif
             }
         }
 
@@ -113,7 +114,7 @@ namespace IDHIPlugIns
         ///
         /// * Plain - every additional coordinate outfit will be assumed is
         ///   for the Plain type
-        /// * Swin - can work events depend on this
+        /// * Swim - can work events depend on this
         /// * Pajamas - TODO: test to see if it is possible
         /// * Bathing - no need events depend on this
         ///
@@ -133,6 +134,10 @@ namespace IDHIPlugIns
                 ChaFileDefine.CoordinateType.Bathing => (int)ChaFileDefine.CoordinateType.Bathing,
                 _ => RandomCoordinate(type),
             };
+            if (_nowRandomCoordinate < 0)
+            {
+                _nowRandomCoordinate = _coordinate;
+            }
             return _coordinate;
         }
 

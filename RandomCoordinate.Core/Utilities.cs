@@ -5,7 +5,7 @@ using ActionGame.Chara;
 
 using KKAPI.MainGame;
 
-using static IDHIPlugIns.RandomCoordinatePlugin;
+using static IDHIPlugIns.RandomCoordinatePlugIn;
 
 
 namespace IDHIPlugIns

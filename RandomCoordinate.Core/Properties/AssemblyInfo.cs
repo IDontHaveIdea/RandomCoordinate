@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // associated with an assembly.
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("https://github.com/IHaveNoIdea/RandomCoordinate")]
-[assembly: AssemblyCopyright("Copyright ©IHaveNoIdea  2022")]
+[assembly: AssemblyCopyright("Copyright ©IHaveNoIdea  2022-2024")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

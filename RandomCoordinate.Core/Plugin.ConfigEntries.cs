@@ -6,9 +6,10 @@ using BepInEx.Logging;
 
 using KKAPI.Utilities;
 
+
 namespace IDHIPlugIns
 {
-    public partial class RandomCoordinatePlugin
+    public partial class RandomCoordinatePlugIn
     {
         internal static ConfigEntry<bool> DebugInfo { get; set; }
         internal static ConfigEntry<bool> DebugToConsole { get; set; }
@@ -32,7 +33,7 @@ namespace IDHIPlugIns
                 _Log.Enabled = DebugInfo.Value;
 #if DEBUG
                 _Log.Level(LogLevel.Info, $"[Configuration] Log.Enabled set " +
-                    $"to {_Log.Enabled}");
+                    $"to {_Log.Enabled}.");
 #endif
             };
 
@@ -52,7 +53,7 @@ namespace IDHIPlugIns
                 _Log.DebugToConsole = DebugToConsole.Value;
 #if DEBUG
                 _Log.Level(LogLevel.Info, $"[ConfigEntries] Log.DebugToConsole set to " +
-                    $"{_Log.DebugToConsole}");
+                    $"{_Log.DebugToConsole}.");
 #endif
 
             };
@@ -72,8 +73,8 @@ namespace IDHIPlugIns
                     tags: new ConfigurationManagerAttributes { Order = 30 }));
             OnlyChangingRoom.SettingChanged += (_sender, _args) =>
             {
-                _Log.Debug($"[ConfigEntries] Random Coordinates Change Room Only set " +
-                    $"to={OnlyChangingRoom.Value}");
+                _Log.Level(LogLevel.Info, $"[ConfigEntries] Random Coordinates Change " +
+                    $"Room Only set to={OnlyChangingRoom.Value}.");
             };
         }
     }
