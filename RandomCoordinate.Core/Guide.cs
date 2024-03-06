@@ -8,9 +8,9 @@ using KKAPI.MainGame;
 using Utils = IDHIUtils.Utilities;
 
 
-namespace IDHIPlugIns
+namespace IDHIPlugins
 {
-    public partial class RandomCoordinatePlugIn
+    public partial class RandomCoordinatePlugin
     {
         internal static SaveData.Heroine _guide;
         internal static int _guideMapNo;

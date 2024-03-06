@@ -1,12 +1,10 @@
 # Changelog
 
-#### <u>(Unrelease)</u>
+#### <u>v1.0.6.0 - 2024-03-06</u>
 
-##### Added
-
-##### Changed
-
-##### Fixed
+The changes are in the inner working the functionality is the same. Once a coordinate
+is selected is more consistent in maintaining it when events run. Like invitations to eat,
+site seeing, etc.
 
 #### <u>v1.0.1.0 - 2023-06-05</u>
 
