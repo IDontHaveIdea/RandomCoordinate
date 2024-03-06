@@ -10,10 +10,10 @@ using KKAPI;
 using IDHIUtils;
 using Utils = IDHIUtils.Utilities;
 
-using static IDHIPlugIns.RandomCoordinatePlugIn;
+using static IDHIPlugins.RandomCoordinatePlugin;
 
 
-namespace IDHIPlugIns
+namespace IDHIPlugins
 {
     internal partial class Hooks
     {

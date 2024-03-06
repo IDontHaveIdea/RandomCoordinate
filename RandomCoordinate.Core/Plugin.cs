@@ -17,9 +17,9 @@ using IDHIUtils;
 
 
 
-namespace IDHIPlugIns
+namespace IDHIPlugins
 {
-    public partial class RandomCoordinatePlugIn
+    public partial class RandomCoordinatePlugin
     {
         internal static Logg _Log = new();
         internal static Random RandCoordinate = new();
@@ -35,10 +35,10 @@ namespace IDHIPlugIns
             ConfigEntries();
             _Log.Enabled = DebugInfo.Value;
             _Log.DebugToConsole = DebugToConsole.Value;
-            _Log.Level(LogLevel.Info, $"[{PlugInName}] {PlugInDisplayName} " +
+            _Log.Level(LogLevel.Info, $"[{PluginName}] {PluginDisplayName} " +
                 $"loaded.");
 #if DEBUG
-            _Log.Level(LogLevel.Info, $"[{PlugInName}] Logging set to " +
+            _Log.Level(LogLevel.Info, $"[{PluginName}] Logging set to " +
                 $"{_Log.Enabled} DebugToConsole={_Log.DebugToConsole}");
             _Log.Level(LogLevel.Info, $"[ConfigEntries] Random Coordinates Change " +
                 $"Room Only set to={OnlyChangingRoom.Value}");
@@ -52,8 +52,8 @@ namespace IDHIPlugIns
         private void Start()
         {
 #if DEBUG
-            var thisAss = typeof(RandomCoordinatePlugIn).Assembly;
-            _Log.Level(LogLevel.Info, $"[{PlugInName}] Assembly {thisAss.FullName}");
+            var thisAss = typeof(RandomCoordinatePlugin).Assembly;
+            _Log.Level(LogLevel.Info, $"[{PluginName}] Assembly {thisAss.FullName}");
 #endif
             Hooks.Init();
         }
@@ -65,7 +65,7 @@ namespace IDHIPlugIns
         /// <param name="e"></param>
         internal static void OnGameExit(object sender, EventArgs e)
         {
-            _Log.Info($"[OnGameExit] {PlugInName} exiting game.");
+            _Log.Info($"[OnGameExit] {PluginName} exiting game.");
         }
 
         internal static void ChangeCoordinate(NPC girl, int coordinateNumber)

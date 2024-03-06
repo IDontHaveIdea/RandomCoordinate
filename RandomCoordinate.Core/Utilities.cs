@@ -5,10 +5,10 @@ using ActionGame.Chara;
 
 using KKAPI.MainGame;
 
-using static IDHIPlugIns.RandomCoordinatePlugIn;
+using static IDHIPlugins.RandomCoordinatePlugin;
 
 
-namespace IDHIPlugIns
+namespace IDHIPlugins
 {
     public partial class Utilities
     {

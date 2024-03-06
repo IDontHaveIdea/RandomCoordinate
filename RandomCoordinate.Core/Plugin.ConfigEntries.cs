@@ -7,9 +7,9 @@ using BepInEx.Logging;
 using KKAPI.Utilities;
 
 
-namespace IDHIPlugIns
+namespace IDHIPlugins
 {
-    public partial class RandomCoordinatePlugIn
+    public partial class RandomCoordinatePlugin
     {
         internal static ConfigEntry<bool> DebugInfo { get; set; }
         internal static ConfigEntry<bool> DebugToConsole { get; set; }
