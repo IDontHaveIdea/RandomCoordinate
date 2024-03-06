@@ -40,9 +40,9 @@ namespace IDHIPlugIns
 #if DEBUG
             _Log.Level(LogLevel.Info, $"[{PlugInName}] Logging set to " +
                 $"{_Log.Enabled} DebugToConsole={_Log.DebugToConsole}");
+            _Log.Level(LogLevel.Info, $"[ConfigEntries] Random Coordinates Change " +
+                $"Room Only set to={OnlyChangingRoom.Value}");
 #endif
-            _Log.Debug($"[ConfigEntries] Random Coordinates Change Room Only set " +
-                    $"to={OnlyChangingRoom.Value}");
             GirlsNames.Clear();
             CharacterApi.RegisterExtraBehaviour<RandomCoordinateController>(GUID);
 
