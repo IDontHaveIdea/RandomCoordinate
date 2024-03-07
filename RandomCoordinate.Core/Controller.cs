@@ -249,6 +249,13 @@ namespace IDHIPlugins
                         _nowRandomCoordinateByType[lookType] = newCoordinate;
                         _nowRandomCoordinate = newCoordinate;
                         _nowRandomType = lookType;
+#if DEBUG
+                        _Log.Warning($"[RandomCoordinate] {name} " +
+                            $"_nowRandomCoordinateByType[{lookType}]=" +
+                            $"{_nowRandomCoordinateByType[lookType]} " +
+                            $"_nowRandomCoordinate={_nowRandomCoordinate} " +
+                            $"_nowRandomType={_nowRandomType}.");
+#endif
                     }
                     catch (Exception e)
                     {
