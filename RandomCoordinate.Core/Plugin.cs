@@ -56,6 +56,7 @@ namespace IDHIPlugins
             _Log.Level(LogLevel.Info, $"[{PluginName}] Assembly {thisAss.FullName}");
 #endif
             Hooks.Init();
+            Hooks.InitJetPack();
         }
 
         /// <summary>
