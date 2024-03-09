@@ -21,7 +21,7 @@ namespace IDHIPlugins
         private bool _firstRandomRequest = true;
         private List<int> _tmpCoordinates;
         private int _nowRandomCoordinate = (-1);
-        private ChaFileDefine.CoordinateType _nowRandomType;
+        private ChaFileDefine.CoordinateType _nowRandomType = ChaFileDefine.CoordinateType.Plain;
 
         private readonly Dictionary<ChaFileDefine.CoordinateType, List<int>>
             _Coordinates = new()
@@ -93,7 +93,13 @@ namespace IDHIPlugins
                 // Sometimes cannot get ChaControl.GetHeroine() to work save
                 // to a lookup table
                 // TODO: check this to see if still stands
-                GirlsNames[ChaControl.name] = Utilities.GirlName(heroine);
+                //  GirlsNames[ChaControl.name] = Utilities.GirlName(heroine);
+                if (!GirlsRandomCoordinates.ContainsKey(heroine.chaCtrl.name))
+                {
+                    _Log.Error($"[OnReload] name={heroine.Name.Trim()}({heroine.chaCtrl.name}) caching info.");
+                    GirlsRandomCoordinates[heroine.chaCtrl.name] =
+                        new RandomInfo(coordinateType, currentRandomCoordinate, heroine.StatusCoordinate);
+                }
 #if DEBUG
 #else
                 _Log.Debug($"[OnReload] " +
@@ -249,12 +255,27 @@ namespace IDHIPlugins
                         _nowRandomCoordinateByType[lookType] = newCoordinate;
                         _nowRandomCoordinate = newCoordinate;
                         _nowRandomType = lookType;
+                        if (GirlsRandomCoordinates.TryGetValue(
+                            ChaControl.name, out var girlInfo))
+                        {
+                            girlInfo.CoordinateType = _nowRandomType;
+                            girlInfo.CoordinateNumber = _nowRandomCoordinate;
+                            girlInfo.NowRandomCoordinateByType[_nowRandomType] =
+                                newCoordinate;
+                        }
+                        else {
+                            GirlsRandomCoordinates[ChaControl.name] =
+                                new RandomInfo(
+                                    _nowRandomType,
+                                    _nowRandomCoordinate,
+                                    newCoordinate);
+                        }
 #if DEBUG
-                        _Log.Warning($"[RandomCoordinate] {name} " +
-                            $"_nowRandomCoordinateByType[{lookType}]=" +
+                        _Log.Warning($"[RandomCoordinate] name={name} " +
+                            $"_nowRCByType[{lookType}]=" +
                             $"{_nowRandomCoordinateByType[lookType]} " +
-                            $"_nowRandomCoordinate={_nowRandomCoordinate} " +
-                            $"_nowRandomType={_nowRandomType}.");
+                            $"_nowRT={_nowRandomType} " +
+                            $"_nowRC={_nowRandomCoordinate}.");
 #endif
                     }
                     catch (Exception e)
