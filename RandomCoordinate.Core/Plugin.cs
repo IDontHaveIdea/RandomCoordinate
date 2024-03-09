@@ -27,7 +27,11 @@ namespace IDHIPlugins
 
         // This dictionary is for caching some information
         // Names sometimes fail when using ChaControl.GetHeroine()
-        internal static Dictionary<string, string> GirlsNames = [];
+        private static Dictionary<string, RandomInfo> _GirlsRandomCoordinates = [];
+
+        public static Dictionary<string, RandomInfo> GirlsRandomCoordinates =>
+            _GirlsRandomCoordinates;
+
 
         private void Awake()
         {
@@ -43,7 +47,7 @@ namespace IDHIPlugins
             _Log.Level(LogLevel.Info, $"[ConfigEntries] Random Coordinates Change " +
                 $"Room Only set to={OnlyChangingRoom.Value}");
 #endif
-            GirlsNames.Clear();
+            //GirlsNames.Clear();
             CharacterApi.RegisterExtraBehaviour<RandomCoordinateController>(GUID);
 
             KoikatuAPI.Quitting += OnGameExit;
@@ -56,7 +60,7 @@ namespace IDHIPlugins
             _Log.Level(LogLevel.Info, $"[{PluginName}] Assembly {thisAss.FullName}");
 #endif
             Hooks.Init();
-            Hooks.InitJetPack();
+            //Hooks.InitJetPack();
         }
 
         /// <summary>
