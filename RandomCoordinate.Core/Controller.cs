@@ -197,8 +197,9 @@ namespace IDHIPlugins
         /// <returns></returns>
         public int NowRandomCoordinateByType(ChaFileDefine.CoordinateType type)
         {
-            var lookType = GetCoordinateType(type);
-            if (_nowRandomCoordinateByType.TryGetValue(lookType, out var coordinateNumber))
+            var categoryType = GetCoordinateType(type);
+            if (_nowRandomCoordinateByType
+                .TryGetValue(categoryType, out var coordinateNumber))
             {
                 return coordinateNumber;
             }
@@ -217,9 +218,9 @@ namespace IDHIPlugins
 
         public void SetRandomCoordinate(ChaFileDefine.CoordinateType type)
         {
-            var lookType = GetCoordinateType(type);
+            var categoryType = GetCoordinateType(type);
             _nowRandomCoordinate = (int)type;
-            _nowRandomType = lookType;
+            _nowRandomType = categoryType;
 
         }
 
@@ -239,8 +240,8 @@ namespace IDHIPlugins
 
             try
             {
-                var lookType = GetCoordinateType(type);
-                _tmpCoordinates = _Coordinates[lookType];
+                var categoryType = GetCoordinateType(type);
+                _tmpCoordinates = _Coordinates[categoryType];
 
                 if (_tmpCoordinates.Count > 1)
                 {
@@ -252,9 +253,9 @@ namespace IDHIPlugins
                         newCoordinate = _tmpCoordinates[coordinateIndex];
 
                         // save coordinate
-                        _nowRandomCoordinateByType[lookType] = newCoordinate;
+                        _nowRandomCoordinateByType[categoryType] = newCoordinate;
                         _nowRandomCoordinate = newCoordinate;
-                        _nowRandomType = lookType;
+                        _nowRandomType = categoryType;
                         if (GirlsRandomCoordinates.TryGetValue(
                             ChaControl.name, out var girlInfo))
                         {
@@ -272,8 +273,8 @@ namespace IDHIPlugins
                         }
 #if DEBUG
                         _Log.Warning($"[RandomCoordinate] name={name} " +
-                            $"_nowRCByType[{lookType}]=" +
-                            $"{_nowRandomCoordinateByType[lookType]} " +
+                            $"_nowRCByType[{categoryType}]=" +
+                            $"{_nowRandomCoordinateByType[categoryType]} " +
                             $"_nowRT={_nowRandomType} " +
                             $"_nowRC={_nowRandomCoordinate}.");
 #endif
@@ -282,7 +283,7 @@ namespace IDHIPlugins
                     {
                         _Log.Level(LogLevel.Error, $"[RandomCoordinate] " +
                             $"Name={name} Problem generating random " +
-                            $"number lookType={lookType} " +
+                            $"number categoryType={categoryType} " +
                             $"Error code={e.Message}");
                     }
                 }
