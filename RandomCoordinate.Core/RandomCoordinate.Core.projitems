@@ -12,7 +12,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Controller.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Guide.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Hooks.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)JetPack.Hooks.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Plugin.ConfigEntries.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Plugin.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Plugin.Info.cs" />

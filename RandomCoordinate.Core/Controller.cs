@@ -72,43 +72,39 @@ namespace IDHIPlugins
                 // Initialize the coordinates information
                 InitCoordinates();
 
-                var coordinateType = GetCoordinateType(heroine.StatusCoordinate);
-                var currentRandomCoordinate = _nowRandomCoordinateByType[coordinateType];
+                var categoryType = GetCategoryType(heroine.StatusCoordinate);
+                var currentRandomCoordinate = _nowRandomCoordinateByType[categoryType];
                 _nowRandomCoordinate = heroine.StatusCoordinate;
-                if (_nowRandomCoordinateByType[coordinateType]
+                if (_nowRandomCoordinateByType[categoryType]
                     != heroine.StatusCoordinate)
                 {
                     // Synchronize coordinate information
-                    _nowRandomCoordinateByType[coordinateType] = heroine.StatusCoordinate;
-                    _nowRandomType = coordinateType;
+                    _nowRandomCoordinateByType[categoryType] = heroine.StatusCoordinate;
+                    _nowRandomType = categoryType;
                 }
 
                 if (heroine.fixCharaID == -13)
                 {
                     // This is the Guide character needs special treatment
                     SetupGuide(heroine, true);
-                    coordinateType = GetCoordinateType(heroine.StatusCoordinate);
+                    categoryType = GetCategoryType(heroine.StatusCoordinate);
                 }
 
-                // Sometimes cannot get ChaControl.GetHeroine() to work save
-                // to a lookup table
-                // TODO: check this to see if still stands
-                //  GirlsNames[ChaControl.name] = Utilities.GirlName(heroine);
+                // Sometimes the controller is not loaded maintain a cache lookup table
                 if (!GirlsRandomCoordinates.ContainsKey(heroine.chaCtrl.name))
                 {
                     _Log.Error($"[OnReload] name={heroine.Name.Trim()}({heroine.chaCtrl.name}) caching info.");
                     GirlsRandomCoordinates[heroine.chaCtrl.name] =
-                        new RandomInfo(coordinateType, currentRandomCoordinate, heroine.StatusCoordinate);
+                        new RandomInfo(categoryType, currentRandomCoordinate, heroine.StatusCoordinate);
                 }
 #if DEBUG
-#else
                 _Log.Debug($"[OnReload] " +
-                    $"Name={heroine.Name.Trim()} chaName={heroine.chaCtrl.name} " +
-                    $"heroinie.StatusCoordinate={heroine.StatusCoordinate} " +
-                    $"nowRandomCoordinate={_nowRandomCoordinateByType[coordinateType]} " +
-                    $"currentRandomCoordinate={currentRandomCoordinate} " +
+                    $"Name={heroine.Name.Trim()}({heroine.chaCtrl.name}) " +
+                    $"heroine.StatusCoordinate={heroine.StatusCoordinate} " +
+                    $"nowRCByType={_nowRandomCoordinateByType[categoryType]} " +
+                    $"currentRC={currentRandomCoordinate} " +
                     $"total coordinates={ChaFileControl.coordinate.Length} " +
-                    $"random possible={HasMoreOutfits}");
+                    $"random possible={HasMoreOutfits}.");
 #endif
             }
         }
@@ -135,9 +131,12 @@ namespace IDHIPlugins
             }
 
             var _coordinate = type switch {
-                ChaFileDefine.CoordinateType.Swim => (int)ChaFileDefine.CoordinateType.Swim,
-                ChaFileDefine.CoordinateType.Pajamas => (int)ChaFileDefine.CoordinateType.Pajamas,
-                ChaFileDefine.CoordinateType.Bathing => (int)ChaFileDefine.CoordinateType.Bathing,
+                ChaFileDefine.CoordinateType.Swim =>
+                    (int)ChaFileDefine.CoordinateType.Swim,
+                ChaFileDefine.CoordinateType.Pajamas =>
+                    (int)ChaFileDefine.CoordinateType.Pajamas,
+                ChaFileDefine.CoordinateType.Bathing =>
+                    (int)ChaFileDefine.CoordinateType.Bathing,
                 _ => RandomCoordinate(type),
             };
             if (_nowRandomCoordinate < 0)
@@ -154,7 +153,7 @@ namespace IDHIPlugins
         /// </summary>
         /// <param name="type">coordinate in the request for random coordinate</param>
         /// <returns></returns>
-        public ChaFileDefine.CoordinateType GetCoordinateType(int coordinate)
+        public ChaFileDefine.CoordinateType GetCategoryType(int coordinate)
         {
             var rc = ChaFileDefine.CoordinateType.Plain;
 
@@ -181,13 +180,15 @@ namespace IDHIPlugins
         }
 
         /// <summary>
-        /// Overload
+        /// This overload is needed because the game for coordinates > 3 uses the
+        /// coordinate number as it type (ex, coordinate 5 has )
         /// </summary>
         /// <param name="type">Type of coordinate</param>
         /// <returns></returns>
-        public ChaFileDefine.CoordinateType GetCoordinateType(ChaFileDefine.CoordinateType type)
+        public ChaFileDefine.CoordinateType GetCategoryType(
+            ChaFileDefine.CoordinateType type)
         {
-            return GetCoordinateType((int)type);
+            return GetCategoryType((int)type);
         }
 
         /// <summary>
@@ -197,7 +198,7 @@ namespace IDHIPlugins
         /// <returns></returns>
         public int NowRandomCoordinateByType(ChaFileDefine.CoordinateType type)
         {
-            var categoryType = GetCoordinateType(type);
+            var categoryType = GetCategoryType(type);
             if (_nowRandomCoordinateByType
                 .TryGetValue(categoryType, out var coordinateNumber))
             {
@@ -218,7 +219,7 @@ namespace IDHIPlugins
 
         public void SetRandomCoordinate(ChaFileDefine.CoordinateType type)
         {
-            var categoryType = GetCoordinateType(type);
+            var categoryType = GetCategoryType(type);
             _nowRandomCoordinate = (int)type;
             _nowRandomType = categoryType;
 
@@ -240,7 +241,7 @@ namespace IDHIPlugins
 
             try
             {
-                var categoryType = GetCoordinateType(type);
+                var categoryType = GetCategoryType(type);
                 _tmpCoordinates = _Coordinates[categoryType];
 
                 if (_tmpCoordinates.Count > 1)

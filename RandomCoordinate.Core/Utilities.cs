@@ -70,17 +70,18 @@ namespace IDHIPlugins
             return GirlName(girl.chaCtrl);
         }
 
-        public static ChaFileDefine.CoordinateType GetCoordinateType(ChaControl girl, int coordinate)
+        /// <summary>
+        /// Need this because the controller sometimes is not defined. The controller
+        /// method is a little more efficient.
+        /// TODO: This and the controller one are done this way for when I decide to
+        /// implement categories for the MoreOutfits coordinates
+        /// </summary>
+        /// <param name="girl"></param>
+        /// <param name="coordinate"></param>
+        /// <returns></returns>
+        public static ChaFileDefine.CoordinateType GetCoordinateType(
+            ChaControl girl, int coordinate)
         {
-            //Dictionary<ChaFileDefine.CoordinateType, List<int>>
-            //    coordinatesByType = new()
-            //    {
-            //        {ChaFileDefine.CoordinateType.Plain, new List<int> {}},
-            //        {ChaFileDefine.CoordinateType.Swim, new List<int> {}},
-            //        {ChaFileDefine.CoordinateType.Pajamas, new List<int> {}},
-            //        {ChaFileDefine.CoordinateType.Bathing, new List<int> {}}
-            //    };
-
             var rc = ChaFileDefine.CoordinateType.Plain;
 
             var totalCoordinates = girl.chaFile.coordinate.Length;
@@ -105,15 +106,18 @@ namespace IDHIPlugins
             }
             else
             {
-                if (_coordinatesByType[ChaFileDefine.CoordinateType.Plain].Contains(coordinate))
+                if (_coordinatesByType[ChaFileDefine.CoordinateType.Plain]
+                    .Contains(coordinate))
                 {
                     return ChaFileDefine.CoordinateType.Plain;
                 }
-                if (_coordinatesByType[ChaFileDefine.CoordinateType.Swim].Contains(coordinate))
+                if (_coordinatesByType[ChaFileDefine.CoordinateType.Swim]
+                    .Contains(coordinate))
                 {
                     return ChaFileDefine.CoordinateType.Swim;
                 }
-                if (_coordinatesByType[ChaFileDefine.CoordinateType.Pajamas].Contains(coordinate))
+                if (_coordinatesByType[ChaFileDefine.CoordinateType.Pajamas]
+                    .Contains(coordinate))
                 {
                     return ChaFileDefine.CoordinateType.Pajamas;
                 }

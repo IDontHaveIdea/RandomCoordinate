@@ -14,6 +14,7 @@ using KKAPI;
 using KKAPI.Chara;
 
 using IDHIUtils;
+using KKAPI.MainGame;
 
 
 
@@ -47,10 +48,12 @@ namespace IDHIPlugins
             _Log.Level(LogLevel.Info, $"[ConfigEntries] Random Coordinates Change " +
                 $"Room Only set to={OnlyChangingRoom.Value}");
 #endif
-            //GirlsNames.Clear();
+            _GirlsRandomCoordinates.Clear();
+
             CharacterApi.RegisterExtraBehaviour<RandomCoordinateController>(GUID);
 
             KoikatuAPI.Quitting += OnGameExit;
+            GameAPI.PeriodChange += PeriodChange;
         }
 
         private void Start()
@@ -86,7 +89,8 @@ namespace IDHIPlugins
         internal static void ChangeCoordinate(ChaControl girl, int coordinateNumber)
         {
             Manager.Character.enableCharaLoadGCClear = false;
-            girl.ChangeCoordinateTypeAndReload((ChaFileDefine.CoordinateType)coordinateNumber);
+            girl.ChangeCoordinateTypeAndReload(
+                (ChaFileDefine.CoordinateType)coordinateNumber);
             Manager.Character.enableCharaLoadGCClear = true;
         }
 

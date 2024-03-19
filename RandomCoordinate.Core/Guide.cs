@@ -64,9 +64,12 @@ namespace IDHIPlugins
                         // For the guide 
                         if (guideMap == 4)
                         {
-                            heroine.chaCtrl.fileStatus.coordinateType = (int)ChaFileDefine.CoordinateType.Swim;
+                            heroine.chaCtrl.fileStatus.coordinateType =
+                                (int)ChaFileDefine.CoordinateType.Swim;
                             ctrl.SetRandomCoordinate(ChaFileDefine.CoordinateType.Swim);
-                            ChangeCoordinate(heroine.chaCtrl, (int)ChaFileDefine.CoordinateType.Swim);
+                            ChangeCoordinate(
+                                heroine.chaCtrl,
+                                (int)ChaFileDefine.CoordinateType.Swim);
                         }
                         else
                         {
@@ -74,7 +77,7 @@ namespace IDHIPlugins
                             {
                                 getNewCoordinate = false;
 #if DEBUG
-                                _Log.Error("[SetGuide] Calling NewRandomCoordinateByType.");
+                                _Log.Warning("[SetGuide] Calling NewRandomCoordinateByType.");
 #endif
                                 // Guide won't be in any map that have special
                                 // consideration
@@ -117,13 +120,15 @@ namespace IDHIPlugins
             }
         }
 
-        internal static void PeriodChange(object sender, GameAPI.PeriodChangeEventArgs args)
+        internal static void PeriodChange(
+            object sender,
+            GameAPI.PeriodChangeEventArgs args)
         {
             var was = getNewCoordinate;
             getNewCoordinate = true;
 #if DEBUG
             _Log.Warning($"[PeriodChange] NewPeriod={args.NewPeriod} " +
-                $"getNewCoordinate={getNewCoordinate} was={was}");
+                $"getNewCoordinate={getNewCoordinate} was={was}.");
 #endif
         }
     }

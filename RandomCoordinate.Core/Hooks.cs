@@ -57,6 +57,7 @@ namespace IDHIPlugins
                 var callingType = type;
                 var categoryType =
                         Utilities.GetCoordinateType(__instance, (int)type);
+                var firstRun = false;
                 var ctrl = GetController(__instance);
                 if (ctrl != null)
                 {
@@ -71,11 +72,11 @@ namespace IDHIPlugins
                         // If type is the current random type set coordinate accordingly
                         type = (ChaFileDefine.CoordinateType)nowRandomCoordinate;
                     }
+                    firstRun = ctrl.FirstRun;
                 }
                 else
                 {
 #if DEBUG
-                    // Name=Momose Hinano on currentMap=36 map=-1 mapName= nowRCByType=6 nowRT=Plain nowRC=6 paramType=4 set type=4.
                     _Log.Warning("[ChangeCoordinateTypePrefix] " +
                         $"name={name}({__instance.name}) Can't get controller");
 #endif
@@ -100,7 +101,7 @@ namespace IDHIPlugins
                     else
                     {
 #if DEBUG
-                        _Log.Error($"[ChangeCoordinateTypePrefix] Unable to read " +
+                        _Log.Warning($"[ChangeCoordinateTypePrefix] Unable to read " +
                             "information from cache.");
 #endif
                         if (!GirlsRandomCoordinates.ContainsKey(__instance.name))
@@ -137,7 +138,7 @@ namespace IDHIPlugins
                         $"nowRCByType={nowRandomCoordinateByType} " +
                         $"nowRT={nowRandomType} " +
                         $"nowRC={nowRandomCoordinate} " +
-                        $"paramType={callingType} set type={type}.");
+                        $"paramType={callingType} set type={type} firstRun={firstRun}.");
                 //}
 #endif
             }
@@ -214,7 +215,7 @@ namespace IDHIPlugins
                     // Guide: Change to swimsuit if on the beach
                     type = ChaFileDefine.CoordinateType.Swim;
 #if DEBUG
-                    _Log.Warning($"[ChangeCoordinateTypeAndReload] Guide name={name} on " +
+                    _Log.Error($"[ChangeCoordinateTypeAndReload] GUIDE name={name} on " +
                         $"map={mapNo} ({mapName}) " +
                         $"nowRCByType={nowRandomCoordinateByType} " +
                         $"nowRT={nowRandomType} " +
@@ -335,7 +336,7 @@ namespace IDHIPlugins
             var nowRandomCoordinate = ctrl.NowRandomCoordinate;
             var nowRandomType = ctrl.NowRandomType;
 
-            var categoryType = ctrl.GetCoordinateType(coordinateType);
+            var categoryType = ctrl.GetCategoryType(coordinateType);
             var nowRandomCoordinateByType = ctrl.NowRandomCoordinateByType(
                     (ChaFileDefine.CoordinateType)coordinateType);
 
