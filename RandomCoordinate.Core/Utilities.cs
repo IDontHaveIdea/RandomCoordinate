@@ -126,28 +126,4 @@ namespace IDHIPlugins
             return rc;
         }
     }
-
-    public class RandomInfo
-    {
-        public ChaFileDefine.CoordinateType CoordinateType { get; set; }
-        public int CoordinateNumber { get; set; }
-        public Dictionary<ChaFileDefine.CoordinateType, int>
-            NowRandomCoordinateByType = new()
-                {
-                    {ChaFileDefine.CoordinateType.Plain, 0},
-                    {ChaFileDefine.CoordinateType.Swim, 1},
-                    {ChaFileDefine.CoordinateType.Pajamas, 2},
-                    {ChaFileDefine.CoordinateType.Bathing, 3}
-                };
-
-        public RandomInfo(
-            ChaFileDefine.CoordinateType coordinateType,
-            int coordinateNumber,
-            int statusCoordinate)
-        {
-            CoordinateType = coordinateType;
-            CoordinateNumber = coordinateNumber;
-            NowRandomCoordinateByType[CoordinateType] = statusCoordinate;
-        }
-    }
 }
