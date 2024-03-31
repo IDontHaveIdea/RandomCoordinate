@@ -26,12 +26,14 @@ namespace IDHIPlugins
         internal static Random RandCoordinate = new();
         internal static MoreOutfits _MoreOutfits = new();
 
-        // This dictionary is for caching some information
-        // Names sometimes fail when using ChaControl.GetHeroine()
-        private static Dictionary<string, RandomInfo> _GirlsRandomCoordinates = [];
+        // The Character controller is reinitialiezed and even unloaded
+        // during the game mantaining persistent data on the controller
+        // is just an act of frustration. So persistent runtime data
+        // will be saved in this dictionary and used by the controller.
+        private static Dictionary<string, RandomData> _GirlsRandomData = [];
 
-        public static Dictionary<string, RandomInfo> GirlsRandomCoordinates =>
-            _GirlsRandomCoordinates;
+        public static Dictionary<string, RandomData> GirlsRandomData =>
+            _GirlsRandomData;
 
 
         private void Awake()
@@ -48,7 +50,7 @@ namespace IDHIPlugins
             _Log.Level(LogLevel.Info, $"[ConfigEntries] Random Coordinates Change " +
                 $"Room Only set to={OnlyChangingRoom.Value}");
 #endif
-            _GirlsRandomCoordinates.Clear();
+            _GirlsRandomData.Clear();
 
             CharacterApi.RegisterExtraBehaviour<RandomCoordinateController>(GUID);
 
