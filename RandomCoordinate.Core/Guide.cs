@@ -83,7 +83,7 @@ namespace IDHIPlugins
                                 // consideration
                                 newCoordinate = ctrl.NewRandomCoordinateByType(
                                             ChaFileDefine.CoordinateType.Plain);
-                                nowRandomCoordinate = ctrl.NowRandomCoordinate;
+                                nowRandomCoordinate = ctrl.NowRandomCoordinate();
                                 if (heroine.StatusCoordinate != newCoordinate)
                                 {
                                     ChangeCoordinate(heroine.chaCtrl, newCoordinate);
@@ -98,15 +98,15 @@ namespace IDHIPlugins
                         nowName = $"({_MoreOutfits
                             .GetCoordinateName(heroine.chaCtrl, statusCoordinate)}) ";
                     }
-                    if (ctrl.NowRandomCoordinate > 3)
+                    if (ctrl.NowRandomCoordinate() > 3)
                     {
                         newName = $" ({_MoreOutfits
                             .GetCoordinateName(
-                            heroine.chaCtrl, ctrl.NowRandomCoordinate)}).";
+                            heroine.chaCtrl, ctrl.NowRandomCoordinate())}).";
                     }
                     _Log.Debug($"[SetGuide] GUIDE={_guide.Name.Trim()} in " +
                         $"mapNo={guideMap} setCoordinate={setCoordinate} {nowName}" +
-                        $"NowRandomCoordinate={ctrl.NowRandomCoordinate}{newName}");
+                        $"NowRandomCoordinate={ctrl.NowRandomCoordinate()}{newName}");
 #if DEBUG
                     _Log.Info($"[SetGuide] GUIDE={_guide.Name.Trim()} " +
                         $"chaName={_guide.chaCtrl.name} " +

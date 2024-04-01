@@ -6,7 +6,8 @@ using System.Collections.Generic;
 using ActionGame.Chara;
 
 using KKAPI.MainGame;
-
+using SaveData;
+using UnityEngine;
 using static IDHIPlugins.RandomCoordinatePlugin;
 
 
@@ -19,6 +20,7 @@ namespace IDHIPlugins
             public ChaFileDefine.CoordinateType CategoryType { get; set; }
             public int CoordinateNumber { get; set; }
             public bool FirstRun { get; set; } = true;
+            public bool HasMoreOutfits { get; set; }
 
             public Dictionary<ChaFileDefine.CoordinateType, List<int>>
                 CoordinatesByType = new()
@@ -38,6 +40,8 @@ namespace IDHIPlugins
                 {ChaFileDefine.CoordinateType.Bathing, 3}
             };
 
+            private int _totalCoordinates = 0;
+
             public RandomData(
                 ChaFileDefine.CoordinateType categoryType,
                 int coordinateNumber,
@@ -45,6 +49,8 @@ namespace IDHIPlugins
                 ChaControl chaCtrl)
             {
                 InitCoordinates(chaCtrl);
+                _totalCoordinates = chaCtrl.chaFile.coordinate.Length;
+                HasMoreOutfits = _totalCoordinates >= 4;
                 CategoryType = categoryType;
                 CoordinateNumber = coordinateNumber;
                 NowRandomCoordinateByType[CategoryType] = statusCoordinate;
@@ -53,6 +59,8 @@ namespace IDHIPlugins
             public RandomData(SaveData.Heroine heroine)
             {
                 InitCoordinates(heroine);
+                _totalCoordinates = heroine.charFile.coordinate.Length;
+                HasMoreOutfits = _totalCoordinates >= 4;
                 CategoryType = GetCategoryType(heroine.StatusCoordinate);
                 NowRandomCoordinateByType[CategoryType] = heroine.StatusCoordinate;
                 CoordinateNumber = heroine.StatusCoordinate;
@@ -126,6 +134,13 @@ namespace IDHIPlugins
                 }
             }
 
+            /// <summary>
+            /// When coordinate is grater than 3 (Bathing) try and get the corresponding
+            /// type. The function is needed if the type selected by the game is
+            /// greater then 3.
+            /// </summary>
+            /// <param name="type">coordinate in the request for random coordinate</param>
+            /// <returns></returns>
             public ChaFileDefine.CoordinateType GetCategoryType(int coordinate)
             {
                 var rc = ChaFileDefine.CoordinateType.Plain;
@@ -150,6 +165,28 @@ namespace IDHIPlugins
                     }
                 }
                 return rc;
+            }
+
+            /// <summary>
+            /// This overload is needed because the game for coordinates > 3 uses the
+            /// coordinate number as it type (ex, coordinate 5 has )
+            /// </summary>
+            /// <param name="type">Type of coordinate</param>
+            /// <returns></returns>
+            public ChaFileDefine.CoordinateType GetCategoryType(ChaFileDefine.CoordinateType type)
+            {
+                return GetCategoryType((int)type);
+            }
+
+            public string ToString(ChaFileDefine.CoordinateType type)
+            {
+                var categoryType = GetCategoryType((int)type);
+                var coordinateByType = NowRandomCoordinateByType[categoryType];
+
+                var cache = $"CoordinateByType[{categoryType}]={coordinateByType} " +
+                    $"Category={CategoryType} Coordinate{CoordinateNumber}";
+
+                return cache;
             }
         }
     }
