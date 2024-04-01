@@ -122,7 +122,6 @@ namespace IDHIPlugins
                     return ChaFileDefine.CoordinateType.Pajamas;
                 }
             }
-
             return rc;
         }
     }

@@ -91,9 +91,9 @@ namespace IDHIPlugins
         {
             var rc = false;
 
-            if (GirlsRandomData.TryGetValue(ChaControl.name, out var rcInfo))
+            if (GirlsRandomData.TryGetValue(ChaControl.name, out var girlInfo))
             {
-                rc = rcInfo.FirstRun;
+                rc = girlInfo.FirstRun;
             }
             return rc;
         }
@@ -104,9 +104,10 @@ namespace IDHIPlugins
         /// <param name="status"></param>
         public void FirstRun(bool status)
         {
-            if (GirlsRandomData.TryGetValue(ChaControl.name, out var rcInfo))
+            if (GirlsRandomData.TryGetValue(ChaControl.name, out var girlInfo))
             {
-                rcInfo.FirstRun = status;
+                girlInfo.FirstRun = status;
+                _Log.Warning($"[FirstRun] FirstRun={girlInfo.FirstRun}.");
             }
         }
 
@@ -140,10 +141,7 @@ namespace IDHIPlugins
                     (int)ChaFileDefine.CoordinateType.Bathing,
                 _ => RandomCoordinate(type),
             };
-            //if (_nowRandomCoordinate < 0)
-            //{
-            //    _nowRandomCoordinate = _coordinate;
-            //}
+
             return _coordinate;
         }
 
@@ -250,13 +248,13 @@ namespace IDHIPlugins
         private int RandomCoordinate(ChaFileDefine.CoordinateType type)
         {
             var newCoordinate = (int)type;
+            var name = Utilities.GirlName(ChaControl);
+
             try
             {
                 if (GirlsRandomData.TryGetValue(ChaControl.name, out var girlInfo))
                 {
-                    var name = Utilities.GirlName(ChaControl);
                     var categoryType = girlInfo.GetCategoryType(type);
-
                     var tmpCoordinates = girlInfo.CoordinatesByType[categoryType];
 
                     if (tmpCoordinates.Count > 1)

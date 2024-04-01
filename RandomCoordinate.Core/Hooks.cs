@@ -83,100 +83,16 @@ namespace IDHIPlugins
                 return true;
             }
 #if DEBUG
-            _Log.Warning($"[ChangeCoordinateTypePrefix] 00 Called name={Utilities.GirlName(__instance)} for type={type}.");
+            _Log.Warning($"[ChangeCoordinateTypePrefix] 00 Called " +
+                "name={Utilities.GirlName(__instance)} for type={type}.");
 #endif
             try
             {
-                /*
-                var name = Utils.TranslateName(Utilities.GirlName(__instance), true);
-                var nowRandomCoordinateByType = -1;
-                var nowRandomCoordinate = -1;
-                var nowPlain = -1;
-                var nowRandomType = (ChaFileDefine.CoordinateType)(-1);
-                var callingType = type;
-                var categoryType =
-                        Utilities.GetCoordinateType(__instance, (int)type);
-                var firstRun = false;
-                var ctrl = GetController(__instance);
-                if (ctrl != null)
-                {
-                    // This is normal on loading this is called before the controller
-                    // OnReload. Also sometimes during the game the controller is
-                    // reinitialized.
-                    nowRandomCoordinateByType = ctrl.NowRandomCoordinateByType(categoryType);
-                    nowRandomCoordinate = ctrl.NowRandomCoordinate();
-                    nowRandomType = ctrl.NowRandomCategoryType();
-                    if (nowRandomType == categoryType)
-                    {
-                        // If type is the current random type set coordinate accordingly
-                        type = (ChaFileDefine.CoordinateType)nowRandomCoordinateByType;
-                    }
-                    firstRun = ctrl.FirstRun();
-                }
-                else
-                {
-#if DEBUG
-                    _Log.Warning("[ChangeCoordinateTypePrefix] 01 " +
-                        $"name={name}({__instance.name}) Can't get controller");
-#endif
-                    if (GirlsRandomData
-                        .TryGetValue(__instance.name, out var girlInfo))
-                    {
-#if DEBUG
-                        _Log.Warning($"[ChangeCoordinateTypePrefix] 02 name={name}" +
-                            $"({__instance.name}) reading from cache.");
-#endif
-                        nowRandomCoordinateByType =
-                            girlInfo.NowRandomCoordinateByType[categoryType];
-                        nowRandomCoordinate = girlInfo.CoordinateNumber;
-                        nowRandomType = girlInfo.CategoryType;
-                        nowPlain = girlInfo.NowRandomCoordinateByType[ChaFileDefine.CoordinateType.Plain];
-                        if (nowRandomType == categoryType)
-                        {
-                            // If type is the current random type set coordinate accordingly
-                            type = (ChaFileDefine.CoordinateType)nowRandomCoordinateByType;
-                        }
-
-                        _Log.Warning($"[ChangeCoordinateTypePrefix] 03 Read from cache name={name}({__instance.name}) on " +
-                            $"categoryType={categoryType} " +
-                            $"nowPlainByType[{ChaFileDefine.CoordinateType.Plain}]={nowPlain} " +
-                            $"nowRCByType[{categoryType}]={nowRandomCoordinateByType} " +
-                            $"nowRT={nowRandomType} " +
-                            $"nowRC={nowRandomCoordinate} " +
-                            $"paramType={callingType} set type={type}.");
-
-                    }
-                    else
-                    {
-#if DEBUG
-                        _Log.Warning($"[ChangeCoordinateTypePrefix] 04 Unable to read " +
-                            "information from cache.");
-#endif
-                        if (!GirlsRandomData.ContainsKey(__instance.name))
-                        {
-#if DEBUG
-                            _Log.Warning("[ChangeCoordinateTypePrefix] 05 Adding to cache" +
-                                $"name={name}({__instance.name}) caching info " +
-                                $"categoryType={categoryType} paramT={type} " +
-                                $"coordinate={(int)type}.");
-#endif
-                            GirlsRandomData.Add(
-                                __instance.name,
-                                new RandomData(
-                                    categoryType,
-                                    (int)type,
-                                    (int)type,
-                                    __instance));
-                        }
-                    }
-                }*/
-
                 var nowRandomCoordinateByType = -1;
                 var nowRandomCoordinate = -1;
                 var nowRandomType = (ChaFileDefine.CoordinateType)(-1);
                 var callingType = type;
                 var categoryType = ChaFileDefine.CoordinateType.Plain;
-
 
                 // Check cache if key not found craete entry
                 if (!GirlsRandomData.ContainsKey(__instance.name))
@@ -483,9 +399,9 @@ namespace IDHIPlugins
 
             if (firstRun)
             {
-                //newCoordinate = ctrl.NewRandomCoordinateByType(
-                //                (ChaFileDefine.CoordinateType)coordinateType);
-                //coordinateNumber = newCoordinate;
+                newCoordinate = ctrl.NewRandomCoordinateByType(
+                                (ChaFileDefine.CoordinateType)coordinateType);
+                coordinateNumber = newCoordinate;
 #if DEBUG
                 _Log.Error($"[SynchroCoordinate] Name={name} in map={mapNo} " +
                     $"mapName={mapName} FirstRun.");
