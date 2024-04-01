@@ -14,7 +14,7 @@ namespace IDHIPlugins
     {
         internal static SaveData.Heroine _guide;
         internal static int _guideMapNo;
-        internal static bool getNewCoordinate = true;
+        internal static bool _guideNewCoordinate = true;
 
         /// <summary>
         /// Save Heroine information for the Guide Character
@@ -73,9 +73,9 @@ namespace IDHIPlugins
                         }
                         else
                         {
-                            if (getNewCoordinate)
+                            if (_guideNewCoordinate)
                             {
-                                getNewCoordinate = false;
+                                _guideNewCoordinate = false;
 #if DEBUG
                                 _Log.Warning("[SetGuide] Calling NewRandomCoordinateByType.");
 #endif
@@ -124,11 +124,11 @@ namespace IDHIPlugins
             object sender,
             GameAPI.PeriodChangeEventArgs args)
         {
-            var was = getNewCoordinate;
-            getNewCoordinate = true;
+            var was = _guideNewCoordinate;
+            _guideNewCoordinate = true;
 #if DEBUG
             _Log.Warning($"[PeriodChange] NewPeriod={args.NewPeriod} " +
-                $"getNewCoordinate={getNewCoordinate} was={was}.");
+                $"getNewCoordinate={_guideNewCoordinate} was={was}.");
 #endif
         }
     }

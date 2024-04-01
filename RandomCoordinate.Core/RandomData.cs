@@ -32,7 +32,7 @@ namespace IDHIPlugins
             };
 
             public Dictionary<ChaFileDefine.CoordinateType, int>
-                NowRandomCoordinateByType = new()
+                RandomCoordinateByType = new()
             {
                 {ChaFileDefine.CoordinateType.Plain, 0},
                 {ChaFileDefine.CoordinateType.Swim, 1},
@@ -53,7 +53,7 @@ namespace IDHIPlugins
                 HasMoreOutfits = _totalCoordinates >= 4;
                 CategoryType = categoryType;
                 CoordinateNumber = coordinateNumber;
-                NowRandomCoordinateByType[CategoryType] = statusCoordinate;
+                RandomCoordinateByType[CategoryType] = statusCoordinate;
             }
 
             public RandomData(SaveData.Heroine heroine)
@@ -62,7 +62,7 @@ namespace IDHIPlugins
                 _totalCoordinates = heroine.charFile.coordinate.Length;
                 HasMoreOutfits = _totalCoordinates >= 4;
                 CategoryType = GetCategoryType(heroine.StatusCoordinate);
-                NowRandomCoordinateByType[CategoryType] = heroine.StatusCoordinate;
+                RandomCoordinateByType[CategoryType] = heroine.StatusCoordinate;
                 CoordinateNumber = heroine.StatusCoordinate;
             }
 
@@ -73,7 +73,7 @@ namespace IDHIPlugins
             {
                 CategoryType = categoryType;
                 CoordinateNumber = coordinateNumber;
-                NowRandomCoordinateByType[CategoryType] = statusCoordinate;
+                RandomCoordinateByType[CategoryType] = statusCoordinate;
                 return true;
             }
 
@@ -83,7 +83,7 @@ namespace IDHIPlugins
                 if (heroine != null)
                 {
                     CategoryType = GetCategoryType(heroine.StatusCoordinate);
-                    NowRandomCoordinateByType[CategoryType] = heroine.StatusCoordinate;
+                    RandomCoordinateByType[CategoryType] = heroine.StatusCoordinate;
                     CoordinateNumber = heroine.StatusCoordinate;
                     rc = true;
                 }
@@ -181,7 +181,7 @@ namespace IDHIPlugins
             public string ToString(ChaFileDefine.CoordinateType type)
             {
                 var categoryType = GetCategoryType((int)type);
-                var coordinateByType = NowRandomCoordinateByType[categoryType];
+                var coordinateByType = RandomCoordinateByType[categoryType];
 
                 var cache = $"CoordinateByType[{categoryType}]={coordinateByType} " +
                     $"Category={CategoryType} Coordinate{CoordinateNumber}";
