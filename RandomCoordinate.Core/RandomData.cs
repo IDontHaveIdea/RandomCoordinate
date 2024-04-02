@@ -3,6 +3,7 @@
 //
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using BepInEx.Logging;
 
@@ -268,6 +269,12 @@ namespace IDHIPlugins
                 return newCoordinate;
             }
 
+            private SaveData.Heroine GetHeroine()
+            {
+                var heroine = Manager.Game.saveData.heroineList
+                    .Where(h => h.chaCtrl.name == CtrlName).FirstOrDefault();
+                return heroine;
+            }
 
             public string ToString(ChaFileDefine.CoordinateType type)
             {
