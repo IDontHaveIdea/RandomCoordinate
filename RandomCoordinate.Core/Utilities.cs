@@ -122,8 +122,54 @@ namespace IDHIPlugins
                     return ChaFileDefine.CoordinateType.Pajamas;
                 }
             }
-
             return rc;
         }
+
+        /// <summary>
+        /// Reset some variables to force a new random selection to ocour.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        internal static void PeriodChange(
+            object sender,
+            GameAPI.PeriodChangeEventArgs args)
+        {
+            var was = _guideNewCoordinate;
+            _guideNewCoordinate = true;
+            if (GirlsRandomData.Count > 0)
+            {
+                foreach (var item in GirlsRandomData)
+                {
+                    item.Value.FirstRun = false;
+                }
+            }
+#if DEBUG
+            _Log.Warning($"[PeriodChange] NewPeriod={args.NewPeriod} " +
+                $"getNewCoordinate={_guideNewCoordinate} was={was}.");
+#endif
+        }
+
+        /// <summary>
+        /// Reset some variables to force a new random coordinate selection
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        internal static void DayChange( object sender, GameAPI.DayChangeEventArgs args )
+        {
+            var was = _guideNewCoordinate;
+            _guideNewCoordinate = true;
+            if (GirlsRandomData.Count > 0)
+            {
+                foreach (var item in GirlsRandomData)
+                {
+                    item.Value.FirstRun = false;
+                }
+            }
+#if DEBUG
+            _Log.Warning($"[Daychange] NewDay={args.NewDay} " +
+                $"getNewCoordinate={_guideNewCoordinate} was={was}.");
+#endif
+        }
+
     }
 }

@@ -55,7 +55,8 @@ namespace IDHIPlugins
             CharacterApi.RegisterExtraBehaviour<RandomCoordinateController>(GUID);
 
             KoikatuAPI.Quitting += OnGameExit;
-            GameAPI.PeriodChange += PeriodChange;
+            GameAPI.PeriodChange += Utilities.PeriodChange;
+            GameAPI.DayChange += Utilities.DayChange;
         }
 
         private void Start()
