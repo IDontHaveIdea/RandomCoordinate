@@ -119,17 +119,5 @@ namespace IDHIPlugins
                 }
             }
         }
-
-        internal static void PeriodChange(
-            object sender,
-            GameAPI.PeriodChangeEventArgs args)
-        {
-            var was = _guideNewCoordinate;
-            _guideNewCoordinate = true;
-#if DEBUG
-            _Log.Warning($"[PeriodChange] NewPeriod={args.NewPeriod} " +
-                $"getNewCoordinate={_guideNewCoordinate} was={was}.");
-#endif
-        }
     }
 }
