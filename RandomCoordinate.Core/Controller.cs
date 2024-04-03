@@ -37,29 +37,45 @@ namespace IDHIPlugins
             }
 
             var heroine = ChaControl.GetHeroine();
-
+            
             if (heroine != null)
             {
+                var girlKey = Utilities.PseudoKey(heroine.chaCtrl);
+
                 // Sometimes the controller is not loaded maintain a cache lookup table
-                if (!GirlsRandomData.ContainsKey(heroine.chaCtrl.name))
+                if (!GirlsRandomData.ContainsKey(girlKey))
                 {
-                    _Log.Warning($"[OnReload] 00 Name={heroine.Name.Trim()}({heroine.chaCtrl.name}) caching info.");
-                    GirlsRandomData[heroine.chaCtrl.name] =
-                        new RandomData(heroine);
+#if DEBUG
+                    _Log.Warning($"[OnReload] 0000: Name={heroine.Name.Trim()}" +
+                        $"({heroine.chaCtrl.name}) caching info.");
+#endif
+                    GirlsRandomData.Add(girlKey, new RandomData(heroine));
                 }
 
-                if (GirlsRandomData.TryGetValue(heroine.chaCtrl.name, out var girlInfo))
+                if (GirlsRandomData.TryGetValue(girlKey, out var girlInfo))
                 {
                     // Initialize the coordinates information
                     var nowRandomCoordinate = heroine.StatusCoordinate;
                     var categoryType = girlInfo.GetCategoryType(heroine.StatusCoordinate);
-                    var currentRandomCoordinateByType = girlInfo.RandomCoordinateByType[categoryType];
-                    var currentRandomCoordinate = girlInfo.CoordinateNumber;
+                    var randomCoordinateByType = girlInfo.CoordinateByType[categoryType];
+                    var randomCoordinate = girlInfo.CoordinateNumber;
+                    var randomCategory = girlInfo.CategoryType;
 
-                    if (nowRandomCoordinate != currentRandomCoordinateByType)
+                    if (nowRandomCoordinate != randomCoordinateByType)
                     {
-                        _Log.Warning($"[OnReload] 01 Name={heroine.Name.Trim()}({heroine.chaCtrl.name}) CT={categoryType} SC={nowRandomCoordinate} RCBT={currentRandomCoordinateByType} CRC={currentRandomCoordinate}.");
+                        // Set current random coordinate cache info to what the heroine is
+                        // currently wearing. This inconsistency occurs when the game resets the
+                        // character controller. Game seems to use the same coordinate for a
+                        // save/load cycle.
                         girlInfo.SetRandomData(heroine);
+#if DEBUG
+                        _Log.Warning($"[OnReload] 0001: Name={heroine.Name.Trim()} " +
+                            $"({heroine.chaCtrl.name}) update cache categoryType={categoryType} " +
+                            $"nowCoordinate={nowRandomCoordinate} " +
+                            $"coordinateBT[{categoryType}]={randomCoordinateByType} " +
+                            $"randomCategory={randomCategory} " +
+                            $"randomCoordinate={randomCoordinate}.");
+#endif
 
                     }
 
@@ -68,14 +84,19 @@ namespace IDHIPlugins
                         // This is the Guide character needs special treatment
                         SetupGuide(heroine, true);
                         categoryType = GetCategoryType(heroine.StatusCoordinate);
-                        _Log.Warning($"[OnReload] 02 Setup Guide Name={heroine.Name.Trim()}({heroine.chaCtrl.name}) synchronize info rcByType[{categoryType}]={heroine.StatusCoordinate} rc={heroine.StatusCoordinate}.");
+#if DEBUG
+                        _Log.Warning($"[OnReload] 0002: Name={heroine.Name.Trim()} setup Guide " +
+                            $"({heroine.chaCtrl.name}) synchronize info rcByType[{categoryType}]" +
+                            $"={heroine.StatusCoordinate} rc={heroine.StatusCoordinate}.");
+#endif
                     }
 #if DEBUG
-                    _Log.Debug($"[OnReload] 03 " +
+                    _Log.Debug($"[OnReload] 0003: " +
                         $"Name={heroine.Name.Trim()}({heroine.chaCtrl.name}) " +
                         $"heroine.StatusCoordinate={heroine.StatusCoordinate} " +
-                        $"nowRCByType[{categoryType}]={currentRandomCoordinateByType} " +
-                        $"currentRC={currentRandomCoordinate} " +
+                        $"nowRCByType[{categoryType}]={randomCoordinateByType} " +
+                        $"randomCategory={randomCategory} " +
+                        $"randomCoordinate={randomCoordinate} " +
                         $"total coordinates={ChaFileControl.coordinate.Length} " +
                         $"random possible={girlInfo.HasMoreOutfits}.");
 #endif
@@ -91,7 +112,7 @@ namespace IDHIPlugins
         {
             var rc = false;
 
-            if (GirlsRandomData.TryGetValue(ChaControl.name, out var girlInfo))
+            if (GirlsRandomData.TryGetValue(Utilities.PseudoKey(ChaControl), out var girlInfo))
             {
                 rc = girlInfo.FirstRun;
             }
@@ -104,10 +125,9 @@ namespace IDHIPlugins
         /// <param name="status"></param>
         public void FirstRun(bool status)
         {
-            if (GirlsRandomData.TryGetValue(ChaControl.name, out var girlInfo))
+            if (GirlsRandomData.TryGetValue(Utilities.PseudoKey(ChaControl), out var girlInfo))
             {
                 girlInfo.FirstRun = status;
-                _Log.Warning($"[FirstRun] FirstRun={girlInfo.FirstRun}.");
             }
         }
 
@@ -154,7 +174,7 @@ namespace IDHIPlugins
         /// <returns></returns>
         public ChaFileDefine.CoordinateType GetCategoryType(int coordinate)
         {
-            GirlsRandomData.TryGetValue(ChaControl.name, out var girlInfo);
+            GirlsRandomData.TryGetValue(Utilities.PseudoKey(ChaControl), out var girlInfo);
 
             var rc = ChaFileDefine.CoordinateType.Plain;
 
@@ -179,7 +199,7 @@ namespace IDHIPlugins
         public int NowRandomCoordinate()
         {
             var rc = -1;
-            if (GirlsRandomData.TryGetValue(ChaControl.name, out var girlInfo))
+            if (GirlsRandomData.TryGetValue(Utilities.PseudoKey(ChaControl), out var girlInfo))
             {
                 rc = girlInfo.CoordinateNumber;
             }
@@ -189,7 +209,7 @@ namespace IDHIPlugins
         public ChaFileDefine.CoordinateType NowRandomCategoryType()
         {
             var rc = ChaFileDefine.CoordinateType.Plain;
-            if (GirlsRandomData.TryGetValue(ChaControl.name, out var girlInfo))
+            if (GirlsRandomData.TryGetValue(Utilities.PseudoKey(ChaControl), out var girlInfo))
             {
                 rc = girlInfo.CategoryType;
             }
@@ -203,11 +223,11 @@ namespace IDHIPlugins
         /// <returns></returns>
         public int NowRandomCoordinateByType(ChaFileDefine.CoordinateType type)
         {
-            if (GirlsRandomData.TryGetValue(ChaControl.name, out var girlInfo))
+            if (GirlsRandomData.TryGetValue(Utilities.PseudoKey(ChaControl), out var girlInfo))
             { 
                 var categoryType = girlInfo.GetCategoryType((int)type);
 
-                if (girlInfo.RandomCoordinateByType
+                if (girlInfo.CoordinateByType
                     .TryGetValue(categoryType, out var coordinate))
                 {
                     return coordinate;
@@ -228,7 +248,7 @@ namespace IDHIPlugins
 
         public void SetRandomCoordinate(ChaFileDefine.CoordinateType type)
         {
-            if (GirlsRandomData.TryGetValue(ChaControl.name, out var girlInfo))
+            if (GirlsRandomData.TryGetValue(Utilities.PseudoKey(ChaControl), out var girlInfo))
             {
                 var categoryType = girlInfo.GetCategoryType((int)type);
 
@@ -248,11 +268,11 @@ namespace IDHIPlugins
         private int RandomCoordinate(ChaFileDefine.CoordinateType type)
         {
             var newCoordinate = (int)type;
-            var name = Utilities.GirlName(ChaControl);
+            var name = Utilities.GirlName(ChaControl) +$" ({ChaControl.name})";
 
             try
             {
-                if (GirlsRandomData.TryGetValue(ChaControl.name, out var girlInfo))
+                if (GirlsRandomData.TryGetValue(Utilities.PseudoKey(ChaControl), out var girlInfo))
                 {
                     var categoryType = girlInfo.GetCategoryType(type);
                     var tmpCoordinates = girlInfo.CoordinatesByType[categoryType];
@@ -268,11 +288,11 @@ namespace IDHIPlugins
                             // save coordinate
                             girlInfo.CategoryType = categoryType;
                             girlInfo.CoordinateNumber = newCoordinate;
-                            girlInfo.RandomCoordinateByType[categoryType] = newCoordinate;
+                            girlInfo.CoordinateByType[categoryType] = newCoordinate;
 #if DEBUG
-                            _Log.Warning($"[RandomCoordinate] name={name} " +
+                            _Log.Warning($"[RandomCoordinate] Name={name} " +
                                 $"_nowRCByType[{categoryType}]=" +
-                                $"{girlInfo.RandomCoordinateByType[categoryType]} " +
+                                $"{girlInfo.CoordinateByType[categoryType]} " +
                                 $"_nowRT={girlInfo.CategoryType} " +
                                 $"_nowRC={girlInfo.CoordinateNumber}.");
 #endif

@@ -12,61 +12,194 @@ namespace IDHIPlugins
 {
     public partial class RandomCoordinatePlugin
     {
-        public class RandomData
+        public class CoordinateData
         {
             public ChaFileDefine.CoordinateType CategoryType { get; set; }
-            public int CoordinateNumber { get; set; }
+            public int CoordinateNumber { get; set; } = -1;
+
+            public Dictionary<ChaFileDefine.CoordinateType, List<int>>
+                CoordinatesByType = new()
+                {
+                    {ChaFileDefine.CoordinateType.Plain, new List<int> {}},
+                    {ChaFileDefine.CoordinateType.Swim, new List<int> {}},
+                    {ChaFileDefine.CoordinateType.Pajamas, new List<int> {}},
+                    {ChaFileDefine.CoordinateType.Bathing, new List<int> {}}
+                };
+
+            public Dictionary<ChaFileDefine.CoordinateType, int>
+                CoordinateByType = new()
+                {
+                    {ChaFileDefine.CoordinateType.Plain, 0},
+                    {ChaFileDefine.CoordinateType.Swim, 1},
+                    {ChaFileDefine.CoordinateType.Pajamas, 2},
+                    {ChaFileDefine.CoordinateType.Bathing, 3}
+                };
+
+            public CoordinateData()
+            {
+            }
+
+            public CoordinateData(ChaControl chaControl)
+            {
+                InitCoordinates(chaControl);
+            }
+
+            public void SetData(
+                ChaFileDefine.CoordinateType categoryType,
+                int coordinateNumber)
+            {
+                CategoryType = categoryType;
+                CoordinateNumber = coordinateNumber;
+                CoordinateByType[CategoryType] = coordinateNumber;
+            }
+
+            public bool SetData(SaveData.Heroine heroine)
+            {
+                var rc = false;
+                if (heroine != null)
+                {
+                    CategoryType = GetCategoryType(heroine.StatusCoordinate);
+                    CoordinateNumber = heroine.StatusCoordinate;
+                    CoordinateByType[CategoryType] = heroine.StatusCoordinate;
+
+                    rc = true;
+                }
+                return rc;
+            }
+
+            public void InitCoordinates(ChaControl heroine)
+            {
+                var totalCoordinates = heroine.chaFile.coordinate.Length;
+
+                for (var i = 0; i < 4; i++)
+                {
+                    // Original 4 coordinates
+                    CoordinatesByType[(ChaFileDefine.CoordinateType)i].Clear();
+                    CoordinatesByType[(ChaFileDefine.CoordinateType)i].Add(i);
+                }
+
+                // Add additional outfits to Plain type for random selection
+                for (var i = 4; i < totalCoordinates; i++)
+                {
+                    CoordinatesByType[ChaFileDefine.CoordinateType.Plain].Add(i);
+                }
+            }
+
+            public ChaFileDefine.CoordinateType GetCategoryType(int coordinate)
+            {
+                var rc = ChaFileDefine.CoordinateType.Plain;
+
+                if (MathfEx.RangeEqualOn(0, coordinate, 3))
+                {
+                    rc = (ChaFileDefine.CoordinateType)coordinate;
+                }
+                else
+                {
+                    if (CoordinatesByType[ChaFileDefine.CoordinateType.Plain].Contains(coordinate))
+                    {
+                        return ChaFileDefine.CoordinateType.Plain;
+                    }
+                    if (CoordinatesByType[ChaFileDefine.CoordinateType.Swim].Contains(coordinate))
+                    {
+                        return ChaFileDefine.CoordinateType.Swim;
+                    }
+                    if (CoordinatesByType[ChaFileDefine.CoordinateType.Pajamas].Contains(coordinate))
+                    {
+                        return ChaFileDefine.CoordinateType.Pajamas;
+                    }
+                }
+                return rc;
+            }
+        }
+
+        public class RandomData
+        {
+            public CoordinateData Current;
+            public CoordinateData Previous;
+
+            #region Properties
+            public ChaFileDefine.CoordinateType CategoryType
+            {
+                get
+                {
+                    return Current.CategoryType;
+                }
+
+                set
+                {
+                    Current.CategoryType = value;
+                }
+            }
+            public int CoordinateNumber
+            {
+                get
+                {
+                    return Current.CoordinateNumber;
+                }
+                set
+                {
+                    Current.CoordinateNumber = value;
+                }
+            }
+            public Dictionary<ChaFileDefine.CoordinateType, List<int>> CoordinatesByType
+            {
+                get
+                {
+                    return Current.CoordinatesByType;
+                }
+                set
+                {
+                    Current.CoordinatesByType = value;
+                }
+            }
+            public Dictionary<ChaFileDefine.CoordinateType, int> CoordinateByType
+            {
+                get
+                {
+                    return Current.CoordinateByType;
+                }
+                set
+                {
+                    Current.CoordinateByType = value;
+                }
+            }
             public string CtrlName { get; private set; }
             public bool FirstRun { get; set; } = true;
             public string Name { get; private set; } = "";
             public bool HasMoreOutfits { get; set; }
-
-            public Dictionary<ChaFileDefine.CoordinateType, List<int>>
-                CoordinatesByType = new()
-            {
-                {ChaFileDefine.CoordinateType.Plain, new List<int> {}},
-                {ChaFileDefine.CoordinateType.Swim, new List<int> {}},
-                {ChaFileDefine.CoordinateType.Pajamas, new List<int> {}},
-                {ChaFileDefine.CoordinateType.Bathing, new List<int> {}}
-            };
-
-            public Dictionary<ChaFileDefine.CoordinateType, int>
-                RandomCoordinateByType = new()
-            {
-                {ChaFileDefine.CoordinateType.Plain, 0},
-                {ChaFileDefine.CoordinateType.Swim, 1},
-                {ChaFileDefine.CoordinateType.Pajamas, 2},
-                {ChaFileDefine.CoordinateType.Bathing, 3}
-            };
-
-            private int _totalCoordinates = 0;
+            #endregion Properties
 
             public RandomData(
                 ChaFileDefine.CoordinateType categoryType,
                 int coordinateNumber,
-                int statusCoordinate,
                 ChaControl chaCtrl)
             {
+                Current = new(chaCtrl);
+                Previous = new(chaCtrl);
+
                 InitCoordinates(chaCtrl);
-                _totalCoordinates = chaCtrl.chaFile.coordinate.Length;
-                HasMoreOutfits = _totalCoordinates >= 4;
+                HasMoreOutfits = chaCtrl.chaFile.coordinate.Length >= 4;
+
                 CategoryType = categoryType;
                 CoordinateNumber = coordinateNumber;
+                CoordinateByType[CategoryType] = coordinateNumber;
+
                 CtrlName = chaCtrl.name;
                 Name = chaCtrl.chaFile.parameter.fullname.Trim();
-                RandomCoordinateByType[CategoryType] = statusCoordinate;
             }
 
             public RandomData(SaveData.Heroine heroine)
             {
+                Current = new(heroine.chaCtrl);
+                Previous = new(heroine.chaCtrl);
+
                 InitCoordinates(heroine);
-                _totalCoordinates = heroine.charFile.coordinate.Length;
-                HasMoreOutfits = _totalCoordinates >= 4;
+                HasMoreOutfits = heroine.charFile.coordinate.Length >= 4;
                 CategoryType = GetCategoryType(heroine.StatusCoordinate);
                 CoordinateNumber = heroine.StatusCoordinate;
                 CtrlName = heroine.chaCtrl.name;
                 Name = heroine.Name.Trim();
-                RandomCoordinateByType[CategoryType] = heroine.StatusCoordinate;
+                CoordinateByType[CategoryType] = heroine.StatusCoordinate;
             }
 
             public bool SetRandomData(
@@ -74,9 +207,12 @@ namespace IDHIPlugins
                 int coordinateNumber,
                 int statusCoordinate)
             {
+                SaveToPrevious();
+
                 CategoryType = categoryType;
                 CoordinateNumber = coordinateNumber;
-                RandomCoordinateByType[CategoryType] = statusCoordinate;
+                CoordinateByType[CategoryType] = statusCoordinate;
+
                 return true;
             }
 
@@ -85,13 +221,25 @@ namespace IDHIPlugins
                 var rc = false;
                 if (heroine != null)
                 {
+                    SaveToPrevious();
+
                     CategoryType = GetCategoryType(heroine.StatusCoordinate);
-                    RandomCoordinateByType[CategoryType] = heroine.StatusCoordinate;
                     CoordinateNumber = heroine.StatusCoordinate;
+                    CoordinateByType[CategoryType] = heroine.StatusCoordinate;
+
                     rc = true;
                 }
                 return rc;
             }
+
+            private void SaveToPrevious()
+            {
+                // Update Previous
+                Previous.CategoryType = CategoryType;
+                Previous.CoordinateNumber = CoordinateNumber;
+                Previous.CoordinateByType[CategoryType] = CoordinateNumber;
+            }
+
 
             /// <summary>
             /// Clears and fill the _Coordinates dictionary
@@ -113,10 +261,6 @@ namespace IDHIPlugins
                     // TODO: Interface to classify coordinates grater than 3
                     CoordinatesByType[ChaFileDefine.CoordinateType.Plain].Add(i);
                 }
-
-                var tmpCoordinates = CoordinatesByType[ChaFileDefine.CoordinateType.Plain];
-                _Log.Warning($"[InitCoordinates.heroine] Name={heroine.Name.Trim()} " +
-                        $"tmpCoordinates[{ChaFileDefine.CoordinateType.Plain}].Count={tmpCoordinates.Count}.");
             }
 
             /// <summary>
@@ -139,9 +283,6 @@ namespace IDHIPlugins
                     // TODO: Interface to classify coordinates grater than 3
                     CoordinatesByType[ChaFileDefine.CoordinateType.Plain].Add(i);
                 }
-                var tmpCoordinates = CoordinatesByType[ChaFileDefine.CoordinateType.Plain];
-                _Log.Warning($"[InitCoordinates.ChaControl] Name={heroine.chaFile.parameter.fullname.Trim()} " +
-                        $"tmpCoordinates[{ChaFileDefine.CoordinateType.Plain}].Count={tmpCoordinates.Count}.");
             }
 
             /// <summary>
@@ -239,11 +380,11 @@ namespace IDHIPlugins
                             {
                                 CategoryType = categoryType;
                                 CoordinateNumber = newCoordinate;
-                                RandomCoordinateByType[categoryType] = newCoordinate;
+                                CoordinateByType[categoryType] = newCoordinate;
 #if DEBUG
-                                _Log.Warning($"[RandomCoordinate] Name={Name} " +
+                                _Log.Warning($"[RandomCoordinate] 0000: Name={Name} " +
                                     $"nowRCByType[{categoryType}]=" +
-                                    $"{RandomCoordinateByType[categoryType]} " +
+                                    $"{CoordinateByType[categoryType]} " +
                                     $"nowRT={CategoryType} " +
                                     $"nowRC={CoordinateNumber}.");
 #endif
@@ -269,20 +410,13 @@ namespace IDHIPlugins
                 return newCoordinate;
             }
 
-            private SaveData.Heroine GetHeroine()
-            {
-                var heroine = Manager.Game.saveData.heroineList
-                    .Where(h => h.chaCtrl.name == CtrlName).FirstOrDefault();
-                return heroine;
-            }
-
             public string ToString(ChaFileDefine.CoordinateType type)
             {
                 var categoryType = GetCategoryType((int)type);
-                var coordinateByType = RandomCoordinateByType[categoryType];
+                var coordinateByType = CoordinateByType[categoryType];
 
-                var cache = $"CoordinateByType[{categoryType}]={coordinateByType} " +
-                    $"Category={CategoryType} Coordinate{CoordinateNumber}";
+                var cache = $"Category={CategoryType} Coordinate={CoordinateNumber} " +
+                    $"CoordinateByType[{categoryType}]={coordinateByType}";
 
                 return cache;
             }

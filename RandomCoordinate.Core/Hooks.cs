@@ -53,8 +53,8 @@ namespace IDHIPlugins
                 female.ChangeCoordinateTypeAndReload(
                     ChaFileDefine.CoordinateType.Pajamas);
 #if DEBUG
-                _Log.Warning("[ChangeAnimatorPostfix] " +
-                    $"Coordinate set to Pajamas.");
+                //_Log.Warning("[ChangeAnimatorPostfix] 0000: " +
+                //    $"Coordinate set to Pajamas.");
 #endif
             }
         }
@@ -82,48 +82,47 @@ namespace IDHIPlugins
             {
                 return true;
             }
+            var name = Utils.TranslateName(Utilities.GirlName(__instance), true) +
+                $" ({__instance.name})";
 #if DEBUG
-            _Log.Warning($"[ChangeCoordinateTypePrefix] 00 Called " +
-                "name={Utilities.GirlName(__instance)} for type={type}.");
+            _Log.Warning($"[ChangeCoordinateTypePrefix] 0000: " +
+                $"Name={name} called for type={type}.");
 #endif
             try
             {
-                var nowRandomCoordinateByType = -1;
-                var nowRandomCoordinate = -1;
-                var nowRandomType = (ChaFileDefine.CoordinateType)(-1);
+                var girlKey = Utilities.PseudoKey(__instance);
+                var randomCoordinateByType = -1;
+                var randomCoordinate = -1;
+                var randomType = (ChaFileDefine.CoordinateType)(-1);
                 var callingType = type;
                 var categoryType = ChaFileDefine.CoordinateType.Plain;
 
                 // Check cache if key not found craete entry
-                if (!GirlsRandomData.ContainsKey(__instance.name))
+                if (!GirlsRandomData.ContainsKey(girlKey))
                 {
+#if DEBUG
+                    _Log.Warning($"[ChangeCoordinateTypePrefix] 0001: " +
+                        $"Name={name} Adding data to cache for type={callingType}.");
+#endif
                     categoryType = Utilities.GetCoordinateType(__instance, (int)type);
-                    GirlsRandomData.Add(
-                        __instance.name,
-                        new RandomData(
-                            categoryType,
-                            (int)type,
-                            (int)type,
-                            __instance));
+                    GirlsRandomData.Add(girlKey, new RandomData(categoryType, (int)type, __instance));
                 }
 
-                if (GirlsRandomData.TryGetValue(__instance.name, out var girlInfo))
+                if (GirlsRandomData.TryGetValue(girlKey, out var girlInfo))
                 {
                     categoryType = girlInfo.GetCategoryType(type);
-                    nowRandomCoordinateByType = girlInfo.RandomCoordinateByType[categoryType];
-                    nowRandomCoordinate = girlInfo.CoordinateNumber;
-                    nowRandomType = girlInfo.CategoryType;
+                    randomCoordinateByType = girlInfo.CoordinateByType[categoryType];
+                    randomCoordinate = girlInfo.CoordinateNumber;
+                    randomType = girlInfo.CategoryType;
                 }
 
-                var name = Utils.TranslateName(Utilities.GirlName(__instance), true);
-                var firstRun = false;
-                if (nowRandomType == categoryType)
+                if (randomType == categoryType)
                 {
                     // If type is the current random type set coordinate accordingly
-                    type = (ChaFileDefine.CoordinateType)nowRandomCoordinateByType;
+                    type = (ChaFileDefine.CoordinateType)randomCoordinateByType;
                 }
-                firstRun = girlInfo.FirstRun;
 #if DEBUG
+                var firstRun = girlInfo.FirstRun;
                 var actScene = ActionScene.instance;
                 var currentMapNo = -1;
                 if (actScene != null)
@@ -133,13 +132,13 @@ namespace IDHIPlugins
                 var mapNo = Utils.MapNumber(__instance);
                 //if (mapNo == currentMapNo)
                 //{
-                var mapName = Utils.MapName(__instance);
-                _Log.Warning($"[ChangeCoordinateTypePrefix] 06 Name={name} on " +
+                    var mapName = Utils.MapName(__instance);
+                    _Log.Warning($"[ChangeCoordinateTypePrefix] 0002: Name={name} on " +
                         $"cMap={currentMapNo} " +
                         $"map={mapNo} ({mapName}) " +
-                        $"nowRCByType[{categoryType}]={nowRandomCoordinateByType} " +
-                        $"nowRT={nowRandomType} " +
-                        $"nowRC={nowRandomCoordinate} " +
+                        $"RCByType[{categoryType}]={randomCoordinateByType} " +
+                        $"RT={randomType} " +
+                        $"RC={randomCoordinate} " +
                         $"pType={callingType} set type={type} fRun={firstRun}.");
                 //}
 #endif
@@ -178,30 +177,40 @@ namespace IDHIPlugins
             {
                 return true;
             }
+            var name = Utils.TranslateName(Utilities.GirlName(__instance), true) +
+                $" ({__instance.name})";
 #if DEBUG
-            _Log.Warning($"[ChangeCoordinateTypeAndReloadPrefix] Called " +
-                $"name={Utilities.GirlName(__instance)} for type={type}.");
+            _Log.Warning($"[ChangeCoordinateTypeAndReloadPrefix] 0000: Called " +
+                $"name={name} called for type={type}.");
 #endif
-            var nowRandomCoordinateByType = -1;
-            var nowRandomCoordinate = -1;
-            var nowPlain = -1;
-            var nowRandomType = (ChaFileDefine.CoordinateType)(-1);
+            var randomCoordinateByType = -1;
+            var randomCoordinate = -1;
+            var plain = -1;
+            var randomType = (ChaFileDefine.CoordinateType)(-1);
             var categoryType =
                 Utilities.GetCoordinateType(__instance, (int)type);
 
-            if (GirlsRandomData.TryGetValue(__instance.name, out var girlInfo))
+            if (GirlsRandomData.TryGetValue(Utilities.PseudoKey(__instance), out var girlInfo))
             {
-                nowRandomCoordinateByType = girlInfo.RandomCoordinateByType[categoryType];
-                nowPlain = girlInfo.RandomCoordinateByType[ChaFileDefine.CoordinateType.Plain];
-                nowRandomCoordinate = girlInfo.CoordinateNumber;
-                nowRandomType = girlInfo.CategoryType;
+                randomCoordinateByType = girlInfo.CoordinateByType[categoryType];
+                plain = girlInfo.CoordinateByType[ChaFileDefine.CoordinateType.Plain];
+                randomCoordinate = girlInfo.CoordinateNumber;
+                randomType = girlInfo.CategoryType;
+#if DEBUG
+                //_Log.Warning($"[ChangeCoordinateTypeAndReloadPrefix] 0001: " +
+                //    $"Name={name} reading cache. " +
+                //    $"nowRCByType[{categoryType}]={nowRandomCoordinateByType} " +
+                //    $"nowPlainByType={nowPlain} " +
+                //    $"nowRT={nowRandomType} " +
+                //    $"nowRC={nowRandomCoordinate}.");
+
+#endif
             }
 
             var actScene = ActionScene.instance;
             var currentMapNo = actScene.Map.no;
             var mapNo = Utils.MapNumber(__instance);
             var mapName = Utils.MapName(__instance);
-            var name = Utilities.GirlName(__instance);
             var callingType = type;
 
             var callName = "";
@@ -220,12 +229,12 @@ namespace IDHIPlugins
                     // Guide: Change to swimsuit if on the beach
                     type = ChaFileDefine.CoordinateType.Swim;
 #if DEBUG
-                    _Log.Error($"[ChangeCoordinateTypeAndReloadPrefix] GUIDE name={name} on " +
+                    _Log.Error($"[ChangeCoordinateTypeAndReloadPrefix] GUIDE: name={name} on " +
                         $"map={mapNo} ({mapName}) " +
-                        $"nowRCByType[{categoryType}]={nowRandomCoordinateByType} " +
-                        $"nowPlainByType={nowPlain} " +
-                        $"nowRT={nowRandomType} " +
-                        $"nowRC={nowRandomCoordinate} " +
+                        $"RCByType[{categoryType}]={randomCoordinateByType} " +
+                        $"nowPlainByType={plain} " +
+                        $"nowRT={randomType} " +
+                        $"nowRC={randomCoordinate} " +
                         $"paramT={callingType}{callName} " +
                         $"set type={type}");
 #endif
@@ -241,16 +250,11 @@ namespace IDHIPlugins
                 if (girlInfo != null)
                 {
                     // Preserve current random coordinate for type change request
-                    nowRandomCoordinate = girlInfo.RandomCoordinateByType[categoryType];
-                    if (nowRandomCoordinateByType >= 0)
+                    randomCoordinate = girlInfo.CoordinateByType[categoryType];
+                    if (randomCoordinateByType >= 0)
                     {
-                        type = (ChaFileDefine.CoordinateType)nowRandomCoordinateByType;
+                        type = (ChaFileDefine.CoordinateType)randomCoordinateByType;
                     }
-                }
-                else
-                {
-                    _Log.Warning($"[ChangeCoordinateTypeAndReloadPrefix] Name={name} " +
-                        "controller is null.");
                 }
             }
 
@@ -260,18 +264,18 @@ namespace IDHIPlugins
                     .GetCoordinateName(__instance, (int)type)}).";
             }
 #if DEBUG
-            //if (mapNo == currentMapNo)
-            //{
-                _Log.Warning($"[ChangeCoordinateTypeAndReloadPrefix] Name={name} on " +
-                $"map={mapNo} ({mapName}) " +
-                $"nowRCByType[{categoryType}]={nowRandomCoordinateByType} " +
-                $"nowRT={nowRandomType} " +
-                $"nowRC={nowRandomCoordinate} " +
-                $"paramT={callingType}{callName} " +
-                $"set type={type}{newName}");
-            //}
+            if (mapNo == currentMapNo)
+            {
+                _Log.Warning($"[ChangeCoordinateTypeAndReloadPrefix] 0004: Name={name} on " +
+                    $"map={mapNo} ({mapName}) " +
+                    $"nowRCByType[{categoryType}]={randomCoordinateByType} " +
+                    $"nowRT={randomType} " +
+                    $"nowRC={randomCoordinate} " +
+                    $"paramT={callingType}{callName} " +
+                    $"set type={type}{newName}");
+            }
 #else
-            _Log.Debug($"[ChangeCoordinateTypeAndReload] Name={name} on " +
+            _Log.Debug($"[ChangeCoordinateTypeAndReload] 0005: Name={name} on " +
                 $"map={mapNo} mapName={mapName} nowRC={nowRandomCoordinate} " +
                 $"paramT={callingType}{callName} set type={type}{newName}");
 #endif
@@ -303,10 +307,9 @@ namespace IDHIPlugins
             {
                 return;
             }
-#if DEBUG
-            _Log.Warning("[SynchroCoordinatePostfix] Called for " +
-                $"name={Utilities.GirlName(__instance)}.");
-#endif
+            var name = Utils.TranslateName(Utilities.GirlName(__instance), true) +
+                $" ({__instance.chaCtrl.name})";
+
             var ctrl = GetController(__instance.chaCtrl);
             if (ctrl == null)
             {
@@ -322,34 +325,41 @@ namespace IDHIPlugins
             ChaFileDefine.CoordinateType categoryType;
 
             var cache = "";
-            if (GirlsRandomData.TryGetValue(__instance.chaCtrl.name, out var girlInfo))
+            if (GirlsRandomData.TryGetValue(Utilities.PseudoKey(__instance.chaCtrl), out var girlInfo))
             {
                 categoryType = girlInfo.GetCategoryType(coordinateNumber);
                 cache = girlInfo.ToString(categoryType);
+#if DEBUG
+                _Log.Warning("[SynchroCoordinatePostfix] 0001: " +
+                    $"Name={girlInfo.Name} ({girlInfo.CtrlName}) Read cache={cache}.");
+#endif
             }
             else
             {
+#if DEBUG
+                _Log.Warning("[SynchroCoordinatePostfix] 0002: No cache " +
+                    $"Name={girlInfo.Name} ({girlInfo.CtrlName}) no cache.");
+#endif
                 return;
             }
 
             var totalCoordinates = __instance.chaCtrl.chaFile.coordinate.Length;
-            var name = Utilities.GirlName(__instance);
             var mapNo = Utils.MapNumber(__instance);
             var mapName = Utils.MapName(__instance);
 
 #if DEBUG
-            if (mapNo == currentMapNo)
-            {
-                _Log.Warning($"[SynchroCoordinatePostfix] Name={name} in map={mapNo} " +
-                        $"({mapName}) total coordinates={totalCoordinates} " +
-                        $"actionNo={__instance.AI.actionNo}.");
-            }
+            //if (mapNo == currentMapNo)
+            //{
+            //    _Log.Warning($"[SynchroCoordinatePostfix] 0003: Name={name} in map={mapNo} " +
+            //        $"({mapName}) total coordinates={totalCoordinates} " +
+            //        $"actionNo={__instance.AI.actionNo}.");
+            //}
 #endif
             // If there no extra outfits
-            if (!ctrl.HasMoreOutfits)
+            if (!girlInfo.HasMoreOutfits)
             {
-                _Log.Warning($"[SynchroCoordinatePostfix] Name={name} in map={mapNo} " +
-                    $"mapName={mapName} total coordinates={totalCoordinates}.");
+                _Log.Debug($"[SynchroCoordinatePostfix] 0004: Name={name} in map={mapNo} " +
+                    $"({mapName}) total coordinates={totalCoordinates} not enough coordinates.");
                 return;
             }
 
@@ -357,7 +367,7 @@ namespace IDHIPlugins
             var nowType = (ChaFileDefine.CoordinateType)coordinateType;
             var nowRandomCoordinate = girlInfo.CoordinateNumber;
             var nowRandomType = girlInfo.CategoryType;
-            var nowRandomCoordinateByType = girlInfo.RandomCoordinateByType[categoryType];
+            var nowRandomCoordinateByType = girlInfo.CoordinateByType[categoryType];
             
             // Test for out of bounds adjusting for each character
             if (!MathfEx.RangeEqualOn(0, coordinateNumber, (totalCoordinates - 1)))
@@ -401,11 +411,14 @@ namespace IDHIPlugins
             {
                 newCoordinate = ctrl.NewRandomCoordinateByType(
                                 (ChaFileDefine.CoordinateType)coordinateType);
-                coordinateNumber = newCoordinate;
 #if DEBUG
-                _Log.Error($"[SynchroCoordinate] Name={name} in map={mapNo} " +
-                    $"mapName={mapName} FirstRun.");
+                cache = girlInfo.ToString(categoryType);
+                _Log.Error($"[SynchroCoordinatePostfix] 0005: Name={name} in map={mapNo} " +
+                    $"({mapName}) for FirstRun={girlInfo.FirstRun} " +
+                    $"coordinateNumber={coordinateNumber} " +
+                    $"newCoordinate={newCoordinate} cache={cache}.");
 #endif
+                coordinateNumber = newCoordinate;
             }
             // coordinateNumber not equal to Bathing
             else if (coordinateNumber != 3)
@@ -419,6 +432,7 @@ namespace IDHIPlugins
                         case 17:
                         // Beach Change Room
                         case 33:
+                            // Get new random coordinate in Hotel and Beach changing rooms
                             newCoordinate = ctrl.NewRandomCoordinateByType(
                                 (ChaFileDefine.CoordinateType)coordinateType);
                             coordinateNumber = newCoordinate;
@@ -431,7 +445,7 @@ namespace IDHIPlugins
                 }
                 else
                 {
-                    // Get new random coordinate
+                    // Get new random coordinate on every oportunity
                     newCoordinate = ctrl.NewRandomCoordinateByType(
                                 (ChaFileDefine.CoordinateType)coordinateType);
                     coordinateNumber = newCoordinate;
@@ -462,13 +476,12 @@ namespace IDHIPlugins
 #else
                 ChangeCoordinate(__instance, coordinateNumber);
 #endif
-            //Name = Momose Megumi in map = 5(Nature Park) nowT = 4 nowC = 4 nowRT = Plain nowRC = 4 coordinates current = 4(Outfit 5) new= 4(Outfit 5).
-            _Log.Warning($"[SynchroCoordinate] Name={name} in map={mapNo} " +
+                _Log.Debug($"[SynchroCoordinatePostfix] 0006: Name={name} in map={mapNo} " +
                     $"({mapName}) " +
-                    $"nowT={nowType} " +
-                    $"nowC={nowCoordinate} " +
-                    $"nowRT={nowRandomType} " +
-                    $"nowRC={nowRandomCoordinate} " +
+                    $"nowType={nowType} " +
+                    $"nowCoord={nowCoordinate} " +
+                    $"nowRType={nowRandomType} " +
+                    $"nowRCoord={nowRandomCoordinate} " +
                     $"coordinates current={nowCoordinate}{nowName} " +
                     $"new={coordinateNumber}{newName}. Cache={cache}");
 

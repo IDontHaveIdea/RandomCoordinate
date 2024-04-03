@@ -104,12 +104,12 @@ namespace IDHIPlugins
                             .GetCoordinateName(
                             heroine.chaCtrl, ctrl.NowRandomCoordinate())}).";
                     }
+#if DEBUG
                     _Log.Debug($"[SetGuide] GUIDE={_guide.Name.Trim()} in " +
                         $"mapNo={guideMap} setCoordinate={setCoordinate} {nowName}" +
                         $"NowRandomCoordinate={ctrl.NowRandomCoordinate()}{newName}");
-#if DEBUG
                     _Log.Info($"[SetGuide] GUIDE={_guide.Name.Trim()} " +
-                        $"chaName={_guide.chaCtrl.name} " +
+                        $"({_guide.chaCtrl.name}) " +
                         $"guideMap={guideMap} options uMap={uMap} mapMove={mapMove} " +
                         $"mapFix={fixChara.mapNo} " +
                         $"setCoordinate={setCoordinate} " +

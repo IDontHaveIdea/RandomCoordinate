@@ -1,6 +1,7 @@
 ﻿//
 // Utilities
 //
+using System;
 using System.Collections.Generic;
 
 using ActionGame.Chara;
@@ -125,6 +126,18 @@ namespace IDHIPlugins
             return rc;
         }
 
+        public static string PseudoKey(ChaControl chaControl)
+        {
+            var name = chaControl.chaFile.parameter.fullname.Trim();
+            var personality = chaControl.chaFile.parameter.personality.ToString();
+            var height = (int)Math.Round(chaControl.chaFile.custom.body
+                .shapeValueBody[(int)ChaFileDefine.BodyShapeIdx.Height] * 100);
+
+            var rc = $"{name}.{personality}.{height}";
+
+            return rc;
+        }
+
         /// <summary>
         /// Reset some variables to force a new random selection to ocour.
         /// </summary>
@@ -140,7 +153,7 @@ namespace IDHIPlugins
             {
                 foreach (var item in GirlsRandomData)
                 {
-                    item.Value.FirstRun = false;
+                    item.Value.FirstRun = true;
                 }
             }
 #if DEBUG
@@ -162,7 +175,7 @@ namespace IDHIPlugins
             {
                 foreach (var item in GirlsRandomData)
                 {
-                    item.Value.FirstRun = false;
+                    item.Value.FirstRun = true;
                 }
             }
 #if DEBUG
