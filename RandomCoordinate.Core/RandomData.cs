@@ -180,9 +180,12 @@ namespace IDHIPlugins
                 InitCoordinates(chaCtrl);
                 HasMoreOutfits = chaCtrl.chaFile.coordinate.Length >= 4;
 
-                CategoryType = categoryType;
-                CoordinateNumber = coordinateNumber;
-                CoordinateByType[CategoryType] = coordinateNumber;
+                Current.SetData(categoryType, coordinateNumber);
+                Previous.SetData(categoryType, coordinateNumber);
+
+                //CategoryType = categoryType;
+                //CoordinateNumber = coordinateNumber;
+                //CoordinateByType[CategoryType] = coordinateNumber;
 
                 CtrlName = chaCtrl.name;
                 Name = chaCtrl.chaFile.parameter.fullname.Trim();
@@ -195,11 +198,17 @@ namespace IDHIPlugins
 
                 InitCoordinates(heroine);
                 HasMoreOutfits = heroine.charFile.coordinate.Length >= 4;
-                CategoryType = GetCategoryType(heroine.StatusCoordinate);
-                CoordinateNumber = heroine.StatusCoordinate;
+
+                Current.SetData(heroine);
+                Previous.SetData(heroine);
+
+                //CategoryType = GetCategoryType(heroine.StatusCoordinate);
+                //CoordinateNumber = heroine.StatusCoordinate;
+                //CoordinateByType[CategoryType] = heroine.StatusCoordinate;
+
                 CtrlName = heroine.chaCtrl.name;
                 Name = heroine.Name.Trim();
-                CoordinateByType[CategoryType] = heroine.StatusCoordinate;
+                
             }
 
             public bool SetRandomData(
@@ -209,9 +218,11 @@ namespace IDHIPlugins
             {
                 SaveToPrevious();
 
-                CategoryType = categoryType;
-                CoordinateNumber = coordinateNumber;
-                CoordinateByType[CategoryType] = statusCoordinate;
+                Current.SetData(categoryType, coordinateNumber);
+
+                //CategoryType = categoryType;
+                //CoordinateNumber = coordinateNumber;
+                //CoordinateByType[CategoryType] = statusCoordinate;
 
                 return true;
             }
@@ -223,11 +234,13 @@ namespace IDHIPlugins
                 {
                     SaveToPrevious();
 
-                    CategoryType = GetCategoryType(heroine.StatusCoordinate);
-                    CoordinateNumber = heroine.StatusCoordinate;
-                    CoordinateByType[CategoryType] = heroine.StatusCoordinate;
+                    rc = Current.SetData(heroine);
 
-                    rc = true;
+                    //CategoryType = GetCategoryType(heroine.StatusCoordinate);
+                    //CoordinateNumber = heroine.StatusCoordinate;
+                    //CoordinateByType[CategoryType] = heroine.StatusCoordinate;
+
+                    //rc = true;
                 }
                 return rc;
             }
@@ -235,9 +248,12 @@ namespace IDHIPlugins
             private void SaveToPrevious()
             {
                 // Update Previous
-                Previous.CategoryType = CategoryType;
-                Previous.CoordinateNumber = CoordinateNumber;
-                Previous.CoordinateByType[CategoryType] = CoordinateNumber;
+
+                Previous.SetData(CategoryType, CoordinateNumber);
+
+                //Previous.CategoryType = CategoryType;
+                //Previous.CoordinateNumber = CoordinateNumber;
+                //Previous.CoordinateByType[CategoryType] = CoordinateNumber;
             }
 
 
@@ -294,27 +310,29 @@ namespace IDHIPlugins
             /// <returns></returns>
             public ChaFileDefine.CoordinateType GetCategoryType(int coordinate)
             {
-                var rc = ChaFileDefine.CoordinateType.Plain;
+                var rc = Current.GetCategoryType(coordinate);
 
-                if (MathfEx.RangeEqualOn(0, coordinate, 3))
-                {
-                    rc = (ChaFileDefine.CoordinateType)coordinate;
-                }
-                else
-                {
-                    if (CoordinatesByType[ChaFileDefine.CoordinateType.Plain].Contains(coordinate))
-                    {
-                        return ChaFileDefine.CoordinateType.Plain;
-                    }
-                    if (CoordinatesByType[ChaFileDefine.CoordinateType.Swim].Contains(coordinate))
-                    {
-                        return ChaFileDefine.CoordinateType.Swim;
-                    }
-                    if (CoordinatesByType[ChaFileDefine.CoordinateType.Pajamas].Contains(coordinate))
-                    {
-                        return ChaFileDefine.CoordinateType.Pajamas;
-                    }
-                }
+                //var rc = ChaFileDefine.CoordinateType.Plain;
+
+                //if (MathfEx.RangeEqualOn(0, coordinate, 3))
+                //{
+                //    rc = (ChaFileDefine.CoordinateType)coordinate;
+                //}
+                //else
+                //{
+                //    if (CoordinatesByType[ChaFileDefine.CoordinateType.Plain].Contains(coordinate))
+                //    {
+                //        return ChaFileDefine.CoordinateType.Plain;
+                //    }
+                //    if (CoordinatesByType[ChaFileDefine.CoordinateType.Swim].Contains(coordinate))
+                //    {
+                //        return ChaFileDefine.CoordinateType.Swim;
+                //    }
+                //    if (CoordinatesByType[ChaFileDefine.CoordinateType.Pajamas].Contains(coordinate))
+                //    {
+                //        return ChaFileDefine.CoordinateType.Pajamas;
+                //    }
+                //}
                 return rc;
             }
 
@@ -416,6 +434,7 @@ namespace IDHIPlugins
                 var coordinateByType = CoordinateByType[categoryType];
 
                 var cache = $"Category={CategoryType} Coordinate={CoordinateNumber} " +
+                    $"Current CoordinateByType[{CategoryType}]={CoordinateByType[CategoryType]} " +
                     $"CoordinateByType[{categoryType}]={coordinateByType}";
 
                 return cache;

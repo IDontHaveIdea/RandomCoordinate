@@ -76,7 +76,6 @@ namespace IDHIPlugins
                             $"randomCategory={randomCategory} " +
                             $"randomCoordinate={randomCoordinate}.");
 #endif
-
                     }
 
                     if (heroine.fixCharaID == -13)
@@ -92,7 +91,7 @@ namespace IDHIPlugins
                     }
 #if DEBUG
                     _Log.Debug($"[OnReload] 0003: " +
-                        $"Name={heroine.Name.Trim()}({heroine.chaCtrl.name}) " +
+                        $"Name={heroine.Name.Trim()} ({heroine.chaCtrl.name}) " +
                         $"heroine.StatusCoordinate={heroine.StatusCoordinate} " +
                         $"nowRCByType[{categoryType}]={randomCoordinateByType} " +
                         $"randomCategory={randomCategory} " +
@@ -282,6 +281,7 @@ namespace IDHIPlugins
                         try
                         {
                             // New random coordinate
+                            var currentType = ChaControl.fileStatus.coordinateType;
                             var coordinateIndex = RandCoordinate.Next(0, tmpCoordinates.Count);
                             newCoordinate = tmpCoordinates[coordinateIndex];
 
@@ -291,10 +291,11 @@ namespace IDHIPlugins
                             girlInfo.CoordinateByType[categoryType] = newCoordinate;
 #if DEBUG
                             _Log.Warning($"[RandomCoordinate] Name={name} " +
-                                $"_nowRCByType[{categoryType}]=" +
+                                $"currentCoordinateType={currentType} " +
+                                $"CoordinateByType[{categoryType}]=" +
                                 $"{girlInfo.CoordinateByType[categoryType]} " +
-                                $"_nowRT={girlInfo.CategoryType} " +
-                                $"_nowRC={girlInfo.CoordinateNumber}.");
+                                $"CategoryType={girlInfo.CategoryType} " +
+                                $"CoordinateNumber={girlInfo.CoordinateNumber}.");
 #endif
                         }
                         catch (Exception e)

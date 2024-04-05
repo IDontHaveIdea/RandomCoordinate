@@ -26,6 +26,8 @@ namespace IDHIPlugins
         internal static Random RandCoordinate = new();
         internal static MoreOutfits _MoreOutfits = new();
 
+        internal const ChaFileDefine.CoordinateType _nullType = (ChaFileDefine.CoordinateType)(-1);
+
         // The Character controller is reinitialiezed and even unloaded
         // during the game mantaining persistent data on the controller
         // is just an act of frustration. So persistent runtime data
@@ -91,10 +93,12 @@ namespace IDHIPlugins
 
         internal static void ChangeCoordinate(ChaControl girl, int coordinateNumber)
         {
+            _Log.Info($"[ChangeCoordinate] Calling.");
             Manager.Character.enableCharaLoadGCClear = false;
             girl.ChangeCoordinateTypeAndReload(
                 (ChaFileDefine.CoordinateType)coordinateNumber);
             Manager.Character.enableCharaLoadGCClear = true;
+            _Log.Info($"[ChangeCoordinate] Returned.");
         }
 
         /// <summary>
