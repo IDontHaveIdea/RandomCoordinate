@@ -225,8 +225,7 @@ namespace IDHIPlugins
 
             public bool SetRandomData(
                 ChaFileDefine.CoordinateType categoryType,
-                int coordinateNumber,
-                int statusCoordinate)
+                int coordinateNumber)
             {
                 SaveToPrevious();
 
@@ -324,27 +323,6 @@ namespace IDHIPlugins
             {
                 var rc = Current.GetCategoryType(coordinate);
 
-                //var rc = ChaFileDefine.CoordinateType.Plain;
-
-                //if (MathfEx.RangeEqualOn(0, coordinate, 3))
-                //{
-                //    rc = (ChaFileDefine.CoordinateType)coordinate;
-                //}
-                //else
-                //{
-                //    if (CoordinatesByType[ChaFileDefine.CoordinateType.Plain].Contains(coordinate))
-                //    {
-                //        return ChaFileDefine.CoordinateType.Plain;
-                //    }
-                //    if (CoordinatesByType[ChaFileDefine.CoordinateType.Swim].Contains(coordinate))
-                //    {
-                //        return ChaFileDefine.CoordinateType.Swim;
-                //    }
-                //    if (CoordinatesByType[ChaFileDefine.CoordinateType.Pajamas].Contains(coordinate))
-                //    {
-                //        return ChaFileDefine.CoordinateType.Pajamas;
-                //    }
-                //}
                 return rc;
             }
 

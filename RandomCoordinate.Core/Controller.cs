@@ -2,12 +2,14 @@
 // RandomCoordinateController
 //
 using System;
-using System.Collections.Generic;
+
 using BepInEx.Logging;
 
 using KKAPI;
 using KKAPI.Chara;
 using KKAPI.MainGame;
+
+using Utils = IDHIUtils.Utilities;
 
 using static IDHIPlugins.RandomCoordinatePlugin;
 
@@ -16,10 +18,6 @@ namespace IDHIPlugins
 {
     public partial class RandomCoordinateController : CharaCustomFunctionController
     {
-        #region properties
-        public bool HasMoreOutfits => (ChaFileControl.coordinate.Length > 4);
-        #endregion
-
         protected override void OnCardBeingSaved(GameMode currentGameMode)
         {
         }
@@ -104,6 +102,152 @@ namespace IDHIPlugins
         }
 
         /// <summary>
+        /// Heroine name
+        /// </summary>
+        /// <returns></returns>
+        public string GetName(bool withCtrlName = true)
+        {
+            var rc = Utils.TranslateName(Utilities.GirlName(ChaControl), true);
+
+            if (withCtrlName)
+            {
+                rc += $" ({ChaControl.name})";
+            }
+
+            return rc; 
+        }
+
+        /// <summary>
+        /// When coordinate is grater than 3 (Bathing) try and get the corresponding
+        /// type. The function is needed if the type selected by the game is
+        /// greater then 3.
+        /// </summary>
+        /// <param name="type">coordinate in the request for random coordinate</param>
+        /// <returns></returns>
+        public ChaFileDefine.CoordinateType GetCategoryType(int coordinate)
+        {
+            GirlsRandomData.TryGetValue(Utilities.PseudoKey(ChaControl), out var girlInfo);
+
+            var rc = ChaFileDefine.CoordinateType.Plain;
+
+            if (girlInfo != null)
+            {
+                rc = girlInfo.GetCategoryType(coordinate);
+            }
+            return rc;
+        }
+
+        /// <summary>
+        /// This overload is needed because the game for coordinates > 3 uses the
+        /// coordinate number as it type (ex, coordinate 5 has )
+        /// </summary>
+        /// <param name="type">Type of coordinate</param>
+        /// <returns></returns>
+        public ChaFileDefine.CoordinateType GetCategoryType(ChaFileDefine.CoordinateType type)
+        {
+            return GetCategoryType((int)type);
+        }
+
+        /// <summary>
+        /// Get current random coordinate in cache
+        /// </summary>
+        /// <returns></returns>
+        public int GetRandomCoordinate()
+        {
+            var rc = -1;
+            if (GirlsRandomData.TryGetValue(Utilities.PseudoKey(ChaControl), out var girlInfo))
+            {
+                rc = girlInfo.CoordinateNumber;
+            }
+            return rc;
+        }
+
+        /// <summary>
+        /// Get current coordinate according to a type
+        /// </summary>
+        /// <returns></returns>
+        public ChaFileDefine.CoordinateType GetRandomCategoryType()
+        {
+            var rc = ChaFileDefine.CoordinateType.Plain;
+            if (GirlsRandomData.TryGetValue(Utilities.PseudoKey(ChaControl), out var girlInfo))
+            {
+                rc = girlInfo.CategoryType;
+            }
+            return rc;
+        }
+
+        /// <summary>
+        /// Return the current coordinate for any given type
+        /// </summary>
+        /// <param name="type">Type of coordinate</param>
+        /// <returns></returns>
+        public int GetRandomCoordinateByType(ChaFileDefine.CoordinateType type)
+        {
+            if (GirlsRandomData.TryGetValue(Utilities.PseudoKey(ChaControl), out var girlInfo))
+            {
+                var categoryType = girlInfo.GetCategoryType((int)type);
+
+                if (girlInfo.CoordinateByType
+                    .TryGetValue(categoryType, out var coordinate))
+                {
+                    return coordinate;
+                }
+            }
+            return (int)type;
+        }
+
+        /// <summary>
+        /// Overload NowRandomCoordinate with integer type
+        /// </summary>
+        /// <param name="type">coordinate type as integer</param>
+        /// <returns></returns>
+        public int GetRandomCoordinateByType(int type)
+        {
+            return GetRandomCoordinateByType((ChaFileDefine.CoordinateType)type);
+        }
+
+        /// <summary>
+        /// Return string with the cache info for 
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public string GetCache(ChaFileDefine.CoordinateType type)
+        {
+            var rc = string.Empty;
+
+            if (GirlsRandomData.TryGetValue(Utilities.PseudoKey(ChaControl), out var girlInfo))
+            {
+                girlInfo.ToString(type);
+            }
+
+            return rc;
+        }
+
+        /// <summary>
+        /// GetCache overload for an int parameter
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public string GetCache(int type)
+        {
+            return GetCache((ChaFileDefine.CoordinateType)type);
+        }
+
+        /// <summary>
+        /// Manually set current random cache information
+        /// </summary>
+        /// <param name="type"></param>
+        public void SetRandomCoordinate(ChaFileDefine.CoordinateType type)
+        {
+            if (GirlsRandomData.TryGetValue(Utilities.PseudoKey(ChaControl), out var girlInfo))
+            {
+                var categoryType = girlInfo.GetCategoryType((int)type);
+
+                girlInfo.SetRandomData(categoryType, (int)type);
+            }
+        }
+
+        /// <summary>
         /// Look for first run info in cache.
         /// </summary>
         /// <returns></returns>
@@ -162,97 +306,6 @@ namespace IDHIPlugins
             };
 
             return _coordinate;
-        }
-
-        /// <summary>
-        /// When coordinate is grater than 3 (Bathing) try and get the corresponding
-        /// type. The function is needed if the type selected by the game is
-        /// greater then 3.
-        /// </summary>
-        /// <param name="type">coordinate in the request for random coordinate</param>
-        /// <returns></returns>
-        public ChaFileDefine.CoordinateType GetCategoryType(int coordinate)
-        {
-            GirlsRandomData.TryGetValue(Utilities.PseudoKey(ChaControl), out var girlInfo);
-
-            var rc = ChaFileDefine.CoordinateType.Plain;
-
-            if (girlInfo != null)
-            {
-                rc = girlInfo.GetCategoryType(coordinate);
-            }
-            return rc;
-        }
-
-        /// <summary>
-        /// This overload is needed because the game for coordinates > 3 uses the
-        /// coordinate number as it type (ex, coordinate 5 has )
-        /// </summary>
-        /// <param name="type">Type of coordinate</param>
-        /// <returns></returns>
-        public ChaFileDefine.CoordinateType GetCategoryType(ChaFileDefine.CoordinateType type)
-        {
-            return GetCategoryType((int)type);
-        }
-
-        public int NowRandomCoordinate()
-        {
-            var rc = -1;
-            if (GirlsRandomData.TryGetValue(Utilities.PseudoKey(ChaControl), out var girlInfo))
-            {
-                rc = girlInfo.CoordinateNumber;
-            }
-            return rc;
-        }
-
-        public ChaFileDefine.CoordinateType NowRandomCategoryType()
-        {
-            var rc = ChaFileDefine.CoordinateType.Plain;
-            if (GirlsRandomData.TryGetValue(Utilities.PseudoKey(ChaControl), out var girlInfo))
-            {
-                rc = girlInfo.CategoryType;
-            }
-            return rc;
-        }
-
-        /// <summary>
-        /// Return the current coordinate for any given type
-        /// </summary>
-        /// <param name="type">Type of coordinate</param>
-        /// <returns></returns>
-        public int NowRandomCoordinateByType(ChaFileDefine.CoordinateType type)
-        {
-            if (GirlsRandomData.TryGetValue(Utilities.PseudoKey(ChaControl), out var girlInfo))
-            { 
-                var categoryType = girlInfo.GetCategoryType((int)type);
-
-                if (girlInfo.CoordinateByType
-                    .TryGetValue(categoryType, out var coordinate))
-                {
-                    return coordinate;
-                }
-            }
-            return (int)type;
-        }
-
-        /// <summary>
-        /// Overload NowRandomCoordinate with integer type
-        /// </summary>
-        /// <param name="type">coordinate type as integer</param>
-        /// <returns></returns>
-        public int NowRandomCoordinateByType(int type)
-        {
-            return NowRandomCoordinateByType((ChaFileDefine.CoordinateType)type);
-        }
-
-        public void SetRandomCoordinate(ChaFileDefine.CoordinateType type)
-        {
-            if (GirlsRandomData.TryGetValue(Utilities.PseudoKey(ChaControl), out var girlInfo))
-            {
-                var categoryType = girlInfo.GetCategoryType((int)type);
-
-                girlInfo.SetRandomData(categoryType, (int)type, (int)type);
-            }
         }
 
         /// <summary>

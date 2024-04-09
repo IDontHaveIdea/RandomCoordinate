@@ -28,8 +28,8 @@ namespace IDHIPlugins
 
         internal const ChaFileDefine.CoordinateType _nullType = (ChaFileDefine.CoordinateType)(-1);
 
-        // The Character controller is reinitialiezed and even unloaded
-        // during the game mantaining persistent data on the controller
+        // The Character controller is reinitialized and even unloaded
+        // during the game maintaining persistent data on the controller
         // is just an act of frustration. So persistent runtime data
         // will be saved in this dictionary and used by the controller.
         private static Dictionary<string, RandomData> _GirlsRandomData = [];
@@ -93,12 +93,10 @@ namespace IDHIPlugins
 
         internal static void ChangeCoordinate(ChaControl girl, int coordinateNumber)
         {
-            _Log.Info($"[ChangeCoordinate] Calling.");
             Manager.Character.enableCharaLoadGCClear = false;
             girl.ChangeCoordinateTypeAndReload(
                 (ChaFileDefine.CoordinateType)coordinateNumber);
             Manager.Character.enableCharaLoadGCClear = true;
-            _Log.Info($"[ChangeCoordinate] Returned.");
         }
 
         /// <summary>

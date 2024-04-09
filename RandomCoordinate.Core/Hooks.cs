@@ -144,6 +144,12 @@ namespace IDHIPlugins
             var name = Utils.TranslateName(Utilities.GirlName(__instance), true) +
                 $" ({__instance.name})";
 
+            var ctrl = GetController(__instance);
+            if (ctrl == null)
+            {
+                _Log.Error($"[ChangeCoordinateTypeAndReloadPrefix] YYYY: Name={name} controller null.");
+            }
+
             var categoryType = Utilities.GetCoordinateType(__instance, (int)type);
 
             var randomCoordinateByType = -1;
@@ -253,14 +259,16 @@ namespace IDHIPlugins
 
             var name = Utils.TranslateName(Utilities.GirlName(__instance), true) +
                 $" ({__instance.chaCtrl.name})";
+
             var ctrl = GetController(__instance.chaCtrl);
 
             if (ctrl == null)
             {
+                // TODO: If test successful go back to using character controller this time
+                // the controller will use the cache
+                _Log.Error($"[SynchroCoordinatePostfix] XXXX: Name={name} controller null.");
                 return;
             }
-
-            var actScene = ActionScene.instance;
 
             // Active coordinate this happens to be the same shit
             var coordinateNumber = __instance.heroine.StatusCoordinate;
@@ -340,8 +348,6 @@ namespace IDHIPlugins
             // On first run (of OnReload) get a random coordinate. This causes to have
             // more variety whenever a start game, change period load a save game a
             // random coordinate will be selected.
-            // FirstRun unreliable game reinitializes controller.
-            // FirstRun() relies on cache.
             var firstRun = girlInfo.FirstRun;
 
             if (firstRun)
@@ -418,13 +424,13 @@ namespace IDHIPlugins
 #endif
             }
 
-            if (isRemove)
-            {
-                _Log.Debug($"[SynchroCoordinate] 0007: Name={name} map={mapNo} " +
-                    $"({mapName}) calling RandomChangeOfClothesLowPoly.");
-                __instance.chaCtrl.RandomChangeOfClothesLowPoly(
-                    __instance.heroine.lewdness);
-            }
+            //if (isRemove)
+            //{
+            //    _Log.Debug($"[SynchroCoordinate] 0007: Name={name} map={mapNo} " +
+            //        $"({mapName}) calling RandomChangeOfClothesLowPoly.");
+            //    __instance.chaCtrl.RandomChangeOfClothesLowPoly(
+            //        __instance.heroine.lewdness);
+            //}
         }
     }
 }
