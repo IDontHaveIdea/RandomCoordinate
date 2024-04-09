@@ -91,8 +91,10 @@ namespace IDHIPlugins
                             }
                         }
                     }
+#if DEBUG
                     var nowName = "";
-                    var newName = ".";
+                    var newName = "";
+                    var mapName = Utils.MapName(guideMap);
                     if (statusCoordinate > 3)
                     {
                         nowName = $"({_MoreOutfits
@@ -104,17 +106,10 @@ namespace IDHIPlugins
                             .GetCoordinateName(
                             heroine.chaCtrl, ctrl.NowRandomCoordinate())}).";
                     }
-#if DEBUG
-                    _Log.Debug($"[SetGuide] GUIDE={_guide.Name.Trim()} in " +
-                        $"mapNo={guideMap} setCoordinate={setCoordinate} {nowName}" +
-                        $"NowRandomCoordinate={ctrl.NowRandomCoordinate()}{newName}");
-                    _Log.Info($"[SetGuide] GUIDE={_guide.Name.Trim()} " +
-                        $"({_guide.chaCtrl.name}) " +
-                        $"guideMap={guideMap} options uMap={uMap} mapMove={mapMove} " +
-                        $"mapFix={fixChara.mapNo} " +
-                        $"setCoordinate={setCoordinate} " +
-                        $"newCoordinate={newCoordinate} " +
-                        $"NowRandomCoordinate={nowRandomCoordinate}.");
+                    _Log.Debug($"[SetGuide] GUIDE={_guide.Name.Trim()} ({_guide.chaCtrl.name})" +
+                        $"mapFix={fixChara.mapNo} mapNo={guideMap} ({mapName}) " +
+                        $"statusCoordinate={statusCoordinate}{nowName} " +
+                        $"NowRandomCoordinate={ctrl.NowRandomCoordinate()}{newName}.");
 #endif
                 }
             }

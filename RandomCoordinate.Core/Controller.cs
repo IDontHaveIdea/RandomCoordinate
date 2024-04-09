@@ -55,13 +55,13 @@ namespace IDHIPlugins
                 if (GirlsRandomData.TryGetValue(girlKey, out var girlInfo))
                 {
                     // Initialize the coordinates information
-                    var nowRandomCoordinate = heroine.StatusCoordinate;
+                    var nowCoordinate = heroine.StatusCoordinate;
                     var categoryType = girlInfo.GetCategoryType(heroine.StatusCoordinate);
                     var randomCoordinateByType = girlInfo.CoordinateByType[categoryType];
                     var randomCoordinate = girlInfo.CoordinateNumber;
                     var randomCategory = girlInfo.CategoryType;
 
-                    if (nowRandomCoordinate != randomCoordinateByType)
+                    if (nowCoordinate != randomCoordinateByType)
                     {
                         // Set current random coordinate cache info to what the heroine is
                         // currently wearing. This inconsistency occurs when the game resets the
@@ -71,7 +71,7 @@ namespace IDHIPlugins
 #if DEBUG
                         _Log.Warning($"[OnReload] 0001: Name={heroine.Name.Trim()} " +
                             $"({heroine.chaCtrl.name}) update cache categoryType={categoryType} " +
-                            $"nowCoordinate={nowRandomCoordinate} " +
+                            $"nowCoordinate={nowCoordinate} " +
                             $"coordinateBT[{categoryType}]={randomCoordinateByType} " +
                             $"randomCategory={randomCategory} " +
                             $"randomCoordinate={randomCoordinate}.");
@@ -119,7 +119,7 @@ namespace IDHIPlugins
         }
 
         /// <summary>
-        /// Sets first run flag in chache.
+        /// Sets first run flag in cache.
         /// </summary>
         /// <param name="status"></param>
         public void FirstRun(bool status)
