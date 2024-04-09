@@ -34,6 +34,7 @@ namespace IDHIPlugins
                     {ChaFileDefine.CoordinateType.Pajamas, 2},
                     {ChaFileDefine.CoordinateType.Bathing, 3}
                 };
+            public int TotalCoordinates { get; set; } = -1;
 
             public CoordinateData()
             {
@@ -69,7 +70,7 @@ namespace IDHIPlugins
 
             public void InitCoordinates(ChaControl heroine)
             {
-                var totalCoordinates = heroine.chaFile.coordinate.Length;
+                TotalCoordinates = heroine.chaFile.coordinate.Length;
 
                 for (var i = 0; i < 4; i++)
                 {
@@ -79,7 +80,7 @@ namespace IDHIPlugins
                 }
 
                 // Add additional outfits to Plain type for random selection
-                for (var i = 4; i < totalCoordinates; i++)
+                for (var i = 4; i < TotalCoordinates; i++)
                 {
                     CoordinatesByType[ChaFileDefine.CoordinateType.Plain].Add(i);
                 }
@@ -167,6 +168,17 @@ namespace IDHIPlugins
             public bool FirstRun { get; set; } = true;
             public string Name { get; private set; } = "";
             public bool HasMoreOutfits { get; set; }
+            public int TotalCoordinates
+            {
+                get
+                {
+                    return Current.TotalCoordinates;
+                }
+                set
+                {
+                    Current.TotalCoordinates = value;
+                }
+            }
             #endregion Properties
 
             public RandomData(
