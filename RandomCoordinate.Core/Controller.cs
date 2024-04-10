@@ -225,14 +225,6 @@ namespace IDHIPlugins
             return (int)type;
         }
 
-        public int this[ChaFileDefine.CoordinateType key]
-        {
-            get
-            {
-                return GetRandomCoordinateByType(key);
-            }
-        }
-
         /// <summary>
         /// Overload NowRandomCoordinate with integer type
         /// </summary>
@@ -241,11 +233,6 @@ namespace IDHIPlugins
         public int GetRandomCoordinateByType(int type)
         {
             return GetRandomCoordinateByType((ChaFileDefine.CoordinateType)type);
-        }
-
-        public int this[int key]
-        {
-            get { return GetRandomCoordinateByType((ChaFileDefine.CoordinateType)key); }
         }
 
         /// <summary>
