@@ -191,6 +191,7 @@ namespace IDHIPlugins
 
                 InitCoordinates(chaCtrl);
                 HasMoreOutfits = chaCtrl.chaFile.coordinate.Length >= 4;
+                TotalCoordinates = chaCtrl.chaFile.coordinate.Length;
 
                 Current.SetData(categoryType, coordinateNumber);
                 Previous.SetData(categoryType, coordinateNumber);
@@ -210,13 +211,10 @@ namespace IDHIPlugins
 
                 InitCoordinates(heroine);
                 HasMoreOutfits = heroine.charFile.coordinate.Length >= 4;
+                TotalCoordinates = heroine.charFile.coordinate.Length;
 
                 Current.SetData(heroine);
                 Previous.SetData(heroine);
-
-                //CategoryType = GetCategoryType(heroine.StatusCoordinate);
-                //CoordinateNumber = heroine.StatusCoordinate;
-                //CoordinateByType[CategoryType] = heroine.StatusCoordinate;
 
                 CtrlName = heroine.chaCtrl.name;
                 Name = heroine.Name.Trim();
@@ -228,12 +226,7 @@ namespace IDHIPlugins
                 int coordinateNumber)
             {
                 SaveToPrevious();
-
                 Current.SetData(categoryType, coordinateNumber);
-
-                //CategoryType = categoryType;
-                //CoordinateNumber = coordinateNumber;
-                //CoordinateByType[CategoryType] = statusCoordinate;
 
                 return true;
             }
@@ -244,14 +237,7 @@ namespace IDHIPlugins
                 if (heroine != null)
                 {
                     SaveToPrevious();
-
                     rc = Current.SetData(heroine);
-
-                    //CategoryType = GetCategoryType(heroine.StatusCoordinate);
-                    //CoordinateNumber = heroine.StatusCoordinate;
-                    //CoordinateByType[CategoryType] = heroine.StatusCoordinate;
-
-                    //rc = true;
                 }
                 return rc;
             }
@@ -261,10 +247,6 @@ namespace IDHIPlugins
                 // Update Previous
 
                 Previous.SetData(CategoryType, CoordinateNumber);
-
-                //Previous.CategoryType = CategoryType;
-                //Previous.CoordinateNumber = CoordinateNumber;
-                //Previous.CoordinateByType[CategoryType] = CoordinateNumber;
             }
 
 
@@ -337,87 +319,11 @@ namespace IDHIPlugins
                 return GetCategoryType((int)type);
             }
 
-            public int NewRandomCoordinateByType(ChaFileDefine.CoordinateType type)
-            {
-                if (FirstRun)
-                {
-                    FirstRun = false;
-                }
-
-                var _coordinate = type switch {
-                    ChaFileDefine.CoordinateType.Swim =>
-                        (int)ChaFileDefine.CoordinateType.Swim,
-                    ChaFileDefine.CoordinateType.Pajamas =>
-                        (int)ChaFileDefine.CoordinateType.Pajamas,
-                    ChaFileDefine.CoordinateType.Bathing =>
-                        (int)ChaFileDefine.CoordinateType.Bathing,
-                    _ => RandomCoordinate(type),
-                };
-
-                return _coordinate;
-            }
-
             /// <summary>
-            /// Get random coordinate according to type classification
-            /// (Plain, Swim, ...) Now only working with Plain coordinate
-            /// only i.e., when Plain clothes are selected the function will
-            /// select among the Plain coordinate number 0 and anything
-            /// above 3 (Bathing)
+            /// Return string representing current data for cache
             /// </summary>
-            /// <param name="type">Coordinate type selected by the game</param>
+            /// <param name="type"></param>
             /// <returns></returns>
-            private int RandomCoordinate(ChaFileDefine.CoordinateType type, bool test = false)
-            {
-                var newCoordinate = (int)type;
-
-                try
-                {
-                    var categoryType = GetCategoryType(type);
-                    var tmpCoordinates = CoordinatesByType[categoryType];
-
-                    if (tmpCoordinates.Count > 1)
-                    {
-                        try
-                        {
-                            // New random coordinate
-                            var coordinateIndex = RandCoordinate.Next(0, tmpCoordinates.Count);
-                            newCoordinate = tmpCoordinates[coordinateIndex];
-
-                            // save coordinate
-                            if (!test)
-                            {
-                                CategoryType = categoryType;
-                                CoordinateNumber = newCoordinate;
-                                CoordinateByType[categoryType] = newCoordinate;
-#if DEBUG
-                                _Log.Warning($"[RandomCoordinate] 0000: Name={Name} " +
-                                    $"nowRCByType[{categoryType}]=" +
-                                    $"{CoordinateByType[categoryType]} " +
-                                    $"nowRT={CategoryType} " +
-                                    $"nowRC={CoordinateNumber}.");
-#endif
-                            }
-
-                        }
-                        catch (Exception e)
-                        {
-                            _Log.Level(LogLevel.Error, $"[RandomCoordinate] " +
-                                $"Name={Name} Problem generating random " +
-                                $"number categoryType={categoryType} " +
-                                $"Error code={e.Message}");
-                        }
-                    }
-                }
-                catch (Exception e)
-                {
-                    _Log.Level(LogLevel.Error, $"[RandomCoordinate] " +
-                        $"Name={Name} Problem " +
-                        $"in random coordinate search type={type} " +
-                        $"code={e.Message}");
-                }
-                return newCoordinate;
-            }
-
             public string ToString(ChaFileDefine.CoordinateType type)
             {
                 var categoryType = GetCategoryType((int)type);
