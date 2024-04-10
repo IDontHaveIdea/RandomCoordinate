@@ -12,12 +12,16 @@ using KKAPI.MainGame;
 using Utils = IDHIUtils.Utilities;
 
 using static IDHIPlugins.RandomCoordinatePlugin;
+using System.Linq;
 
 
 namespace IDHIPlugins
 {
     public partial class RandomCoordinateController : CharaCustomFunctionController
     {
+        public bool HasMoreOutfits => ChaControl.chaFile.coordinate.Length >= 4;
+        public int TotalCoordinates => ChaControl.chaFile.coordinate.Length;
+
         protected override void OnCardBeingSaved(GameMode currentGameMode)
         {
         }
@@ -118,6 +122,31 @@ namespace IDHIPlugins
         }
 
         /// <summary>
+        /// Heroine map location
+        /// </summary>
+        /// <returns></returns>
+        public string GetMapInfo()
+        {
+            var mapNo = Utils.MapNumber(ChaControl);
+            var mapName = Utils.MapName(ChaControl);
+
+            var rc = $"map={mapNo} ({mapName})";
+
+            return rc;
+        }
+
+        /// <summary>
+        /// Get the RandomData set in cache for this ChaControl
+        /// </summary>
+        /// <returns></returns>
+        public RandomData GirlInfo()
+        {
+            GirlsRandomData.TryGetValue(Utilities.PseudoKey(ChaControl), out var girlInfo);
+
+            return girlInfo;
+        }
+
+        /// <summary>
         /// When coordinate is grater than 3 (Bathing) try and get the corresponding
         /// type. The function is needed if the type selected by the game is
         /// greater then 3.
@@ -196,6 +225,14 @@ namespace IDHIPlugins
             return (int)type;
         }
 
+        public int this[ChaFileDefine.CoordinateType key]
+        {
+            get
+            {
+                return GetRandomCoordinateByType(key);
+            }
+        }
+
         /// <summary>
         /// Overload NowRandomCoordinate with integer type
         /// </summary>
@@ -204,6 +241,11 @@ namespace IDHIPlugins
         public int GetRandomCoordinateByType(int type)
         {
             return GetRandomCoordinateByType((ChaFileDefine.CoordinateType)type);
+        }
+
+        public int this[int key]
+        {
+            get { return GetRandomCoordinateByType((ChaFileDefine.CoordinateType)key); }
         }
 
         /// <summary>
@@ -320,31 +362,49 @@ namespace IDHIPlugins
         private int RandomCoordinate(ChaFileDefine.CoordinateType type)
         {
             var newCoordinate = (int)type;
-            var name = Utilities.GirlName(ChaControl) +$" ({ChaControl.name})";
+            var name = Utilities.GirlName(ChaControl) + $" ({ChaControl.name})";
 
             try
             {
                 if (GirlsRandomData.TryGetValue(Utilities.PseudoKey(ChaControl), out var girlInfo))
                 {
                     var categoryType = girlInfo.GetCategoryType(type);
-                    var tmpCoordinates = girlInfo.CoordinatesByType[categoryType];
+                    var currentType = ChaControl.fileStatus.coordinateType;
+                    var coordinates = girlInfo.CoordinatesByType[categoryType];
 
-                    if (tmpCoordinates.Count > 1)
+                    if (coordinates.Count > 1)
                     {
                         try
                         {
-                            // New random coordinate
-                            var currentType = ChaControl.fileStatus.coordinateType;
-                            var coordinateIndex = RandCoordinate.Next(0, tmpCoordinates.Count);
-                            newCoordinate = tmpCoordinates[coordinateIndex];
+                            var newCoordinates = coordinates.Where(x => x != currentType).ToList();
+
+                            if (newCoordinates.Count > 1)
+                            {
+                                // New random coordinate
+                                var coordinateIndex = RandCoordinate.Next(0, newCoordinates.Count);
+                                newCoordinate = newCoordinates[coordinateIndex];
+                            }
+                            else
+                            {
+                                if (newCoordinates.Count == 0)
+                                {
+                                    // This should never be true
+                                    newCoordinate = (int)type;
+                                }
+                                else
+                                {
+                                    // There were only 2 coordinates in the pool
+                                    newCoordinate = coordinates[0];
+                                }
+                            }
 
                             // save coordinate
                             girlInfo.CategoryType = categoryType;
                             girlInfo.CoordinateNumber = newCoordinate;
                             girlInfo.CoordinateByType[categoryType] = newCoordinate;
 #if DEBUG
-                            _Log.Warning($"[RandomCoordinate] Name={name} " +
-                                $"currentCoordinateType={currentType} " +
+                            _Log.Warning($"[RandomCoordinate] 0000: Name={name} " +
+                                $"{GetMapInfo()} currentCoordinateType={currentType} " +
                                 $"CoordinateByType[{categoryType}]=" +
                                 $"{girlInfo.CoordinateByType[categoryType]} " +
                                 $"CategoryType={girlInfo.CategoryType} " +
