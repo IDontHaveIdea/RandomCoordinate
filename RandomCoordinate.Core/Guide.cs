@@ -35,7 +35,6 @@ namespace IDHIPlugins
                     var guideMap = -1;
                     var mapMove = -1;
                     var statusCoordinate = heroine.StatusCoordinate;
-                    var nowRandomCoordinate = -1;
                     var newCoordinate = -1;
 
                     mapMove = fixChara.charaData.moveData.mapNo;
@@ -83,7 +82,6 @@ namespace IDHIPlugins
                                 // consideration
                                 newCoordinate = ctrl.NewRandomCoordinateByType(
                                             ChaFileDefine.CoordinateType.Plain);
-                                nowRandomCoordinate = ctrl.GetRandomCoordinate();
                                 if (heroine.StatusCoordinate != newCoordinate)
                                 {
                                     ChangeCoordinate(heroine.chaCtrl, newCoordinate);
