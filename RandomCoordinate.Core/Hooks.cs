@@ -106,15 +106,15 @@ namespace IDHIPlugins
                     return true;
                 }
 #if DEBUG
-                var ctrl = GetController(__instance);
-                _Log.Warning($"[ChangeCoordinateTypePrefix] 0001: " +
-                        $"Name={name} type={type}.");
+                //var ctrl = GetController(__instance);
+                //_Log.Warning($"[ChangeCoordinateTypePrefix] 0001: " +
+                //        $"Name={name} type={type}.");
 
-                if (ctrl != null)
-                {
-                    _Log.Warning($"[ChangeCoordinateTypePrefix] 0002: " +
-                        $"Name={name} type={type} randomByType={ctrl.GetRandomCoordinateByType(type)}.");
-                }
+                //if (ctrl != null)
+                //{
+                //    _Log.Warning($"[ChangeCoordinateTypePrefix] 0002: " +
+                //        $"Name={name} type={type} randomByType={ctrl.GetRandomCoordinateByType(type)}.");
+                //}
 #endif
             }
             catch (Exception e)

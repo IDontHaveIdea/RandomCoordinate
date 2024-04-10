@@ -196,10 +196,6 @@ namespace IDHIPlugins
                 Current.SetData(categoryType, coordinateNumber);
                 Previous.SetData(categoryType, coordinateNumber);
 
-                //CategoryType = categoryType;
-                //CoordinateNumber = coordinateNumber;
-                //CoordinateByType[CategoryType] = coordinateNumber;
-
                 CtrlName = chaCtrl.name;
                 Name = chaCtrl.chaFile.parameter.fullname.Trim();
             }
@@ -248,7 +244,6 @@ namespace IDHIPlugins
 
                 Previous.SetData(CategoryType, CoordinateNumber);
             }
-
 
             /// <summary>
             /// Clears and fill the _Coordinates dictionary
