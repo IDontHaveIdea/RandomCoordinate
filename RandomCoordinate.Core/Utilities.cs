@@ -52,7 +52,7 @@ namespace IDHIPlugins
 
         /// <summary>
         /// Get the girl name for debugging purposes. Sometimes looking in
-        /// the Savedata.Heroine class fails.
+        /// the SaveData.Heroine class fails.
         /// </summary>
         /// <param name="girl"></param>
         /// <returns></returns>
