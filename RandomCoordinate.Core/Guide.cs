@@ -14,7 +14,7 @@ namespace IDHIPlugins
     {
         internal static SaveData.Heroine _guide;
         internal static int _guideMapNo;
-        internal static bool getNewCoordinate = true;
+        internal static bool _guideNewCoordinate = true;
 
         /// <summary>
         /// Save Heroine information for the Guide Character
@@ -35,7 +35,6 @@ namespace IDHIPlugins
                     var guideMap = -1;
                     var mapMove = -1;
                     var statusCoordinate = heroine.StatusCoordinate;
-                    var nowRandomCoordinate = -1;
                     var newCoordinate = -1;
 
                     mapMove = fixChara.charaData.moveData.mapNo;
@@ -64,23 +63,25 @@ namespace IDHIPlugins
                         // For the guide 
                         if (guideMap == 4)
                         {
-                            heroine.chaCtrl.fileStatus.coordinateType = (int)ChaFileDefine.CoordinateType.Swim;
+                            heroine.chaCtrl.fileStatus.coordinateType =
+                                (int)ChaFileDefine.CoordinateType.Swim;
                             ctrl.SetRandomCoordinate(ChaFileDefine.CoordinateType.Swim);
-                            ChangeCoordinate(heroine.chaCtrl, (int)ChaFileDefine.CoordinateType.Swim);
+                            ChangeCoordinate(
+                                heroine.chaCtrl,
+                                (int)ChaFileDefine.CoordinateType.Swim);
                         }
                         else
                         {
-                            if (getNewCoordinate)
+                            if (_guideNewCoordinate)
                             {
-                                getNewCoordinate = false;
+                                _guideNewCoordinate = false;
 #if DEBUG
-                                _Log.Error("[SetGuide] Calling NewRandomCoordinateByType.");
+                                _Log.Warning("[SetGuide] Calling NewRandomCoordinateByType.");
 #endif
                                 // Guide won't be in any map that have special
                                 // consideration
                                 newCoordinate = ctrl.NewRandomCoordinateByType(
                                             ChaFileDefine.CoordinateType.Plain);
-                                nowRandomCoordinate = ctrl.NowRandomCoordinate;
                                 if (heroine.StatusCoordinate != newCoordinate)
                                 {
                                     ChangeCoordinate(heroine.chaCtrl, newCoordinate);
@@ -88,43 +89,28 @@ namespace IDHIPlugins
                             }
                         }
                     }
+#if DEBUG
                     var nowName = "";
-                    var newName = ".";
+                    var newName = "";
+                    var mapName = Utils.MapName(guideMap);
                     if (statusCoordinate > 3)
                     {
                         nowName = $"({_MoreOutfits
                             .GetCoordinateName(heroine.chaCtrl, statusCoordinate)}) ";
                     }
-                    if (ctrl.NowRandomCoordinate > 3)
+                    if (ctrl.GetRandomCoordinate() > 3)
                     {
                         newName = $" ({_MoreOutfits
                             .GetCoordinateName(
-                            heroine.chaCtrl, ctrl.NowRandomCoordinate)}).";
+                            heroine.chaCtrl, ctrl.GetRandomCoordinate())}).";
                     }
-                    _Log.Debug($"[SetGuide] GUIDE={_guide.Name.Trim()} in " +
-                        $"mapNo={guideMap} setCoordinate={setCoordinate} {nowName}" +
-                        $"NowRandomCoordinate={ctrl.NowRandomCoordinate}{newName}");
-#if DEBUG
-                    _Log.Info($"[SetGuide] GUIDE={_guide.Name.Trim()} " +
-                        $"chaName={_guide.chaCtrl.name} " +
-                        $"guideMap={guideMap} options uMap={uMap} mapMove={mapMove} " +
-                        $"mapFix={fixChara.mapNo} " +
-                        $"setCoordinate={setCoordinate} " +
-                        $"newCoordinate={newCoordinate} " +
-                        $"NowRandomCoordinate={nowRandomCoordinate}.");
+                    _Log.Debug($"[SetGuide] GUIDE={_guide.Name.Trim()} ({_guide.chaCtrl.name})" +
+                        $"mapFix={fixChara.mapNo} mapNo={guideMap} ({mapName}) " +
+                        $"statusCoordinate={statusCoordinate}{nowName} " +
+                        $"NowRandomCoordinate={ctrl.GetRandomCoordinate()}{newName}.");
 #endif
                 }
             }
-        }
-
-        internal static void PeriodChange(object sender, GameAPI.PeriodChangeEventArgs args)
-        {
-            var was = getNewCoordinate;
-            getNewCoordinate = true;
-#if DEBUG
-            _Log.Warning($"[PeriodChange] NewPeriod={args.NewPeriod} " +
-                $"getNewCoordinate={getNewCoordinate} was={was}");
-#endif
         }
     }
 }

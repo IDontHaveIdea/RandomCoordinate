@@ -14,6 +14,7 @@ using KKAPI;
 using KKAPI.Chara;
 
 using IDHIUtils;
+using KKAPI.MainGame;
 
 
 
@@ -25,9 +26,17 @@ namespace IDHIPlugins
         internal static Random RandCoordinate = new();
         internal static MoreOutfits _MoreOutfits = new();
 
-        // This dictionary is for caching some information
-        // Names sometimes fail when using ChaControl.GetHeroine()
-        internal static Dictionary<string, string> GirlsNames = [];
+        internal const ChaFileDefine.CoordinateType _nullType = (ChaFileDefine.CoordinateType)(-1);
+
+        // The Character controller is reinitialized and even unloaded
+        // during the game maintaining persistent data on the controller
+        // is just an act of frustration. So persistent runtime data
+        // will be saved in this dictionary and used by the controller.
+        private static Dictionary<string, RandomData> _GirlsRandomData = [];
+
+        public static Dictionary<string, RandomData> GirlsRandomData =>
+            _GirlsRandomData;
+
 
         private void Awake()
         {
@@ -43,10 +52,13 @@ namespace IDHIPlugins
             _Log.Level(LogLevel.Info, $"[ConfigEntries] Random Coordinates Change " +
                 $"Room Only set to={OnlyChangingRoom.Value}");
 #endif
-            GirlsNames.Clear();
+            _GirlsRandomData.Clear();
+
             CharacterApi.RegisterExtraBehaviour<RandomCoordinateController>(GUID);
 
             KoikatuAPI.Quitting += OnGameExit;
+            GameAPI.PeriodChange += Utilities.PeriodChange;
+            GameAPI.DayChange += Utilities.DayChange;
         }
 
         private void Start()
@@ -56,6 +68,7 @@ namespace IDHIPlugins
             _Log.Level(LogLevel.Info, $"[{PluginName}] Assembly {thisAss.FullName}");
 #endif
             Hooks.Init();
+            //Hooks.InitJetPack();
         }
 
         /// <summary>
@@ -81,7 +94,8 @@ namespace IDHIPlugins
         internal static void ChangeCoordinate(ChaControl girl, int coordinateNumber)
         {
             Manager.Character.enableCharaLoadGCClear = false;
-            girl.ChangeCoordinateTypeAndReload((ChaFileDefine.CoordinateType)coordinateNumber);
+            girl.ChangeCoordinateTypeAndReload(
+                (ChaFileDefine.CoordinateType)coordinateNumber);
             Manager.Character.enableCharaLoadGCClear = true;
         }
 

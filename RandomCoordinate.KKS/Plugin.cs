@@ -11,7 +11,6 @@ using KKAPI;
 // Development one.
 //
 
-
 namespace IDHIPlugins
 {
     [BepInDependency(KoikatuAPI.GUID, KoikatuAPI.VersionConst)]
