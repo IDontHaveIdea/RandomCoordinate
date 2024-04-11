@@ -78,6 +78,10 @@ namespace IDHIPlugins
                             $"randomCategory={randomCategory} " +
                             $"randomCoordinate={randomCoordinate}.");
 #endif
+                        categoryType = girlInfo.GetCategoryType(heroine.StatusCoordinate);
+                        randomCoordinateByType = girlInfo.CoordinateByType[categoryType];
+                        randomCoordinate = girlInfo.CoordinateNumber;
+                        randomCategory = girlInfo.CategoryType;
                     }
 
                     if (heroine.fixCharaID == -13)
