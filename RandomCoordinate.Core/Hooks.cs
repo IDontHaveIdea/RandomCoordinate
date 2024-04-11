@@ -185,38 +185,33 @@ namespace IDHIPlugins
                     return true;
                 }
 
-                if (categoryType == ChaFileDefine.CoordinateType.Plain)
+                // Preserve current random coordinate for type change request
+                var randomCoordinateByType = ctrl.GetRandomCoordinateByType(categoryType);
+                if ((randomCoordinateByType >= 0)
+                    && (type != (ChaFileDefine.CoordinateType)randomCoordinateByType))
                 {
-                    if (ctrl != null)
-                    {
-                        // Preserve current random coordinate for type change request
-                        var randomCoordinateByType = ctrl.GetRandomCoordinateByType(categoryType);
-                        if (randomCoordinateByType >= 0)
-                        {
-                            type = (ChaFileDefine.CoordinateType)randomCoordinateByType;
-                        }
-                    }
+                    type = (ChaFileDefine.CoordinateType)randomCoordinateByType;
                 }
 
                 if (DebugInfo.Value)
                 {
-                    var callName = "";
-                    var newName = "";
-
-                    if ((int)callingType > 3)
-                    {
-                        callName = $" ({_MoreOutfits
-                            .GetCoordinateName(__instance, (int)callingType)})";
-                    }
-
-                    if ((int)type > 3)
-                    {
-                        newName = $" ({_MoreOutfits
-                            .GetCoordinateName(__instance, (int)type)})";
-                    }
-
                     if (callingType != type)
                     {
+                        var callName = "";
+                        var newName = "";
+
+                        if ((int)callingType > 3)
+                        {
+                            callName = $" ({_MoreOutfits
+                                .GetCoordinateName(__instance, (int)callingType)})";
+                        }
+
+                        if ((int)type > 3)
+                        {
+                            newName = $" ({_MoreOutfits
+                                .GetCoordinateName(__instance, (int)type)})";
+                        }
+                    
                         _Log.Debug($"[ChangeCoordinateTypeAndReloadPrefix] 0001: Name={name} " +
                             $"{mapInfo} paramType={callingType}{callName} " +
                             $"set type={type}{newName}. Called by {Utils.CallingMethod(4)}");
@@ -411,8 +406,8 @@ namespace IDHIPlugins
 
             //if (isRemove)
             //{
-            //    _Log.Debug($"[SynchroCoordinate] 0007: Name={name} map={mapNo} " +
-            //        $"({mapName}) calling RandomChangeOfClothesLowPoly.");
+            //    _Log.Debug($"[SynchroCoordinate] 0007: Name={name} {mapInfo} " +
+            //        $"calling RandomChangeOfClothesLowPoly.");
             //    __instance.chaCtrl.RandomChangeOfClothesLowPoly(
             //        __instance.heroine.lewdness);
             //}
