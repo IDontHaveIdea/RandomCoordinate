@@ -21,6 +21,19 @@ namespace IDHIPlugins
     {
         public bool HasMoreOutfits => ChaControl.chaFile.coordinate.Length >= 4;
         public int TotalCoordinates => ChaControl.chaFile.coordinate.Length;
+        public string GirlKey => PseudoKey();
+
+        private string PseudoKey()
+        {
+            var name = ChaControl.chaFile.parameter.fullname.Trim();
+            var personality = ChaControl.chaFile.parameter.personality.ToString();
+            var height = (int)Math.Round(ChaControl.chaFile.custom.body
+                .shapeValueBody[(int)ChaFileDefine.BodyShapeIdx.Height] * 100);
+
+            var rc = $"{name}.{personality}.{height}";
+
+            return rc;
+        }
 
         protected override void OnCardBeingSaved(GameMode currentGameMode)
         {
@@ -42,7 +55,7 @@ namespace IDHIPlugins
             
             if (heroine != null)
             {
-                var girlKey = Utilities.PseudoKey(heroine.chaCtrl);
+                var girlKey = GirlKey;
 
                 // Sometimes the controller is not loaded maintain a cache lookup table
                 if (!GirlsRandomData.ContainsKey(girlKey))
@@ -145,7 +158,7 @@ namespace IDHIPlugins
         /// <returns></returns>
         public RandomData GirlInfo()
         {
-            GirlsRandomData.TryGetValue(Utilities.PseudoKey(ChaControl), out var girlInfo);
+            GirlsRandomData.TryGetValue(GirlKey, out var girlInfo);
 
             return girlInfo;
         }
@@ -159,7 +172,7 @@ namespace IDHIPlugins
         /// <returns></returns>
         public ChaFileDefine.CoordinateType GetCategoryType(int coordinate)
         {
-            GirlsRandomData.TryGetValue(Utilities.PseudoKey(ChaControl), out var girlInfo);
+            GirlsRandomData.TryGetValue(GirlKey, out var girlInfo);
 
             var rc = ChaFileDefine.CoordinateType.Plain;
 
@@ -188,7 +201,7 @@ namespace IDHIPlugins
         public int GetRandomCoordinate()
         {
             var rc = -1;
-            if (GirlsRandomData.TryGetValue(Utilities.PseudoKey(ChaControl), out var girlInfo))
+            if (GirlsRandomData.TryGetValue(GirlKey, out var girlInfo))
             {
                 rc = girlInfo.CoordinateNumber;
             }
@@ -202,7 +215,7 @@ namespace IDHIPlugins
         public ChaFileDefine.CoordinateType GetRandomCategoryType()
         {
             var rc = ChaFileDefine.CoordinateType.Plain;
-            if (GirlsRandomData.TryGetValue(Utilities.PseudoKey(ChaControl), out var girlInfo))
+            if (GirlsRandomData.TryGetValue(GirlKey, out var girlInfo))
             {
                 rc = girlInfo.CategoryType;
             }
@@ -216,7 +229,7 @@ namespace IDHIPlugins
         /// <returns></returns>
         public int GetRandomCoordinateByType(ChaFileDefine.CoordinateType type)
         {
-            if (GirlsRandomData.TryGetValue(Utilities.PseudoKey(ChaControl), out var girlInfo))
+            if (GirlsRandomData.TryGetValue(GirlKey, out var girlInfo))
             {
                 var categoryType = girlInfo.GetCategoryType((int)type);
 
@@ -248,7 +261,7 @@ namespace IDHIPlugins
         {
             var rc = string.Empty;
 
-            if (GirlsRandomData.TryGetValue(Utilities.PseudoKey(ChaControl), out var girlInfo))
+            if (GirlsRandomData.TryGetValue(GirlKey, out var girlInfo))
             {
                 girlInfo.ToString(type);
             }
@@ -272,7 +285,7 @@ namespace IDHIPlugins
         /// <param name="type"></param>
         public void SetRandomCoordinate(ChaFileDefine.CoordinateType type)
         {
-            if (GirlsRandomData.TryGetValue(Utilities.PseudoKey(ChaControl), out var girlInfo))
+            if (GirlsRandomData.TryGetValue(GirlKey, out var girlInfo))
             {
                 var categoryType = girlInfo.GetCategoryType((int)type);
 
@@ -288,7 +301,7 @@ namespace IDHIPlugins
         {
             var rc = false;
 
-            if (GirlsRandomData.TryGetValue(Utilities.PseudoKey(ChaControl), out var girlInfo))
+            if (GirlsRandomData.TryGetValue(GirlKey, out var girlInfo))
             {
                 rc = girlInfo.FirstRun;
             }
@@ -301,7 +314,7 @@ namespace IDHIPlugins
         /// <param name="status"></param>
         public void FirstRun(bool status)
         {
-            if (GirlsRandomData.TryGetValue(Utilities.PseudoKey(ChaControl), out var girlInfo))
+            if (GirlsRandomData.TryGetValue(GirlKey, out var girlInfo))
             {
                 girlInfo.FirstRun = status;
             }
@@ -357,7 +370,7 @@ namespace IDHIPlugins
 
             try
             {
-                if (GirlsRandomData.TryGetValue(Utilities.PseudoKey(ChaControl), out var girlInfo))
+                if (GirlsRandomData.TryGetValue(GirlKey, out var girlInfo))
                 {
                     var categoryType = girlInfo.GetCategoryType(type);
                     var currentType = ChaControl.fileStatus.coordinateType;
@@ -395,7 +408,7 @@ namespace IDHIPlugins
                             girlInfo.CoordinateByType[categoryType] = newCoordinate;
 #if DEBUG
                             _Log.Warning($"[RandomCoordinate] 0000: Name={name} " +
-                                $"{GetMapInfo()} currentCoordinateType={currentType} " +
+                                $"({GetMapInfo()}) currentCoordinateType={currentType} " +
                                 $"CoordinateByType[{categoryType}]=" +
                                 $"{girlInfo.CoordinateByType[categoryType]} " +
                                 $"CategoryType={girlInfo.CategoryType} " +

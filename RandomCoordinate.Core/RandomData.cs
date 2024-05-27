@@ -181,6 +181,7 @@ namespace IDHIPlugins
             }
             #endregion Properties
 
+            #region Constructors
             public RandomData(
                 ChaFileDefine.CoordinateType categoryType,
                 int coordinateNumber,
@@ -216,34 +217,7 @@ namespace IDHIPlugins
                 Name = heroine.Name.Trim();
                 
             }
-
-            public bool SetRandomData(
-                ChaFileDefine.CoordinateType categoryType,
-                int coordinateNumber)
-            {
-                SaveToPrevious();
-                Current.SetData(categoryType, coordinateNumber);
-
-                return true;
-            }
-
-            public bool SetRandomData(SaveData.Heroine heroine)
-            {
-                var rc = false;
-                if (heroine != null)
-                {
-                    SaveToPrevious();
-                    rc = Current.SetData(heroine);
-                }
-                return rc;
-            }
-
-            private void SaveToPrevious()
-            {
-                // Update Previous
-
-                Previous.SetData(CategoryType, CoordinateNumber);
-            }
+            #endregion Constructors
 
             /// <summary>
             /// Clears and fill the _Coordinates dictionary
@@ -289,6 +263,13 @@ namespace IDHIPlugins
                 }
             }
 
+            private void SaveToPrevious()
+            {
+                // Update Previous
+
+                Previous.SetData(CategoryType, CoordinateNumber);
+            }
+
             /// <summary>
             /// When coordinate is grater than 3 (Bathing) try and get the corresponding
             /// type. The function is needed if the type selected by the game is
@@ -329,6 +310,27 @@ namespace IDHIPlugins
                     $"CoordinateByType[{categoryType}]={coordinateByType}";
 
                 return cache;
+            }
+
+            public bool SetRandomData(
+                ChaFileDefine.CoordinateType categoryType,
+                int coordinateNumber)
+            {
+                SaveToPrevious();
+                Current.SetData(categoryType, coordinateNumber);
+
+                return true;
+            }
+
+            public bool SetRandomData(SaveData.Heroine heroine)
+            {
+                var rc = false;
+                if (heroine != null)
+                {
+                    SaveToPrevious();
+                    rc = Current.SetData(heroine);
+                }
+                return rc;
             }
         }
     }
