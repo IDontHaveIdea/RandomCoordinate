@@ -1,9 +1,8 @@
 ﻿//
 // RandomCoordinatePlugin
 //
-using System.Linq;
 
-using KKAPI.MainGame;
+using System.Linq;
 
 using Utils = IDHIUtils.Utilities;
 

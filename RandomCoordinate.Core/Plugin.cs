@@ -17,7 +17,6 @@ using IDHIUtils;
 using KKAPI.MainGame;
 
 
-
 namespace IDHIPlugins
 {
     public partial class RandomCoordinatePlugin
@@ -68,7 +67,6 @@ namespace IDHIPlugins
             _Log.Level(LogLevel.Info, $"[{PluginName}] Assembly {thisAss.FullName}");
 #endif
             Hooks.Init();
-            //Hooks.InitJetPack();
         }
 
         /// <summary>

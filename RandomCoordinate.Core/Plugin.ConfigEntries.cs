@@ -1,6 +1,7 @@
 ﻿//
 // Configuration entries RandomCoordinate
 //
+
 using BepInEx.Configuration;
 using BepInEx.Logging;
 

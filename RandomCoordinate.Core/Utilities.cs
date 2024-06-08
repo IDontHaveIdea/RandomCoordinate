@@ -1,6 +1,7 @@
 ﻿//
 // Utilities
 //
+
 using System;
 using System.Collections.Generic;
 
@@ -139,7 +140,7 @@ namespace IDHIPlugins
         }
 
         /// <summary>
-        /// Reset some variables to force a new random selection to ocour.
+        /// Reset some variables to force a new random selection to occur.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="args"></param>
