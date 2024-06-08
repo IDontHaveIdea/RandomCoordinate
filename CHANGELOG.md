@@ -1,6 +1,12 @@
 # Changelog
 
-#### <u>v1.0.7.0 - 2024-04-10</u>
+#### <u>v1.0.9.0 - 2024-06-08</u>
+
+##### Fix
+
+- Fix error in FreeH while checking status for player room
+
+#### <u>v1.0.8.0 - 2024-04-10</u>
 
 ##### Added
 
