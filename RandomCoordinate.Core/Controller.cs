@@ -1,6 +1,7 @@
 ﻿//
 // RandomCoordinateController
 //
+
 using System;
 
 using BepInEx.Logging;
