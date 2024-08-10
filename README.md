@@ -8,7 +8,8 @@ rooms.
 - It's only for the **Plain** type.
 - If in the configuration the option Changing Room Only is disabled there will be a
 random selection at every opportunity the game reloads the character (Start
-conversations, Dating events, entering a map, ..., etc). The game already does this.
+conversations, Dating events, entering a map, ..., etc).
+- Optional always use pajamas in player room.
 
 ## How to install
 
@@ -19,5 +20,4 @@ conversations, Dating events, entering a map, ..., etc). The game already does t
 
 ## Roadmap
 
-- Enable to specify the additional coordinate type in Maker. This will permit that
-the random selection be by coordinate type.
+- Specify the coordinate type in Maker. This will permit that the random selection be by coordinate type.
