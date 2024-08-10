@@ -24,13 +24,14 @@ namespace IDHIPlugins
             SaveData.Heroine heroine,
             bool setCoordinate = false)
         {
+            // This is the guide fixCharaID
             if (heroine.fixCharaID == -13)
             {
                 var fixChara = heroine.charaBase as ActionGame.Chara.Fix;
 
                 if (fixChara != null)
                 {
-                    var ctrl = GetController(heroine.chaCtrl);
+                    var ctrl = GetRaddomCoordinateController(heroine.chaCtrl);
                     var guideMap = -1;
                     var mapMove = -1;
                     var statusCoordinate = heroine.StatusCoordinate;

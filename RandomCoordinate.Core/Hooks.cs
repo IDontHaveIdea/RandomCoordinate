@@ -63,7 +63,7 @@ namespace IDHIPlugins
                     // Default coordinate
                     var coordinate = ChaFileDefine.CoordinateType.Plain;
                     // Get controller for heroine
-                    var ctrl = GetController(flags.lstHeroine[0].chaCtrl);
+                    var ctrl = GetRaddomCoordinateController(flags.lstHeroine[0].chaCtrl);
                     
                     if (ctrl != null)
                     {
@@ -190,7 +190,7 @@ namespace IDHIPlugins
                 var name = Utils.TranslateName(Utilities.GirlName(__instance), true) +
                     $" ({__instance.name})";
 
-                var ctrl = GetController(__instance);
+                var ctrl = GetRaddomCoordinateController(__instance);
                 if (ctrl == null)
                 {
                     _Log.Error($"[ChangeCoordinateTypeAndReloadPrefix] YYYY: Name={name} controller null.");
@@ -287,7 +287,7 @@ namespace IDHIPlugins
                 var name = Utils.TranslateName(Utilities.GirlName(__instance), true) +
                     $" ({__instance.chaCtrl.name})";
 
-                var ctrl = GetController(__instance.chaCtrl);
+                var ctrl = GetRaddomCoordinateController(__instance.chaCtrl);
 
                 if (ctrl == null)
                 {
@@ -344,8 +344,9 @@ namespace IDHIPlugins
 
                 var nowRandomCoordinate = ctrl.GetRandomCoordinateByType(nowCoordinate);
                 var newCoordinate = -1;
-                // On first run (of OnReload) get a random coordinate. This causes to have
-                // more variety whenever a start game, change period load a save game a
+
+                // On first run (of OnReload) get a random coordinate. This produces more variety.
+                // Whenever a start game, change period and load of a save game a
                 // random coordinate will be selected.
                 var firstRun = ctrl.FirstRun();
 
@@ -442,6 +443,7 @@ namespace IDHIPlugins
                     }
                 }
 
+                // What is going on here?
                 //if (isRemove)
                 //{
                 //    _Log.Debug($"[SynchroCoordinate] 0007: Name={name} {mapInfo} " +

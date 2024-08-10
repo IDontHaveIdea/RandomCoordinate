@@ -102,7 +102,7 @@ namespace IDHIPlugins
         /// </summary>
         /// <param name="chaControl"></param>
         /// <returns></returns>
-        public static RandomCoordinateController GetController(ChaControl chaControl)
+        public static RandomCoordinateController GetRaddomCoordinateController(ChaControl chaControl)
         {
             return ((chaControl == null) || (chaControl.gameObject == null))
                 ? null : chaControl.GetComponent<RandomCoordinateController>();
