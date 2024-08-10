@@ -6,11 +6,6 @@ using BepInEx;
 
 using KKAPI;
 
-//
-//[BepInDependency(IDHIUtils.IDHIUtilsInfo.GUID, IDHIUtils.IDHIUtilsInfo.Version)]
-// State IDHIUtils manually to not update the version dependency to the current
-// Development one.
-//
 
 namespace IDHIPlugins
 {
@@ -20,7 +15,7 @@ namespace IDHIPlugins
         BepInDependency.DependencyFlags.SoftDependency)]
     [BepInPlugin(GUID, PluginDisplayName, Version)]
     [BepInProcess(KoikatuAPI.GameProcessName)]
-    public partial class RandomCoordinatePlugin : BaseUnityPlugin
+    public partial class RandomCoordinatePlugIn : BaseUnityPlugin
     {
     }
 }

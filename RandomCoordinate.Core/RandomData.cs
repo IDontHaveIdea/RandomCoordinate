@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace IDHIPlugins
 {
-    public partial class RandomCoordinatePlugin
+    public partial class RandomCoordinatePlugIn
     {
         public class CoordinateData
         {
@@ -139,6 +139,7 @@ namespace IDHIPlugins
                     Current.CoordinateNumber = value;
                 }
             }
+            public int PreviousCoordinateNumber => Previous.CoordinateNumber;
             public Dictionary<ChaFileDefine.CoordinateType, List<int>> CoordinatesByType
             {
                 get

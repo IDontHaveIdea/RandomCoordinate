@@ -12,7 +12,7 @@ using KKAPI.MainGame;
 
 using Utils = IDHIUtils.Utilities;
 
-using static IDHIPlugins.RandomCoordinatePlugin;
+using static IDHIPlugins.RandomCoordinatePlugIn;
 using System.Linq;
 
 
@@ -205,6 +205,20 @@ namespace IDHIPlugins
             if (GirlsRandomData.TryGetValue(GirlKey, out var girlInfo))
             {
                 rc = girlInfo.CoordinateNumber;
+            }
+            return rc;
+        }
+
+        /// <summary>
+        /// Get previous random coordinate in chace
+        /// </summary>
+        /// <returns></returns>
+        public int PreviousRandomCoordinate()
+        {
+            var rc = -1;
+            if (GirlsRandomData.TryGetValue(GirlKey, out var girlInfo))
+            {
+                rc = girlInfo.PreviousCoordinateNumber;
             }
             return rc;
         }
