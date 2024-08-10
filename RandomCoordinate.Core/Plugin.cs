@@ -19,7 +19,7 @@ using KKAPI.MainGame;
 
 namespace IDHIPlugins
 {
-    public partial class RandomCoordinatePlugin
+    public partial class RandomCoordinatePlugIn
     {
         internal static Logg _Log = new();
         internal static Random RandCoordinate = new();
@@ -63,10 +63,10 @@ namespace IDHIPlugins
         private void Start()
         {
 #if DEBUG
-            var thisAss = typeof(RandomCoordinatePlugin).Assembly;
+            var thisAss = typeof(RandomCoordinatePlugIn).Assembly;
             _Log.Level(LogLevel.Info, $"[{PluginName}] Assembly {thisAss.FullName}");
 #endif
-            Hooks.Init();
+            RandomCoordinatePlugInHooks.Init();
         }
 
         /// <summary>

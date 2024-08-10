@@ -12,7 +12,7 @@ using KKAPI.MainGame;
 
 using Utils = IDHIUtils.Utilities;
 
-using static IDHIPlugins.RandomCoordinatePlugin;
+using static IDHIPlugins.RandomCoordinatePlugIn;
 using System.Linq;
 
 

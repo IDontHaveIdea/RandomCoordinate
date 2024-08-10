@@ -9,7 +9,7 @@ using ActionGame.Chara;
 
 using KKAPI.MainGame;
 
-using static IDHIPlugins.RandomCoordinatePlugin;
+using static IDHIPlugins.RandomCoordinatePlugIn;
 
 
 namespace IDHIPlugins
