@@ -32,10 +32,10 @@ namespace IDHIPlugins
                         { Order = 40, IsAdvanced = true }));
             DebugInfo.SettingChanged += (_sender, _args) =>
             {
-                _Log.Enabled = DebugInfo.Value;
+                Log.Enabled = DebugInfo.Value;
 #if DEBUG
-                _Log.Level(LogLevel.Info, $"[Configuration] Log.Enabled set " +
-                    $"to {_Log.Enabled}.");
+                Log.Level(LogLevel.Info, $"[Configuration] Log.Enabled set " +
+                    $"to {Log.Enabled}.");
 #endif
             };
 
@@ -52,10 +52,10 @@ namespace IDHIPlugins
                     }));
             DebugToConsole.SettingChanged += (_sender, _args) =>
             {
-                _Log.DebugToConsole = DebugToConsole.Value;
+                Log.DebugToConsole = DebugToConsole.Value;
 #if DEBUG
-                _Log.Level(LogLevel.Info, $"[ConfigEntries] Log.DebugToConsole set to " +
-                    $"{_Log.DebugToConsole}.");
+                Log.Level(LogLevel.Info, $"[ConfigEntries] Log.DebugToConsole set to " +
+                    $"{Log.DebugToConsole}.");
 #endif
 
             };
@@ -75,7 +75,7 @@ namespace IDHIPlugins
             OnlyChangingRoom.SettingChanged += (_sender, _args) =>
             {
 #if DEBUG
-                _Log.Level(LogLevel.Info, $"[ConfigEntries] Random Coordinates Change " +
+                Log.Level(LogLevel.Info, $"[ConfigEntries] Random Coordinates Change " +
                     $"Room Only set to={OnlyChangingRoom.Value}.");
 #endif
             };
@@ -91,7 +91,7 @@ namespace IDHIPlugins
             OnlyChangingRoom.SettingChanged += (_sender, _args) =>
             {
 #if DEBUG
-                _Log.Level(LogLevel.Info, $"[ConfigEntries] Always use pajamas in " +
+                Log.Level(LogLevel.Info, $"[ConfigEntries] Always use pajamas in " +
                     $"Player Room set to={PajamasInRoom.Value}.");
 #endif
             };

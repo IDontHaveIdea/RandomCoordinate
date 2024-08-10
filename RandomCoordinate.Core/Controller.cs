@@ -62,7 +62,7 @@ namespace IDHIPlugins
                 if (!GirlsRandomData.ContainsKey(girlKey))
                 {
 #if DEBUG
-                    _Log.Warning($"[OnReload] 0000: Name={heroine.Name.Trim()}" +
+                    Log.Warning($"[OnReload] 0000: Name={heroine.Name.Trim()}" +
                         $"({heroine.chaCtrl.name}) caching info.");
 #endif
                     GirlsRandomData.Add(girlKey, new RandomData(heroine));
@@ -85,7 +85,7 @@ namespace IDHIPlugins
                         // save/load cycle.
                         girlInfo.SetRandomData(heroine);
 #if DEBUG
-                        _Log.Warning($"[OnReload] 0001: Name={heroine.Name.Trim()} " +
+                        Log.Warning($"[OnReload] 0001: Name={heroine.Name.Trim()} " +
                             $"({heroine.chaCtrl.name}) update cache categoryType={categoryType} " +
                             $"nowCoordinate={nowCoordinate} " +
                             $"coordinateBT[{categoryType}]={randomCoordinateByType} " +
@@ -104,13 +104,13 @@ namespace IDHIPlugins
                         SetupGuide(heroine, true);
                         categoryType = GetCategoryType(heroine.StatusCoordinate);
 #if DEBUG
-                        _Log.Warning($"[OnReload] 0002: Name={heroine.Name.Trim()} setup Guide " +
+                        Log.Warning($"[OnReload] 0002: Name={heroine.Name.Trim()} setup Guide " +
                             $"({heroine.chaCtrl.name}) synchronize info rcByType[{categoryType}]" +
                             $"={heroine.StatusCoordinate} rc={heroine.StatusCoordinate}.");
 #endif
                     }
 #if DEBUG
-                    _Log.Debug($"[OnReload] 0003: " +
+                    Log.Debug($"[OnReload] 0003: " +
                         $"Name={heroine.Name.Trim()} ({heroine.chaCtrl.name}) " +
                         $"heroine.StatusCoordinate={heroine.StatusCoordinate} " +
                         $"nowRCByType[{categoryType}]={randomCoordinateByType} " +
@@ -422,7 +422,7 @@ namespace IDHIPlugins
                             girlInfo.CoordinateNumber = newCoordinate;
                             girlInfo.CoordinateByType[categoryType] = newCoordinate;
 #if DEBUG
-                            _Log.Warning($"[RandomCoordinate] 0000: Name={name} " +
+                            Log.Warning($"[RandomCoordinate] 0000: Name={name} " +
                                 $"({GetMapInfo()}) currentCoordinateType={currentType} " +
                                 $"CoordinateByType[{categoryType}]=" +
                                 $"{girlInfo.CoordinateByType[categoryType]} " +
@@ -432,7 +432,7 @@ namespace IDHIPlugins
                         }
                         catch (Exception e)
                         {
-                            _Log.Level(LogLevel.Error, $"[RandomCoordinate] " +
+                            Log.Level(LogLevel.Error, $"[RandomCoordinate] " +
                                 $"Name={name} Problem generating random " +
                                 $"number categoryType={categoryType} " +
                                 $"Error code={e.Message}");
@@ -442,7 +442,7 @@ namespace IDHIPlugins
             }
             catch (Exception e)
             {
-                _Log.Level(LogLevel.Error, $"[RandomCoordinate] " +
+                Log.Level(LogLevel.Error, $"[RandomCoordinate] " +
                     $"Name={name} Problem " +
                     $"in random coordinate search type={type} " +
                     $"code={e.Message}");

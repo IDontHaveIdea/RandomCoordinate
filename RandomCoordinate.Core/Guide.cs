@@ -76,7 +76,7 @@ namespace IDHIPlugins
                             {
                                 _guideNewCoordinate = false;
 #if DEBUG
-                                _Log.Warning("[SetGuide] Calling NewRandomCoordinateByType.");
+                                Log.Warning("[SetGuide] Calling NewRandomCoordinateByType.");
 #endif
                                 // Guide won't be in any map that have special
                                 // consideration
@@ -95,16 +95,16 @@ namespace IDHIPlugins
                     var mapName = Utils.MapName(guideMap);
                     if (statusCoordinate > 3)
                     {
-                        nowName = $"({_MoreOutfits
+                        nowName = $"({MoreCoordinates
                             .GetCoordinateName(heroine.chaCtrl, statusCoordinate)}) ";
                     }
                     if (ctrl.GetRandomCoordinate() > 3)
                     {
-                        newName = $" ({_MoreOutfits
+                        newName = $" ({MoreCoordinates
                             .GetCoordinateName(
                             heroine.chaCtrl, ctrl.GetRandomCoordinate())}).";
                     }
-                    _Log.Debug($"[SetGuide] GUIDE={_guide.Name.Trim()} ({_guide.chaCtrl.name})" +
+                    Log.Debug($"[SetGuide] GUIDE={_guide.Name.Trim()} ({_guide.chaCtrl.name})" +
                         $"mapFix={fixChara.mapNo} mapNo={guideMap} ({mapName}) " +
                         $"statusCoordinate={statusCoordinate}{nowName} " +
                         $"NowRandomCoordinate={ctrl.GetRandomCoordinate()}{newName}.");

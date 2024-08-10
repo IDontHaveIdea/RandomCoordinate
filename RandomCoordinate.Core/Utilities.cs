@@ -158,7 +158,7 @@ namespace IDHIPlugins
                 }
             }
 #if DEBUG
-            _Log.Warning($"[PeriodChange] NewPeriod={args.NewPeriod} " +
+            Log.Warning($"[PeriodChange] NewPeriod={args.NewPeriod} " +
                 $"getNewCoordinate={_guideNewCoordinate} was={was}.");
 #endif
         }
@@ -180,7 +180,7 @@ namespace IDHIPlugins
                 }
             }
 #if DEBUG
-            _Log.Warning($"[Daychange] NewDay={args.NewDay} " +
+            Log.Warning($"[Daychange] NewDay={args.NewDay} " +
                 $"getNewCoordinate={_guideNewCoordinate} was={was}.");
 #endif
         }
