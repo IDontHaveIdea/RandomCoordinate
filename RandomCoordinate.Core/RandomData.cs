@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace IDHIPlugins
 {
-    public partial class RandomCoordinatePlugin
+    public partial class RandomCoordinatePlugIn
     {
         public class CoordinateData
         {
