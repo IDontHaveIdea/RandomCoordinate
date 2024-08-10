@@ -139,6 +139,7 @@ namespace IDHIPlugins
                     Current.CoordinateNumber = value;
                 }
             }
+            public int PreviousCoordinateNumber => Previous.CoordinateNumber;
             public Dictionary<ChaFileDefine.CoordinateType, List<int>> CoordinatesByType
             {
                 get

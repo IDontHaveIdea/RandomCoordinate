@@ -210,6 +210,20 @@ namespace IDHIPlugins
         }
 
         /// <summary>
+        /// Get previous random coordinate in chace
+        /// </summary>
+        /// <returns></returns>
+        public int PreviousRandomCoordinate()
+        {
+            var rc = -1;
+            if (GirlsRandomData.TryGetValue(GirlKey, out var girlInfo))
+            {
+                rc = girlInfo.PreviousCoordinateNumber;
+            }
+            return rc;
+        }
+
+        /// <summary>
         /// Get current coordinate according to a type
         /// </summary>
         /// <returns></returns>
