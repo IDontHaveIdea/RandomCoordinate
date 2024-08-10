@@ -10,11 +10,12 @@ using KKAPI.Utilities;
 
 namespace IDHIPlugins
 {
-    public partial class RandomCoordinatePlugin
+    public partial class RandomCoordinatePlugIn
     {
         internal static ConfigEntry<bool> DebugInfo { get; set; }
         internal static ConfigEntry<bool> DebugToConsole { get; set; }
         internal static ConfigEntry<bool> OnlyChangingRoom { get; set; }
+        internal static ConfigEntry<bool> PajamasInRoom { get; set; }
 
         internal void ConfigEntries()
         {
@@ -59,7 +60,6 @@ namespace IDHIPlugins
 
             };
 
-
             sectionDescription = "Options";
 
             OnlyChangingRoom = Config.Bind(
@@ -74,8 +74,26 @@ namespace IDHIPlugins
                     tags: new ConfigurationManagerAttributes { Order = 30 }));
             OnlyChangingRoom.SettingChanged += (_sender, _args) =>
             {
+#if DEBUG
                 _Log.Level(LogLevel.Info, $"[ConfigEntries] Random Coordinates Change " +
                     $"Room Only set to={OnlyChangingRoom.Value}.");
+#endif
+            };
+
+            PajamasInRoom = Config.Bind(
+                section: sectionDescription,
+                key: "Use pajamas in Room",
+                defaultValue: false,
+                configDescription: new ConfigDescription(
+                    description: "Always us pajamas for H scenes in the Player Room.",
+                    acceptableValues: null,
+                    tags: new ConfigurationManagerAttributes { Order = 29 }));
+            OnlyChangingRoom.SettingChanged += (_sender, _args) =>
+            {
+#if DEBUG
+                _Log.Level(LogLevel.Info, $"[ConfigEntries] Always use pajamas in " +
+                    $"Player Room set to={PajamasInRoom.Value}.");
+#endif
             };
         }
     }

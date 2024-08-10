@@ -13,23 +13,25 @@ using KKAPI;
 
 using IDHIUtils;
 using Utils = IDHIUtils.Utilities;
+using KKAPI.MainGame;
 
 
 namespace IDHIPlugins
 {
-    public partial class RandomCoordinatePlugin
+    public partial class RandomCoordinatePlugIn
     {
-        internal partial class Hooks
+        internal partial class RandomCoordinatePlugInHooks
         {
             internal static Harmony _hookInstance;
 
             public static void Init()
             {
-                _hookInstance = Harmony.CreateAndPatchAll(typeof(Hooks));
+                _hookInstance = Harmony.CreateAndPatchAll(typeof(RandomCoordinatePlugInHooks));
             }
 
             /// <summary>
-            /// Change coordinate to Pajamas while in the Room
+            /// Control the coordinate use in the room maintain the one use when entering the room
+            /// or change to pajamas if option is set
             /// </summary>
             /// <param name="__instance"></param>
             /// <param name="_nextAinmInfo"></param>
@@ -52,15 +54,35 @@ namespace IDHIPlugins
                 var actScene = ActionScene.instance;
                 var currentMapNo = actScene.Map.no;
 
-
                 var myRoom = currentMapNo == 10
                     || currentMapNo == 18
                     || currentMapNo == 22;
 
                 if (myRoom)
                 {
-                    var female = flags.lstHeroine[0].chaCtrl;
-                    female.ChangeCoordinateTypeAndReload(ChaFileDefine.CoordinateType.Pajamas);
+                    // Default coordinate
+                    var coordinate = ChaFileDefine.CoordinateType.Plain;
+                    // Get controller for heroine
+                    var ctrl = GetController(flags.lstHeroine[0].chaCtrl);
+                    
+                    if (ctrl != null)
+                    {
+                        // assign coordinate if controller found
+                        coordinate = (ChaFileDefine.CoordinateType)ctrl.PreviousRandomCoordinate();
+                    }
+
+                    if (PajamasInRoom.Value)
+                    {
+                        // assign pajamas if option is set
+                        coordinate = ChaFileDefine.CoordinateType.Pajamas;
+                    }
+
+                    // assign new coordinate
+                    if (coordinate != ChaFileDefine.CoordinateType.Plain)
+                    {
+                        var female = flags.lstHeroine[0].chaCtrl;
+                        female.ChangeCoordinateTypeAndReload(coordinate);
+                    }
                 }
             }
 
@@ -159,10 +181,12 @@ namespace IDHIPlugins
                 {
                     return true;
                 }
+
                 if (Utils.InHScene)
                 {
                     return true;
                 }
+
                 var name = Utils.TranslateName(Utilities.GirlName(__instance), true) +
                     $" ({__instance.name})";
 
@@ -340,6 +364,7 @@ namespace IDHIPlugins
 #endif
                     coordinateNumber = newCoordinate;
                 }
+
                 // coordinateNumber not equal to Bathing
                 else if (coordinateNumber != 3)
                 {
