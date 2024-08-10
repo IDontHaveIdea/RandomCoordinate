@@ -52,36 +52,39 @@ namespace IDHIPlugins
                 }
 
                 var actScene = ActionScene.instance;
-                var currentMapNo = actScene.Map.no;
-
-                var myRoom = currentMapNo == 10
-                    || currentMapNo == 18
-                    || currentMapNo == 22;
-
-                if (myRoom)
+                if (actScene != null)
                 {
-                    // Default coordinate
-                    var coordinate = ChaFileDefine.CoordinateType.Plain;
-                    // Get controller for heroine
-                    var ctrl = GetRaddomCoordinateController(flags.lstHeroine[0].chaCtrl);
-                    
-                    if (ctrl != null)
-                    {
-                        // assign coordinate if controller found
-                        coordinate = (ChaFileDefine.CoordinateType)ctrl.PreviousRandomCoordinate();
-                    }
+                    var currentMapNo = actScene.Map.no;
 
-                    if (PajamasInRoom.Value)
-                    {
-                        // assign pajamas if option is set
-                        coordinate = ChaFileDefine.CoordinateType.Pajamas;
-                    }
+                    var myRoom = currentMapNo == 10
+                        || currentMapNo == 18
+                        || currentMapNo == 22;
 
-                    // assign new coordinate
-                    if (coordinate != ChaFileDefine.CoordinateType.Plain)
+                    if (myRoom)
                     {
-                        var female = flags.lstHeroine[0].chaCtrl;
-                        female.ChangeCoordinateTypeAndReload(coordinate);
+                        // Default coordinate
+                        var coordinate = ChaFileDefine.CoordinateType.Plain;
+                        // Get controller for heroine
+                        var ctrl = GetRaddomCoordinateController(flags.lstHeroine[0].chaCtrl);
+
+                        if (ctrl != null)
+                        {
+                            // assign coordinate if controller found
+                            coordinate = (ChaFileDefine.CoordinateType)ctrl.PreviousRandomCoordinate();
+                        }
+
+                        if (PajamasInRoom.Value)
+                        {
+                            // assign pajamas if option is set
+                            coordinate = ChaFileDefine.CoordinateType.Pajamas;
+                        }
+
+                        // assign new coordinate
+                        if (coordinate != ChaFileDefine.CoordinateType.Plain)
+                        {
+                            var female = flags.lstHeroine[0].chaCtrl;
+                            female.ChangeCoordinateTypeAndReload(coordinate);
+                        }
                     }
                 }
             }
