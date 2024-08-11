@@ -21,11 +21,9 @@ namespace IDHIPlugins
 {
     public partial class RandomCoordinatePlugIn
     {
-        internal static Logg _Log = new();
+        internal static Logg Log = new();
         internal static Random RandCoordinate = new();
-        internal static MoreOutfits _MoreOutfits = new();
-
-        internal const ChaFileDefine.CoordinateType _nullType = (ChaFileDefine.CoordinateType)(-1);
+        internal static MoreOutfits MoreCoordinates = new();
 
         // The Character controller is reinitialized and even unloaded
         // during the game maintaining persistent data on the controller
@@ -39,16 +37,16 @@ namespace IDHIPlugins
 
         private void Awake()
         {
-            _Log.LogSource = base.Logger;
+            Log.LogSource = base.Logger;
             ConfigEntries();
-            _Log.Enabled = DebugInfo.Value;
-            _Log.DebugToConsole = DebugToConsole.Value;
-            _Log.Level(LogLevel.Info, $"[{PluginName}] {PluginDisplayName} " +
+            Log.Enabled = DebugInfo.Value;
+            Log.DebugToConsole = DebugToConsole.Value;
+            Log.Level(LogLevel.Info, $"[{PluginName}] {PluginDisplayName} " +
                 $"loaded.");
 #if DEBUG
-            _Log.Level(LogLevel.Info, $"[{PluginName}] Logging set to " +
-                $"{_Log.Enabled} DebugToConsole={_Log.DebugToConsole}");
-            _Log.Level(LogLevel.Info, $"[ConfigEntries] Random Coordinates Change " +
+            Log.Level(LogLevel.Info, $"[{PluginName}] Logging set to " +
+                $"{Log.Enabled} DebugToConsole={Log.DebugToConsole}");
+            Log.Level(LogLevel.Info, $"[ConfigEntries] Random Coordinates Change " +
                 $"Room Only set to={OnlyChangingRoom.Value}");
 #endif
             _GirlsRandomData.Clear();
@@ -64,7 +62,7 @@ namespace IDHIPlugins
         {
 #if DEBUG
             var thisAss = typeof(RandomCoordinatePlugIn).Assembly;
-            _Log.Level(LogLevel.Info, $"[{PluginName}] Assembly {thisAss.FullName}");
+            Log.Level(LogLevel.Info, $"[{PluginName}] Assembly {thisAss.FullName}");
 #endif
             RandomCoordinatePlugInHooks.Init();
         }
@@ -76,7 +74,7 @@ namespace IDHIPlugins
         /// <param name="e"></param>
         internal static void OnGameExit(object sender, EventArgs e)
         {
-            _Log.Info($"[OnGameExit] {PluginName} exiting game.");
+            Log.Info($"[OnGameExit] {PluginName} exiting game.");
         }
 
         internal static void ChangeCoordinate(NPC girl, int coordinateNumber)
@@ -102,7 +100,7 @@ namespace IDHIPlugins
         /// </summary>
         /// <param name="chaControl"></param>
         /// <returns></returns>
-        public static RandomCoordinateController GetController(ChaControl chaControl)
+        public static RandomCoordinateController GetRaddomCoordinateController(ChaControl chaControl)
         {
             return ((chaControl == null) || (chaControl.gameObject == null))
                 ? null : chaControl.GetComponent<RandomCoordinateController>();

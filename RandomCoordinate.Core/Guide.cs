@@ -24,13 +24,14 @@ namespace IDHIPlugins
             SaveData.Heroine heroine,
             bool setCoordinate = false)
         {
+            // This is the guide fixCharaID
             if (heroine.fixCharaID == -13)
             {
                 var fixChara = heroine.charaBase as ActionGame.Chara.Fix;
 
                 if (fixChara != null)
                 {
-                    var ctrl = GetController(heroine.chaCtrl);
+                    var ctrl = GetRaddomCoordinateController(heroine.chaCtrl);
                     var guideMap = -1;
                     var mapMove = -1;
                     var statusCoordinate = heroine.StatusCoordinate;
@@ -75,7 +76,7 @@ namespace IDHIPlugins
                             {
                                 _guideNewCoordinate = false;
 #if DEBUG
-                                _Log.Warning("[SetGuide] Calling NewRandomCoordinateByType.");
+                                Log.Warning("[SetGuide] Calling NewRandomCoordinateByType.");
 #endif
                                 // Guide won't be in any map that have special
                                 // consideration
@@ -94,16 +95,16 @@ namespace IDHIPlugins
                     var mapName = Utils.MapName(guideMap);
                     if (statusCoordinate > 3)
                     {
-                        nowName = $"({_MoreOutfits
+                        nowName = $"({MoreCoordinates
                             .GetCoordinateName(heroine.chaCtrl, statusCoordinate)}) ";
                     }
                     if (ctrl.GetRandomCoordinate() > 3)
                     {
-                        newName = $" ({_MoreOutfits
+                        newName = $" ({MoreCoordinates
                             .GetCoordinateName(
                             heroine.chaCtrl, ctrl.GetRandomCoordinate())}).";
                     }
-                    _Log.Debug($"[SetGuide] GUIDE={_guide.Name.Trim()} ({_guide.chaCtrl.name})" +
+                    Log.Debug($"[SetGuide] GUIDE={_guide.Name.Trim()} ({_guide.chaCtrl.name})" +
                         $"mapFix={fixChara.mapNo} mapNo={guideMap} ({mapName}) " +
                         $"statusCoordinate={statusCoordinate}{nowName} " +
                         $"NowRandomCoordinate={ctrl.GetRandomCoordinate()}{newName}.");

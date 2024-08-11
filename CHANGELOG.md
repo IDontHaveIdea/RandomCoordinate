@@ -1,10 +1,16 @@
 # Changelog
 
+#### <u>v1.1.0.0 - 2024-08-12</u>
+
+##### Added
+
+- Control coordinates in the player room when inviting heroines to room. Use last random coordinate when entering room for H scene or always use pajamas.
+
 #### <u>v1.0.9.0 - 2024-06-08</u>
 
 ##### Fix
 
-- Fix error in FreeH while checking status for player room
+- Fix error in FreeH while checking status for player room.
 
 #### <u>v1.0.8.0 - 2024-04-10</u>
 

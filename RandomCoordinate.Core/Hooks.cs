@@ -52,36 +52,39 @@ namespace IDHIPlugins
                 }
 
                 var actScene = ActionScene.instance;
-                var currentMapNo = actScene.Map.no;
-
-                var myRoom = currentMapNo == 10
-                    || currentMapNo == 18
-                    || currentMapNo == 22;
-
-                if (myRoom)
+                if (actScene != null)
                 {
-                    // Default coordinate
-                    var coordinate = ChaFileDefine.CoordinateType.Plain;
-                    // Get controller for heroine
-                    var ctrl = GetController(flags.lstHeroine[0].chaCtrl);
-                    
-                    if (ctrl != null)
-                    {
-                        // assign coordinate if controller found
-                        coordinate = (ChaFileDefine.CoordinateType)ctrl.PreviousRandomCoordinate();
-                    }
+                    var currentMapNo = actScene.Map.no;
 
-                    if (PajamasInRoom.Value)
-                    {
-                        // assign pajamas if option is set
-                        coordinate = ChaFileDefine.CoordinateType.Pajamas;
-                    }
+                    var myRoom = currentMapNo == 10
+                        || currentMapNo == 18
+                        || currentMapNo == 22;
 
-                    // assign new coordinate
-                    if (coordinate != ChaFileDefine.CoordinateType.Plain)
+                    if (myRoom)
                     {
-                        var female = flags.lstHeroine[0].chaCtrl;
-                        female.ChangeCoordinateTypeAndReload(coordinate);
+                        // Default coordinate
+                        var coordinate = ChaFileDefine.CoordinateType.Plain;
+                        // Get controller for heroine
+                        var ctrl = GetRaddomCoordinateController(flags.lstHeroine[0].chaCtrl);
+
+                        if (ctrl != null)
+                        {
+                            // assign coordinate if controller found
+                            coordinate = (ChaFileDefine.CoordinateType)ctrl.PreviousRandomCoordinate();
+                        }
+
+                        if (PajamasInRoom.Value)
+                        {
+                            // assign pajamas if option is set
+                            coordinate = ChaFileDefine.CoordinateType.Pajamas;
+                        }
+
+                        // assign new coordinate
+                        if (coordinate != ChaFileDefine.CoordinateType.Plain)
+                        {
+                            var female = flags.lstHeroine[0].chaCtrl;
+                            female.ChangeCoordinateTypeAndReload(coordinate);
+                        }
                     }
                 }
             }
@@ -131,7 +134,7 @@ namespace IDHIPlugins
                         // This is the first of the hooks to execute when loading.
                         // This condition triggers one time per period or save/load.
 #if DEBUG
-                        _Log.Warning($"[ChangeCoordinateTypePrefix] 0000: " +
+                        Log.Warning($"[ChangeCoordinateTypePrefix] 0000: " +
                             $"Name={name} adding data to cache for type={type}.");
 #endif
                         var categoryType = Utilities.GetCoordinateType(__instance, (int)type);
@@ -154,7 +157,7 @@ namespace IDHIPlugins
                 }
                 catch (Exception e)
                 {
-                    _Log.Error($"[ChangeCoordinateTypePrefix] Error: {e.Message}");
+                    Log.Error($"[ChangeCoordinateTypePrefix] Error: {e.Message}");
                 }
                 return true;
             }
@@ -190,10 +193,10 @@ namespace IDHIPlugins
                 var name = Utils.TranslateName(Utilities.GirlName(__instance), true) +
                     $" ({__instance.name})";
 
-                var ctrl = GetController(__instance);
+                var ctrl = GetRaddomCoordinateController(__instance);
                 if (ctrl == null)
                 {
-                    _Log.Error($"[ChangeCoordinateTypeAndReloadPrefix] YYYY: Name={name} controller null.");
+                    Log.Error($"[ChangeCoordinateTypeAndReloadPrefix] YYYY: Name={name} controller null.");
                     return true;
                 }
 
@@ -216,7 +219,7 @@ namespace IDHIPlugins
 
                     if (!ctrl.HasMoreOutfits)
                     {
-                        _Log.Debug($"[ChangeCoordinateTypeAndReloadPrefix] 0000: Name={name} " +
+                        Log.Debug($"[ChangeCoordinateTypeAndReloadPrefix] 0000: Name={name} " +
                             $"{mapInfo} total coordinates={ctrl.TotalCoordinates} " +
                             "not enough coordinates.");
                         return true;
@@ -239,17 +242,17 @@ namespace IDHIPlugins
 
                             if ((int)callingType > 3)
                             {
-                                callName = $" ({_MoreOutfits
+                                callName = $" ({MoreCoordinates
                                     .GetCoordinateName(__instance, (int)callingType)})";
                             }
 
                             if ((int)type > 3)
                             {
-                                newName = $" ({_MoreOutfits
+                                newName = $" ({MoreCoordinates
                                     .GetCoordinateName(__instance, (int)type)})";
                             }
 
-                            _Log.Debug($"[ChangeCoordinateTypeAndReloadPrefix] 0001: Name={name} " +
+                            Log.Debug($"[ChangeCoordinateTypeAndReloadPrefix] 0001: Name={name} " +
                                 $"{mapInfo} paramType={callingType}{callName} " +
                                 $"set type={type}{newName}. Called by {Utils.CallingMethod(4)}");
                         }
@@ -287,11 +290,11 @@ namespace IDHIPlugins
                 var name = Utils.TranslateName(Utilities.GirlName(__instance), true) +
                     $" ({__instance.chaCtrl.name})";
 
-                var ctrl = GetController(__instance.chaCtrl);
+                var ctrl = GetRaddomCoordinateController(__instance.chaCtrl);
 
                 if (ctrl == null)
                 {
-                    _Log.Error($"[SynchroCoordinatePostfix] XXXX: Name={name} controller null.");
+                    Log.Error($"[SynchroCoordinatePostfix] XXXX: Name={name} controller null.");
                     return;
                 }
 
@@ -302,7 +305,7 @@ namespace IDHIPlugins
                 // If there no extra outfits
                 if (!ctrl.HasMoreOutfits)
                 {
-                    _Log.Debug($"[SynchroCoordinatePostfix] 0000: Name={name} {mapInfo} " +
+                    Log.Debug($"[SynchroCoordinatePostfix] 0000: Name={name} {mapInfo} " +
                         $"total coordinates={totalCoordinates} not enough coordinates.");
                     return;
                 }
@@ -344,8 +347,9 @@ namespace IDHIPlugins
 
                 var nowRandomCoordinate = ctrl.GetRandomCoordinateByType(nowCoordinate);
                 var newCoordinate = -1;
-                // On first run (of OnReload) get a random coordinate. This causes to have
-                // more variety whenever a start game, change period load a save game a
+
+                // On first run (of OnReload) get a random coordinate. This produces more variety.
+                // Whenever a start game, change period and load of a save game a
                 // random coordinate will be selected.
                 var firstRun = ctrl.FirstRun();
 
@@ -356,7 +360,7 @@ namespace IDHIPlugins
 #if DEBUG
                     if (newCoordinate != nowCoordinate)
                     {
-                        _Log.Error($"[SynchroCoordinatePostfix] 0001: Name={name} {mapInfo} " +
+                        Log.Error($"[SynchroCoordinatePostfix] 0001: Name={name} {mapInfo} " +
                             $"first run coordinateType={nowCoordinate} " +
                             $"coordinateNumber={coordinateNumber} " +
                             $"newCoordinate={newCoordinate}.");
@@ -383,7 +387,7 @@ namespace IDHIPlugins
 #if DEBUG
                                 if (newCoordinate != nowCoordinate)
                                 {
-                                    _Log.Error($"[SynchroCoordinatePostfix] 0002: Name={name} " +
+                                    Log.Error($"[SynchroCoordinatePostfix] 0002: Name={name} " +
                                         $"{mapInfo} changing room coordinateType={nowCoordinate} " +
                                         $"coordinateNumber={coordinateNumber} " +
                                         $"newCoordinate={newCoordinate}.");
@@ -405,7 +409,7 @@ namespace IDHIPlugins
 #if DEBUG
                         if (newCoordinate != nowCoordinate)
                         {
-                            _Log.Error($"[SynchroCoordinatePostfix] 0003: Name={name} " +
+                            Log.Error($"[SynchroCoordinatePostfix] 0003: Name={name} " +
                                 $"{mapInfo} free for all coordinateType={nowCoordinate} " +
                                 $"coordinateNumber={coordinateNumber} " +
                                 $"newCoordinate={newCoordinate}.");
@@ -427,21 +431,22 @@ namespace IDHIPlugins
 
                         if (nowCoordinate > 3)
                         {
-                            nowName = $" ({_MoreOutfits
+                            nowName = $" ({MoreCoordinates
                                 .GetCoordinateName(__instance.chaCtrl, nowCoordinate)})";
                         }
                         if (coordinateNumber > 3)
                         {
-                            newName = $" ({_MoreOutfits
+                            newName = $" ({MoreCoordinates
                                 .GetCoordinateName(__instance.chaCtrl, coordinateNumber)})";
                         }
 
-                        _Log.Debug($"[SynchroCoordinatePostfix] 0004: Name={name} in " +
+                        Log.Debug($"[SynchroCoordinatePostfix] 0004: Name={name} in " +
                             $"{mapInfo} current coordinate={nowCoordinate}{nowName} " +
                             $"new={coordinateNumber}{newName}.");
                     }
                 }
 
+                // What is going on here?
                 //if (isRemove)
                 //{
                 //    _Log.Debug($"[SynchroCoordinate] 0007: Name={name} {mapInfo} " +
