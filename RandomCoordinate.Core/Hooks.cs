@@ -62,8 +62,19 @@ namespace IDHIPlugins
 
                     if (myRoom)
                     {
+                        // Current coordinate
+                        var currentCoordinate = (ChaFileDefine.CoordinateType)
+                            __instance.lstFemale[0].fileStatus.coordinateType;
+
+                        // If current coordinate is pajamas do nothing
+                        if (currentCoordinate == ChaFileDefine.CoordinateType.Pajamas)
+                        {
+                            return;
+                        }
+
                         // Default coordinate
                         var coordinate = ChaFileDefine.CoordinateType.Plain;
+
                         // Get controller for heroine
                         var ctrl = GetRaddomCoordinateController(flags.lstHeroine[0].chaCtrl);
 
