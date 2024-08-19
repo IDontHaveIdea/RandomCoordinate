@@ -109,6 +109,13 @@ namespace IDHIPlugins
                             $"={heroine.StatusCoordinate} rc={heroine.StatusCoordinate}.");
 #endif
                     }
+                    if (Utils.InRoom &&
+                        (heroine.StatusCoordinate != (int)ChaFileDefine.CoordinateType.Pajamas))
+                    {
+                        // Save coordinate when entering player room somehow random coordinate is
+                        // set to Plain and plugin fails to capture this otherwise
+                        girlInfo.RoomCoordinate = randomCoordinate;
+                    }
 #if DEBUG
                     Log.Debug($"[OnReload] 0003: " +
                         $"Name={heroine.Name.Trim()} ({heroine.chaCtrl.name}) " +
@@ -265,6 +272,35 @@ namespace IDHIPlugins
         public int GetRandomCoordinateByType(int type)
         {
             return GetRandomCoordinateByType((ChaFileDefine.CoordinateType)type);
+        }
+
+        /// <summary>
+        /// Get coordinate when entering room
+        /// </summary>
+        /// <returns>int representing coordinate</returns>
+        public int GetRoomCoordinate()
+        {
+            if (GirlsRandomData.TryGetValue(GirlKey, out var girlInfo))
+            {
+                var roomCoordinate = girlInfo.RoomCoordinate;
+                return roomCoordinate;
+            }
+            return -1;
+        }
+
+        /// <summary>
+        /// Clear room coordinate set
+        /// </summary>
+        /// <returns></returns>
+        public int ClearRoomCoordinate()
+        {
+            if (GirlsRandomData.TryGetValue(GirlKey, out var girlInfo))
+            {
+                var roomCoordinate = girlInfo.RoomCoordinate;
+                girlInfo.RoomCoordinate = -1;
+                return roomCoordinate;
+            }
+            return -1;
         }
 
         /// <summary>
