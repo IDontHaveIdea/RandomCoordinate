@@ -1,5 +1,11 @@
 # Changelog
 
+#### <u>v1.1.1.0 - 2024-08-19</u>
+
+##### Changed
+
+- Better control of coordinates in the player room when inviting heroines to room.
+
 #### <u>v1.1.0.0 - 2024-08-12</u>
 
 ##### Added
