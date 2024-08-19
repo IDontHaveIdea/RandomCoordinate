@@ -31,7 +31,7 @@ namespace IDHIPlugins
 
                 if (fixChara != null)
                 {
-                    var ctrl = GetRaddomCoordinateController(heroine.chaCtrl);
+                    var ctrl = GetRandomCoordinateController(heroine.chaCtrl);
                     var guideMap = -1;
                     var mapMove = -1;
                     var statusCoordinate = heroine.StatusCoordinate;

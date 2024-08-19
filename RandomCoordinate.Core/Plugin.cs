@@ -12,9 +12,9 @@ using BepInEx.Logging;
 
 using KKAPI;
 using KKAPI.Chara;
+using KKAPI.MainGame;
 
 using IDHIUtils;
-using KKAPI.MainGame;
 
 
 namespace IDHIPlugins
@@ -55,7 +55,7 @@ namespace IDHIPlugins
 
             KoikatuAPI.Quitting += OnGameExit;
             GameAPI.PeriodChange += Utilities.PeriodChange;
-            GameAPI.DayChange += Utilities.DayChange;
+            //GameAPI.DayChange += Utilities.DayChange;
         }
 
         private void Start()
@@ -100,7 +100,7 @@ namespace IDHIPlugins
         /// </summary>
         /// <param name="chaControl"></param>
         /// <returns></returns>
-        public static RandomCoordinateController GetRaddomCoordinateController(ChaControl chaControl)
+        public static RandomCoordinateController GetRandomCoordinateController(ChaControl chaControl)
         {
             return ((chaControl == null) || (chaControl.gameObject == null))
                 ? null : chaControl.GetComponent<RandomCoordinateController>();

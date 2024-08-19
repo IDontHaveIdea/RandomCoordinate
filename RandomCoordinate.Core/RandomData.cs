@@ -177,6 +177,8 @@ namespace IDHIPlugins
                     Current.TotalCoordinates = value;
                 }
             }
+            public int RoomCoordinate { get; set; } = -1;
+
             #endregion Properties
 
             #region Constructors
@@ -264,7 +266,6 @@ namespace IDHIPlugins
             private void SaveToPrevious()
             {
                 // Update Previous
-
                 Previous.SetData(CategoryType, CoordinateNumber);
             }
 
