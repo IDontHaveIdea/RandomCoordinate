@@ -62,7 +62,7 @@ namespace IDHIPlugins
                 if (!GirlsRandomData.ContainsKey(girlKey))
                 {
 #if DEBUG
-                    Log.Warning($"[OnReload] 0000: Name={heroine.Name.Trim()}" +
+                    Log.Level(LogLevel.Warning, $"[OnReload] Name={heroine.Name.Trim()}" +
                         $"({heroine.chaCtrl.name}) caching info.");
 #endif
                     GirlsRandomData.Add(girlKey, new RandomData(heroine));
@@ -114,7 +114,11 @@ namespace IDHIPlugins
                     {
                         // Save coordinate when entering player room somehow random coordinate is
                         // set to Plain and plugin fails to capture this otherwise
-                        girlInfo.RoomCoordinate = randomCoordinate;
+                        if (girlInfo.RoomCoordinate == -1)
+                        {
+                            girlInfo.RoomCoordinate = randomCoordinate;
+                            Log.Warning($"[OnReload] Name={heroine.Name.Trim()} roomCoordinate={randomCoordinate}.");
+                        }
                     }
 #if DEBUG
                     Log.Debug($"[OnReload] 0003: " +
