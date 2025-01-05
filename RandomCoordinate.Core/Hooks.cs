@@ -24,6 +24,7 @@ namespace IDHIPlugins
         internal partial class RandomCoordinatePlugInHooks
         {
             internal static Harmony _hookInstance;
+            internal static int _lastCoordinate = -1;
 
             public static void Init()
             {
@@ -52,22 +53,35 @@ namespace IDHIPlugins
                     return;
                 }
 
+#if DEBUG
+                Log.Level(LogLevel.Warning, "[RandomCoordinate.ChangeAnimatorPostfix] Called.");
+#endif
+
                 if (IDHIUtils.Utilities.InRoom)
                 {
                     // Current coordinate
                     var currentCoordinate = (ChaFileDefine.CoordinateType)
                         __instance.lstFemale[0].fileStatus.coordinateType;
                     var setCoordinate = false;
-                    var coordinate = ChaFileDefine.CoordinateType.Pajamas;
+                    var coordinate = ChaFileDefine.CoordinateType.Plain;
+#if DEBUG 
+                    Log.Level(LogLevel.Warning, $"[RandomCoordinate.ChangeAnimatorPostfix] In Room currentCoordinate={currentCoordinate} _lastCoordinate={_lastCoordinate}.");
+#endif
 
                     // If current coordinate is pajamas do nothing
                     if (currentCoordinate == ChaFileDefine.CoordinateType.Pajamas)
                     {
+#if DEBUG
+                        Log.Level(LogLevel.Warning, $"[RandomCoordinate.ChangeAnimatorPostfix] Current coordinate Pajamas return;");
+#endif
                         return;
                     }
 
                     if (PajamasInRoom.Value)
                     {
+#if DEBUG
+                        Log.Level(LogLevel.Warning, $"[RandomCoordinate.ChangeAnimatorPostfix] Always Pajamas.");
+#endif
                         coordinate = ChaFileDefine.CoordinateType.Pajamas;
                         setCoordinate = true;
                     }
@@ -78,21 +92,49 @@ namespace IDHIPlugins
                         if (ctrl != null)
                         {
                             var roomCoordinate = (ChaFileDefine.CoordinateType)ctrl.GetRoomCoordinate();
-                            if (roomCoordinate > 0)
+                            if (roomCoordinate >= 0)
                             {
                                 coordinate = roomCoordinate;
                                 setCoordinate = true;
+#if DEBUG
+                                var coordinateName = $" ({MoreCoordinates
+                                    .GetCoordinateName(flags.lstHeroine[0].chaCtrl, (int)roomCoordinate)})";
+                                Log.Level(LogLevel.Warning, $"[RandomCoordinate.ChangeAnimatorPostfix] RoomCoordinate={coordinateName.Trim()}");
+#endif
                             }
-                            else if (currentCoordinate != ChaFileDefine.CoordinateType.Pajamas)
-                            {
-                                coordinate = ChaFileDefine.CoordinateType.Pajamas;
-                                setCoordinate = true;
-                            }
+#if DEBUG
+                            Log.Level(LogLevel.Warning, $"[RandomCoordinate.ChangeAnimatorPostfix] RoomCoordinate={roomCoordinate} coordinate={coordinate}.");
+#endif
+                            //else if (currentCoordinate != ChaFileDefine.CoordinateType.Pajamas)
+                            //{
+                            //    coordinate = ChaFileDefine.CoordinateType.Pajamas;
+                            //    setCoordinate = true;
+                            //}
+                        }
+                        else
+                        {
+#if DEBUG
+                            Log.Level(LogLevel.Warning, $"[RandomCoordinate.ChangeAnimatorPostfix] Controller null.");
+#endif
                         }
                     }
 
                     if (setCoordinate)
                     {
+#if DEBUG
+                        Log.Level(LogLevel.Warning, $"[RandomCoordinate.ChangeAnimatorPostfix] In Room coordinate={coordinate}.");
+                        if ((_lastCoordinate >= 0)
+                            && (_lastCoordinate != (int)coordinate))
+                        {
+                            Log.Level(LogLevel.Warning, $"[RandomCoordinate.ChangeAnimatorPostfix] Coordinate differ=({_lastCoordinate} != {(int)coordinate}).");
+                            _lastCoordinate = (int)coordinate;
+                        }
+                        else
+                        {
+                            _lastCoordinate = (int)coordinate;
+                            Log.Level(LogLevel.Warning, $"[ChangeAnimatorPostfix] Coordinate initialized to={_lastCoordinate}.");
+                        }
+#endif
                         var female = flags.lstHeroine[0].chaCtrl;
                         female.ChangeCoordinateTypeAndReload(coordinate);
                     }
@@ -144,7 +186,7 @@ namespace IDHIPlugins
                         // This is the first of the hooks to execute when loading.
                         // This condition triggers one time per period or save/load.
 #if DEBUG
-                        Log.Warning($"[ChangeCoordinateTypePrefix] " +
+                        Log.Level(LogLevel.Warning, $"[RandomCoordinate.ChangeCoordinateTypePrefix] " +
                             $"Name={name} adding data to cache for type={type}.");
 #endif
                         var categoryType = Utilities.GetCoordinateType(__instance, (int)type);
@@ -169,7 +211,7 @@ namespace IDHIPlugins
                 }
                 catch (Exception e)
                 {
-                    Log.Error($"[ChangeCoordinateTypePrefix] Error: {e.Message}");
+                    Log.Error($"[RandomCoordinate.ChangeCoordinateTypePrefix] Error: {e.Message}");
                 }
                 return true;
             }
@@ -212,8 +254,8 @@ namespace IDHIPlugins
                 var ctrl = GetRandomCoordinateController(__instance);
                 if (ctrl == null)
                 {
-                    Log.Error("[ChangeCoordinateTypeAndReloadPrefix] " +
-                        $"[ChangeCoordinateTypeAndReloadPrefix] Name={name} controller null.");
+                    Log.Error("[RandomCoordinate.ChangeCoordinateTypeAndReloadPrefix] " +
+                        $"Name={name} controller null.");
                     return true;
                 }
 
@@ -236,7 +278,7 @@ namespace IDHIPlugins
 
                     if (!ctrl.HasMoreOutfits)
                     {
-                        Log.Debug($"[ChangeCoordinateTypeAndReloadPrefix] 0000: Name={name} " +
+                        Log.Debug($"[RandomCoordinate.ChangeCoordinateTypeAndReloadPrefix] Name={name} " +
                             $"{mapInfo} total coordinates={ctrl.TotalCoordinates} " +
                             "not enough coordinates.");
                         return true;
@@ -246,7 +288,7 @@ namespace IDHIPlugins
                     var roomCoordinate = ctrl.GetRoomCoordinate();
                     if (IDHIUtils.Utilities.InRoom)
                     {
-                        if (roomCoordinate > 0)
+                        if (roomCoordinate >= 0)
                         {
                             // Coordinate saved by controller on reload when entering room
                             type = (ChaFileDefine.CoordinateType)roomCoordinate;
@@ -255,6 +297,10 @@ namespace IDHIPlugins
                         {
                             type = ChaFileDefine.CoordinateType.Pajamas;
                         }
+                        _lastCoordinate = (int)type;
+                        Log.Level(LogLevel.Warning,
+                            $"[RandomCoordinate.ChangeCoordinateTypeAndReloadPrefix] In Room " +
+                            $"RoomCoordinate={roomCoordinate} type={type}.");
                     }
 
                     if (!IDHIUtils.Utilities.InRoom
@@ -388,6 +434,7 @@ namespace IDHIPlugins
 
                 if (firstRun)
                 {
+                    ctrl.ClearRoomCoordinate();
                     newCoordinate = ctrl.NewRandomCoordinateByType(
                                     (ChaFileDefine.CoordinateType)nowCoordinate);
 #if DEBUG
