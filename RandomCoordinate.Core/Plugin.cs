@@ -34,7 +34,6 @@ namespace IDHIPlugins
         public static Dictionary<string, RandomData> GirlsRandomData =>
             _GirlsRandomData;
 
-
         private void Awake()
         {
             Log.LogSource = base.Logger;
@@ -55,6 +54,7 @@ namespace IDHIPlugins
 
             KoikatuAPI.Quitting += OnGameExit;
             GameAPI.PeriodChange += Utilities.PeriodChange;
+            HProcMonitor.OnExit += OnHProcExit;
             //GameAPI.DayChange += Utilities.DayChange;
         }
 
@@ -104,6 +104,11 @@ namespace IDHIPlugins
         {
             return ((chaControl == null) || (chaControl.gameObject == null))
                 ? null : chaControl.GetComponent<RandomCoordinateController>();
+        }
+
+        private void OnHProcExit(object s, EventArgs e)
+        {
+            RandomCoordinatePlugInHooks._lastCoordinate = -1;
         }
     }
 }
